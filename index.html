@@ -115,7 +115,7 @@ section[id^=p]{animation:rise .42s var(--ease) both}
 
 /* ---------- оболочка: плавающая панель + страница ---------- */
 #app{display:flex;align-items:flex-start;min-height:100vh}
-#side{position:sticky;top:12px;margin:12px 0 12px 12px;height:calc(100vh - 24px);width:76px;flex:none;background:var(--tile);border:1px solid var(--line);border-radius:26px;padding:22px 11px 14px;display:flex;flex-direction:column;gap:6px;overflow:hidden;transition:width .3s var(--ease);z-index:20}
+#side{position:sticky;top:12px;margin:12px 0 12px 12px;height:calc(100vh - 24px);width:76px;flex:none;background:var(--tile);border:1px solid var(--line);border-radius:26px;padding:22px 11px 14px;display:flex;flex-direction:column;gap:6px;overflow:hidden;overflow:clip;transition:width .3s var(--ease);z-index:20}
 #side.open{width:222px}
 .lb{opacity:0;transform:translateX(-8px);white-space:nowrap;transition:opacity .2s,transform .3s var(--ease);pointer-events:none}
 #side.open .lb{opacity:1;transform:none;transition-delay:.07s}
@@ -128,9 +128,9 @@ section[id^=p]{animation:rise .42s var(--ease) both}
 #sp:hover{background:var(--tile2);color:var(--fg)}
 #sp span{font-size:12.5px;font-weight:500;flex:1;text-align:left}
 #sp kbd{font:700 10.5px var(--sans);color:var(--dim);border:1px solid var(--line2);background:var(--bg);border-radius:6px;padding:2px 6px;margin-right:8px}
-#nav{position:relative;display:grid;gap:6px;margin-top:4px}
+#nav{position:relative;display:grid;grid-template-columns:minmax(0,1fr);gap:6px;margin-top:4px;overflow:clip}
 #navsel{position:absolute;left:0;top:0;width:100%;height:52px;border-radius:16px;background:var(--accent);transition:transform .38s var(--ease),background .3s;pointer-events:none}
-#nav button{position:relative;z-index:1;display:flex;align-items:center;gap:0;height:52px;width:100%;border:0;background:none;border-radius:16px;color:var(--mute);cursor:pointer;padding:0;text-align:left;transition:color .22s,background .16s}
+#nav button{position:relative;z-index:1;overflow:clip;display:flex;align-items:center;gap:0;height:52px;width:100%;border:0;background:none;border-radius:16px;color:var(--mute);cursor:pointer;padding:0;text-align:left;transition:color .22s,background .16s}
 #nav button:hover{color:var(--fg);background:rgba(255,255,255,.035)}
 #nav button svg{width:22px;height:22px;flex:none;margin:0 15px}
 #nav button .lb{font-size:13.5px;font-weight:600}
@@ -333,6 +333,20 @@ section[id^=p]>*:nth-child(2){--n:1}section[id^=p]>*:nth-child(3){--n:2}section[
 .btn.pri.ld:after{border-color:rgba(128,128,128,.3);border-top-color:var(--on-accent)}
 .btn.cd{background:linear-gradient(90deg,var(--tile3) calc(var(--p,0)*100%),var(--tile2) 0)}
 @media(max-width:860px){.lwrap{grid-template-columns:1fr}.lcol{order:2}}
+
+.uhero{display:flex;align-items:center;gap:20px;flex-wrap:wrap}
+.uav{width:96px;height:96px;border-radius:50%;background:var(--tile3);flex:none;overflow:hidden;display:grid;place-items:center;font:800 36px var(--disp);color:var(--mute)}
+.uav img{width:100%;height:100%;object-fit:cover;display:block}
+.uinfo{flex:1;min-width:200px}
+.uchips{display:flex;gap:8px;flex-wrap:wrap;margin-top:8px}
+.facts{flex-basis:100%;display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin-top:6px}
+.fct{background:var(--tile2);border-radius:16px;padding:10px 14px;min-width:0}
+.fk{font:700 10.5px var(--sans);letter-spacing:.1em;text-transform:uppercase;color:var(--dim)}
+.fv{font-weight:650;margin-top:3px;overflow:hidden;text-overflow:ellipsis}
+.upage{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:14px;align-items:start;margin-top:14px}
+.ucol{display:grid;gap:14px;min-width:0}
+#ubody.enter>*{animation:rise .42s var(--ease) both;animation-delay:calc(var(--i,0)*60ms)}
+@media(max-width:1000px){.upage{grid-template-columns:1fr}}
 @media(max-width:1100px){#main{padding:26px 22px 60px}}
 @media(max-width:860px){
  #app{display:block}
@@ -505,6 +519,7 @@ section[id^=p]>*:nth-child(2){--n:1}section[id^=p]>*:nth-child(3){--n:2}section[
     <div class="list" id="glist"></div><p class="err" id="elg"></p>
   </section>
 
+  <section id="t-user" class="pg" hidden><div id="ubody"></div></section>
   <section id="t-set" class="stack" hidden>
     <div class="tile"><h3>Акцентный цвет</h3><p class="hint" style="margin:6px 0 0">Красит кнопки, выделение и графики. Запоминается в этом браузере.</p><div id="accs"></div></div>
     <div class="two">
@@ -751,7 +766,7 @@ function tab(k,keep){
   if(!keep&&location.pathname.replace(/\/+$/,"")!==PATHS[k].replace(/\/+$/,"")&&!(PATHS[k]==="/"&&location.pathname==="/"))history.pushState(null,"",PATHS[k]);
   var tt=$("#dlg");if(tt&&!tt.hidden&&!keep)tt.hidden=true;
   $$("#nav button").forEach(function(x){x.setAttribute("aria-selected",x.dataset.tab===k)});
-  TABS.forEach(function(t){$("#t-"+t).hidden=t!==k});
+  TABS.forEach(function(t){$("#t-"+t).hidden=t!==k});$("#t-user").hidden=true;
   if(k==="set")loadSet();if(k==="ov")loadOv();
   if(k==="us")loadUsers();if(k==="fb")loadFb();if(k==="pay")loadPay();if(k==="an")loadAnn();if(k==="pr")loadPromo();if(k==="lg")loadLog();
   uiTab(k);
@@ -808,40 +823,53 @@ function loadUsers(){
 }
 $("#ulist").onclick=function(e){var it=e.target.closest("[data-id]");if(it)openUser(+it.dataset.id)};
 function dlg(html){$("#dbody").innerHTML=html;$("#dlg").hidden=false}
-function closeDlg(){$("#dlg").hidden=true;if(/^\/users\//.test(location.pathname))history.replaceState(null,"","/users")}
+function closeDlg(){$("#dlg").hidden=true}
 $("#dlg").onclick=function(e){if(e.target.id==="dlg"||e.target.closest("[data-close]"))closeDlg()};
 var ACHN={"first": "Первый шаг", "ten": "Десятка", "hundred": "Сотня", "km50": "Полсотни", "marathon": "Марафон в рассрочку", "km500": "Путешественник", "hours10": "10 часов", "kcal10k": "Печка", "goat": "Горный козёл", "long": "Черепаха-марафонец", "streak7": "Неделя без пропусков", "norm": "Нормальный", "norm30": "Железная воля", "early": "Ранняя пташка", "weigh10": "Взвешенное решение", "wgoal": "В яблочко", "plan": "По плану", "friends3": "Своя компания", "friends5": "Душа компании", "str10": "Железо", "reps1k": "Тысяча повторов", "tonne": "Тонна", "pro": "В клубе", "friends10": "Своя тусовка"},GT=null,FRAMES=["classic", "ears", "orbit", "pulse", "sparkle", "flame", "glitch", "crystal", "comet", "vine", "autumn", "daisy", "jelly", "runes", "sigil", "radar", "lights", "halo", "sakura", "stars", "fireflies", "wave", "bubbles", "frost", "antlers", "hearts", "cloud", "bow", "eclipse", "lava", "hud", "laurel", "wind", "pixring", "coins", "crown8", "hologram", "circuit", "eye3", "phases", "fairywing", "gummy", "blackhole", "clockwork", "neonportal", "ribbons", "waterblade", "arcflash", "paws", "matrix", "dice", "cards", "lockon", "telemetry", "claw", "doodlespace", "corrupt", "aurora", "gold", "neon", "ocean", "cyber", "emerald", "galaxy", "ice", "storm", "pixel", "plasma", "atom", "holo", "moon", "prism"];
 function armed(btn,fn){var t=btn.textContent;btn.onclick=function(){if(btn.dataset.a){fn();return}btn.dataset.a=1;btn.textContent="Точно?";setTimeout(function(){btn.dataset.a="";btn.textContent=t},3500)}}
 function sec(t,body){return '<div style="margin-top:20px"><div class="k mono" style="font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--mute);margin-bottom:8px">'+t+"</div>"+body+"</div>"}
 function sumW(w){var o=[];Object.keys(w).forEach(function(k){if(k==="rid"||k==="date"||o.length>=3)return;var v=w[k];if(typeof v==="number"||(typeof v==="string"&&v.length<18))o.push(esc(k)+" "+esc(v))});return o.join(" · ")}
+function tl(t,body){return '<div class="tile"><h3>'+t+'</h3><div style="margin-top:12px">'+body+"</div></div>"}
+function showUserPage(sy){
+  TABS.forEach(function(t){$("#t-"+t).hidden=true});var p=$("#t-user");p.hidden=false;CUR="us";
+  $$("#nav button").forEach(function(x){x.setAttribute("aria-selected",x.dataset.tab==="us")});
+  $("#navsel").style.transform="translateY("+(TABS.indexOf("us")*58)+"px)";document.title="Пользователь · VOOB CORE";
+  var kids=$("#ubody").children;for(var j=0;j<kids.length;j++)kids[j].style.setProperty("--i",Math.min(j,22));
+  var b=$("#ubody");if(!sy){b.classList.remove("enter");void b.offsetWidth;b.classList.add("enter");setTimeout(function(){b.classList.remove("enter")},1200)}
+  window.scrollTo(0,sy||0);
+}
+document.addEventListener("click",function(e){if(e.target.closest("[data-uback]"))tab("us")});
 function openUser(id,np){
   if(!np&&location.pathname!=="/users/"+id)history.pushState(null,"","/users/"+id);
   Promise.all([api("user",{tg_id:id}),GT?Promise.resolve(GT):api("gift_types")]).then(function(r){
-    var j=r[0];if(j.error){$("#eus").textContent=j.error;return}
+    var j=r[0];if(j.error){toast(j.error,"err");return}
     if(!GT)GT=r[1].items||[];
     var u=j.user,pro=j.pro&&j.pro.until&&Date.parse(j.pro.until)>Date.now(),meta=j.meta||{},nameNow=(meta.profile&&meta.profile.name)||"";
-    var h='<div class="chartT"><div style="display:flex;gap:12px;align-items:center;min-width:0"><div id="uph" style="width:52px;height:52px;border-radius:50%;background:var(--tile2);flex:none;overflow:hidden"></div><h3 style="overflow:hidden;text-overflow:ellipsis">'+nm(u)+'</h3></div><button class="btn sm" data-close>Закрыть</button></div>'+
-      '<dl class="kv"><dt>ID</dt><dd class="mono">'+u.tg_id+'</dd><dt>Ник</dt><dd>'+(u.handle?"@"+esc(u.handle):"—")+'</dd><dt>Регистрация</dt><dd>'+dt(u.created_at)+'</dd><dt>Был</dt><dd>'+dt(u.last_seen)+'</dd><dt>Тренировок</dt><dd>'+j.workouts_total+'</dd><dt>PRO</dt><dd>'+(pro?"до "+dt(j.pro.until):"нет")+'</dd>'+(u.blocked?'<dt>Блок</dt><dd class="dn">'+esc(u.block_reason||"без причины")+"</dd>":"")+"</dl>";
-    h+=sec("Сообщение",'<div class="bar"><input class="field" id="umsg" placeholder="Текст в Telegram"><button class="btn sm" id="usend">Отправить</button></div>');
-    h+=sec("PRO",'<div class="bar"><input class="field" id="pdays" type="number" placeholder="дней, можно с минусом" style="max-width:200px"><button class="btn sm" id="pgo">Выдать</button><button class="btn sm" id="p7">+7</button><button class="btn sm" id="p30">+30</button></div>');
-    h+=sec("Профиль",'<div class="stack"><div class="bar"><input class="field" id="ename" placeholder="Имя" value="'+esc(nameNow)+'"><button class="btn sm" id="ename_go">Сохранить имя</button></div><div class="bar"><input class="field" id="ehandle" placeholder="Ник без @" value="'+esc(u.handle||"")+'"><button class="btn sm" id="ehandle_go">Сохранить ник</button></div>'+
+    var ini=esc(String(u.first_name||u.username||u.handle||"?").trim().charAt(0).toUpperCase()||"?"),L="",R="";
+    var chips=(pro?'<span class="chip g">PRO</span>':"")+(u.blocked?'<span class="chip r">блок</span>':"")+(u.creator?'<span class="chip">создатель</span>':"")+(u.private?'<span class="chip">закрытый</span>':"");
+    var fc=function(k,v,c){return '<div class="fct"><div class="fk">'+k+'</div><div class="fv'+(c?" "+c:"")+'">'+v+"</div></div>"};
+    var h='<div class="tile uhero"><div class="uav" id="uph">'+ini+'</div><div class="uinfo"><div class="crumb">VOOB CORE / люди / '+u.tg_id+'</div><div class="ptitle" style="font-size:28px">'+nm(u)+'</div><div class="uchips">'+chips+'</div></div><button class="btn sm" type="button" data-uback>← Все пользователи</button>'+
+      '<div class="facts">'+fc("ID",'<span class="mono">'+u.tg_id+"</span>")+fc("Ник",u.handle?"@"+esc(u.handle):"—")+fc("Регистрация",dt(u.created_at))+fc("Был",dt(u.last_seen))+fc("Тренировок",j.workouts_total)+fc("PRO",pro?"до "+dt(j.pro.until):"нет")+(u.blocked?fc("Блок",esc(u.block_reason||"без причины"),"dn"):"")+"</div></div>";
+    L+=tl("Сообщение",'<div class="bar"><input class="field" id="umsg" placeholder="Текст в Telegram"><button class="btn sm" id="usend">Отправить</button></div>');
+    L+=tl("PRO",'<div class="bar"><input class="field" id="pdays" type="number" placeholder="дней, можно с минусом" style="max-width:200px"><button class="btn sm" id="pgo">Выдать</button><button class="btn sm" id="p7">+7</button><button class="btn sm" id="p30">+30</button></div>');
+    L+=tl("Профиль",'<div class="stack"><div class="bar"><input class="field" id="ename" placeholder="Имя" value="'+esc(nameNow)+'"><button class="btn sm" id="ename_go">Сохранить имя</button></div><div class="bar"><input class="field" id="ehandle" placeholder="Ник без @" value="'+esc(u.handle||"")+'"><button class="btn sm" id="ehandle_go">Сохранить ник</button></div>'+
       '<div class="row" style="margin:0"><button class="btn sm" id="epriv">Профиль: '+(u.private?"закрытый":"открытый")+'</button><button class="btn sm" id="efeed">Лента: '+(u.hide_feed?"скрыт":"виден")+'</button><button class="btn sm" id="esoc">Сбросить соцсети</button></div></div>');
-    h+=sec("Рамка и значок",'<div class="stack"><div class="bar"><select class="field" id="efr"><option value="">Без рамки</option>'+FRAMES.map(function(f){return '<option value="'+f+'"'+(j.frame===f?" selected":"")+">"+f+"</option>"}).join("")+'</select><button class="btn sm" id="efr_go">Сохранить рамку</button></div><div class="bar"><input class="field" id="ebd" placeholder="Значок, латиница 3–12, пусто = Печать" value="'+esc((meta.settings&&meta.settings.badge)||"")+'"><button class="btn sm" id="ebd_go">Сохранить значок</button></div></div>');
-    h+=sec("Достижения",'<div class="row" id="achBox" style="margin:0"><span class="hint" style="margin:0">Загружаю…</span></div><p class="hint" style="margin:8px 0 0">Нажми на достижение, чтобы отозвать или вернуть. Выключенные отмечены.</p>');
-    h+=sec("Подарок",'<div class="bar"><select class="field" id="gk">'+GT.filter(function(g){return g.kind!=="pro"}).map(function(g){return '<option value="'+esc(g.kind)+'">'+esc(g.emoji)+" "+esc(g.title)+"</option>"}).join("")+'</select><button class="btn sm" id="ggo">Подарить</button></div>'+
+    L+=tl("Рамка и значок",'<div class="stack"><div class="bar"><select class="field" id="efr"><option value="">Без рамки</option>'+FRAMES.map(function(f){return '<option value="'+f+'"'+(j.frame===f?" selected":"")+">"+f+"</option>"}).join("")+'</select><button class="btn sm" id="efr_go">Сохранить рамку</button></div><div class="bar"><input class="field" id="ebd" placeholder="Значок, латиница 3–12, пусто = Печать" value="'+esc((meta.settings&&meta.settings.badge)||"")+'"><button class="btn sm" id="ebd_go">Сохранить значок</button></div></div>');
+    R+=tl("Достижения",'<div class="row" id="achBox" style="margin:0"><span class="hint" style="margin:0">Загружаю…</span></div><p class="hint" style="margin:8px 0 0">Нажми на достижение, чтобы отозвать или вернуть. Выключенные отмечены.</p>');
+    L+=tl("Подарок",'<div class="bar"><select class="field" id="gk">'+GT.filter(function(g){return g.kind!=="pro"}).map(function(g){return '<option value="'+esc(g.kind)+'">'+esc(g.emoji)+" "+esc(g.title)+"</option>"}).join("")+'</select><button class="btn sm" id="ggo">Подарить</button></div>'+
       (j.gifts_in.length?'<p class="hint">Получил: '+j.gifts_in.length+(j.gifts_out.length?", подарил: "+j.gifts_out.length:"")+"</p>":""));
     var st=[];if(u.frozen_until)st.push("PRO заморожен до "+dt(u.frozen_until));if(u.delete_at)st.push("Удаление аккаунта запланировано на "+dt(u.delete_at));
-    if(st.length)h+=sec("Состояние",'<p class="hint dn" style="margin:0">'+esc(st.join(" · "))+"</p>");
-    h+=sec("Тренировки (последние 15)",j.workouts.length?'<div class="list">'+j.workouts.slice(0,15).map(function(w){return '<div class="item"><div class="m"><div class="t">'+esc(w.date||"без даты")+'</div><div class="s">'+sumW(w)+'</div></div><button class="btn sm bad" data-w="'+esc(w.rid)+'">Удалить</button></div>'}).join("")+"</div>":'<p class="hint">Нет</p>');
-    if(j.weights.length)h+=sec("Вес",'<p class="hint" style="margin:0">'+j.weights.slice(0,10).map(function(w){return esc(w.date)+": "+esc(w.kg!=null?w.kg:(w.value!=null?w.value:""))}).join(" · ")+"</p>");
-    if(j.friends.length)h+=sec("Друзья ("+j.friends.length+")",'<p class="hint" style="margin:0">'+j.friends.slice(0,30).map(nm).join(", ")+"</p>");
-    if(j.payments.length)h+=sec("Платежи",'<p class="hint" style="margin:0">'+j.payments.map(function(p){return p.stars+"⭐ "+dt(p.created_at)+(p.refunded_at?" (возврат)":"")}).join(" · ")+"</p>");
-    if(j.feedback.length)h+=sec("Обращения",'<div class="list">'+j.feedback.slice(0,5).map(function(x){return '<div class="item"><div class="m"><div class="s wrap">'+esc(x.text)+"</div></div></div>"}).join("")+"</div>");
-    h+=sec("Сессии",'<p class="hint" style="margin:0 0 8px">'+(j.sessions.length?j.sessions.map(function(x){return esc(x.device||"?")+" · "+dt(x.last_seen)}).join("<br>"):"Нет активных")+"</p>"+(u.creator?"":'<button class="btn sm bad" id="ukick">Завершить все сессии</button>'));
-    if(!u.creator)h+=sec("Доступ",u.blocked?'<button class="btn sm" id="ublk">Разблокировать</button>':'<button class="btn sm bad" id="ublk">Заблокировать</button>');
-    h+='<p class="err" id="eu"></p>';
-    dlg(h);
-    api("photo",{tg_id:id}).then(function(p){if(p&&p.ok)$("#uph").innerHTML='<img alt="" style="width:100%;height:100%;object-fit:cover" src="data:image/jpeg;base64,'+p.b64+'">'});
+    if(st.length)L+=tl("Состояние",'<p class="hint dn" style="margin:0">'+esc(st.join(" · "))+"</p>");
+    R+=tl("Тренировки (последние 15)",j.workouts.length?'<div class="list">'+j.workouts.slice(0,15).map(function(w){return '<div class="item"><div class="m"><div class="t">'+esc(w.date||"без даты")+'</div><div class="s">'+sumW(w)+'</div></div><button class="btn sm bad" data-w="'+esc(w.rid)+'">Удалить</button></div>'}).join("")+"</div>":'<p class="hint">Нет</p>');
+    if(j.weights.length)R+=tl("Вес",'<p class="hint" style="margin:0">'+j.weights.slice(0,10).map(function(w){return esc(w.date)+": "+esc(w.kg!=null?w.kg:(w.value!=null?w.value:""))}).join(" · ")+"</p>");
+    if(j.friends.length)R+=tl("Друзья ("+j.friends.length+")",'<p class="hint" style="margin:0">'+j.friends.slice(0,30).map(nm).join(", ")+"</p>");
+    if(j.payments.length)R+=tl("Платежи",'<p class="hint" style="margin:0">'+j.payments.map(function(p){return p.stars+"⭐ "+dt(p.created_at)+(p.refunded_at?" (возврат)":"")}).join(" · ")+"</p>");
+    if(j.feedback.length)R+=tl("Обращения",'<div class="list">'+j.feedback.slice(0,5).map(function(x){return '<div class="item"><div class="m"><div class="s wrap">'+esc(x.text)+"</div></div></div>"}).join("")+"</div>");
+    R+=tl("Сессии",'<p class="hint" style="margin:0 0 8px">'+(j.sessions.length?j.sessions.map(function(x){return esc(x.device||"?")+" · "+dt(x.last_seen)}).join("<br>"):"Нет активных")+"</p>"+(u.creator?"":'<button class="btn sm bad" id="ukick">Завершить все сессии</button>'));
+    if(!u.creator)L+=tl("Доступ",u.blocked?'<button class="btn sm" id="ublk">Разблокировать</button>':'<button class="btn sm bad" id="ublk">Заблокировать</button>');
+    h+='<div class="upage"><div class="ucol">'+L+'</div><div class="ucol">'+R+'</div></div><p class="err" id="eu"></p>';
+    var sy=window.scrollY;$("#ubody").innerHTML=h;showUserPage(sy);
+    api("photo",{tg_id:id,big:true}).then(function(p){if(p&&p.ok)$("#uph").innerHTML='<img alt="" style="width:100%;height:100%;object-fit:cover" src="data:image/jpeg;base64,'+p.b64+'">'});
     var say=function(r,ok){$("#eu").innerHTML=r&&r.error?esc(r.error):'<span class="ok">'+ok+"</span>"},again=function(r,ok){if(r&&r.error)say(r);else{openUser(id);loadUsers()}};
     $("#usend").onclick=function(){var t=$("#umsg").value.trim();if(!t)return;api("message",{tg_id:id,text:t}).then(function(r){say(r,r.status==="ok"?"Отправлено":"Не доставлено");$("#umsg").value=""})};
     $("#p7").onclick=function(){api("pro",{tg_id:id,days:7}).then(again)};
@@ -866,9 +894,9 @@ function openUser(id,np){
     if($("#ublk")){
       if(u.blocked)$("#ublk").onclick=function(){api("unblock",{tg_id:id}).then(again)};
       else $("#ublk").onclick=function(){
-        $("#dbody").innerHTML='<h3>Причина блокировки</h3><div class="stack" style="margin-top:12px"><input class="field" id="why" placeholder="Коротко, пользователь её увидит"><div class="row" style="margin:0"><button class="btn bad sm" id="whyGo">Заблокировать</button><button class="btn sm" id="whyNo">Назад</button></div><p class="err" id="ew"></p></div>';
-        $("#whyGo").onclick=function(){api("block",{tg_id:id,reason:$("#why").value.trim()}).then(function(r){if(r.error)$("#ew").textContent=r.error;else{closeDlg();loadUsers()}})};
-        $("#whyNo").onclick=function(){openUser(id)};
+        dlg('<h3>Причина блокировки</h3><div class="stack" style="margin-top:12px"><input class="field" id="why" placeholder="Коротко, пользователь её увидит"><div class="row" style="margin:0"><button class="btn bad sm" id="whyGo">Заблокировать</button><button class="btn sm" id="whyNo">Назад</button></div><p class="err" id="ew"></p></div>');
+        $("#whyGo").onclick=function(){api("block",{tg_id:id,reason:$("#why").value.trim()}).then(function(r){if(r.error)$("#ew").textContent=r.error;else{closeDlg();openUser(id);loadUsers()}})};
+        $("#whyNo").onclick=function(){closeDlg()};
       };
     }
   });
