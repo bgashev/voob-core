@@ -157,6 +157,10 @@ section[id^=p]{animation:rise .42s var(--ease) both}
 .qside .btn{justify-self:stretch;text-align:center}
 .btn.lnk{display:block;margin:14px auto 0;background:none;border:0;color:var(--mute);font-size:13px;padding:6px 12px;height:auto}.btn.lnk:hover{color:var(--fg)}
 #pwBox{margin-top:6px}
+.pwf{position:relative;display:block}.pwf .field{width:100%;padding-right:50px}
+.pwe{position:absolute;right:8px;top:50%;transform:translateY(-50%);width:36px;height:36px;border:0;border-radius:12px;background:none;color:var(--mute);display:grid;place-items:center;cursor:pointer;transition:color .2s,background .2s}
+.pwe:hover{color:var(--fg);background:var(--tile3)}.pwe svg{width:19px;height:19px}.pwe .x{display:none}.pwe.on .x{display:block}.pwe.on .o{display:none}
+
 .status{display:flex;justify-content:center;gap:8px;align-items:center;color:var(--mute);font-size:13px}
 .dot{width:8px;height:8px;border-radius:50%;background:var(--accent);animation:p 1.4s infinite}
 @keyframes p{50%{opacity:.25}}
@@ -1473,6 +1477,10 @@ function applyAccent(h,save){
 function accHtml(list){return list.map(function(a){return '<button type="button" data-c="'+a[2]+'" title="'+a[1]+'" aria-label="'+a[1]+'" style="--s:'+a[2]+'"></button>'}).join("")}
 $("#accs").innerHTML='<div class="accl" style="margin-top:6px">Пастельные</div><div class="accs">'+accHtml(ACC)+'</div>';
 $("#accs").onclick=function(e){var b=e.target.closest("button");if(b){applyAccent(b.dataset.c,true);toast("Акцент: "+b.title)}};
+
+(function(){var E='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><g class="o"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></g><g class="x"><path d="M3 3l18 18M10.6 5.1A10 10 0 0 1 12 5c6.5 0 10 7 10 7a17 17 0 0 1-3.2 4M6.3 6.3A17 17 0 0 0 2 12s3.5 7 10 7a10 10 0 0 0 4-.8M9.9 9.9a3 3 0 0 0 4.2 4.2"/></g></svg>';
+function wrap(i){if(!i||i.parentNode.classList.contains("pwf"))return;var w=document.createElement("div");w.className="pwf";i.parentNode.insertBefore(w,i);w.appendChild(i);var b=document.createElement("button");b.type="button";b.className="pwe";b.tabIndex=-1;b.setAttribute("aria-label","Показать пароль");b.innerHTML=E;b.onmousedown=function(e){e.preventDefault()};b.onclick=function(){var on=i.type==="password";i.type=on?"text":"password";b.classList.toggle("on",on);b.setAttribute("aria-label",on?"Скрыть пароль":"Показать пароль");i.focus()};w.appendChild(b)}
+window.pwEye=function(root){[].forEach.call((root||document).querySelectorAll('input[type=password].field'),wrap)};pwEye()})();
 var savedAcc=null;try{savedAcc=localStorage.getItem("voobcore.acc")}catch(e){}
 if(savedAcc&&!ACC.some(function(a){return a[2].toLowerCase()===savedAcc.toLowerCase()}))savedAcc=null;
 applyAccent(savedAcc||"#EDEDF2",false);
