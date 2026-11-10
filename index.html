@@ -260,6 +260,79 @@ section.pg{display:grid;gap:14px;align-content:start}
 #toast.err i{background:rgba(251,113,133,.16);color:var(--bad)}
 #toast svg{width:14px;height:14px}
 
+
+/* ---------- вход: плитки и живые состояния ---------- */
+#login{position:relative;overflow:hidden}
+#login:not([hidden]){animation:fade .6s}
+#login::before{content:"";position:fixed;inset:-20%;z-index:-1;pointer-events:none;background:radial-gradient(40% 40% at 25% 30%,rgba(var(--accent-rgb),.07),transparent 70%),radial-gradient(35% 35% at 75% 70%,rgba(110,160,255,.06),transparent 70%);animation:amb 18s ease-in-out infinite alternate}
+@keyframes amb{to{transform:translate3d(6%,4%,0) scale(1.12)}}
+#login.lout{animation:lout .42s ease-in forwards}
+@keyframes lout{to{opacity:0;transform:scale(.97);filter:blur(10px)}}
+#app:not([hidden]){animation:fade .55s}
+.lwrap{width:min(1020px,100%);display:grid;grid-template-columns:minmax(0,5fr) minmax(0,7fr);gap:14px;align-items:start}
+.lcol{display:grid;gap:14px}
+.lbrand{display:flex;align-items:center;gap:18px;animation:rise .6s var(--ease) both}
+.lbrand .lt1{font-size:20px;margin:0;padding-left:0}
+.lcard{padding:30px;animation:rise .6s var(--ease) .06s both}
+.guard{animation:rise .6s var(--ease) .12s both}
+.guard h3{font:700 10.5px var(--sans);letter-spacing:.16em;text-transform:uppercase;color:var(--dim)}
+.guard ul{list-style:none;margin:16px 0 0;padding:0;display:grid;gap:13px}
+.guard li{position:relative;padding-left:20px;font-size:13px;color:var(--mute);animation:rise .5s var(--ease) both;animation-delay:calc(.3s + var(--i)*.1s)}
+.guard li:before{content:"";position:absolute;left:0;top:7px;width:7px;height:7px;border-radius:2px;background:var(--accent);opacity:.8}
+.steps i{position:relative;border-top:0;padding-top:11px}
+.steps i:before,.steps i:after{content:"";position:absolute;left:0;right:0;top:0;height:3px;border-radius:2px}
+.steps i:before{background:var(--line)}
+.steps i:after{background:var(--accent);transform:scaleX(0);transform-origin:left;transition:transform .65s var(--ease)}
+.steps i.on:after{transform:scaleX(1)}
+section[id^=p]{animation:stepIn .55s var(--ease) both}
+section[id^=p].out{animation:stepOut .2s ease-in both}
+section[id^=p]>*{animation:rise .5s var(--ease) both;animation-delay:calc(.07s + var(--n,0)*.06s)}
+section[id^=p]>*:nth-child(2){--n:1}section[id^=p]>*:nth-child(3){--n:2}section[id^=p]>*:nth-child(4){--n:3}section[id^=p]>*:nth-child(5){--n:4}
+@keyframes stepIn{from{opacity:0;transform:translateX(26px);filter:blur(8px)}}
+@keyframes stepOut{to{opacity:0;transform:translateX(-18px);filter:blur(6px)}}
+.qr.ld{background:linear-gradient(110deg,#e4e6ea 30%,#f4f5f7 50%,#e4e6ea 70%);background-size:200% 100%;animation:shim 1.3s linear infinite}
+.qr.ld:after,.qr.dead:after{display:none}
+.qr svg{animation:qin .75s var(--ease) both}
+@keyframes qin{from{opacity:0;transform:scale(.9);filter:blur(10px)}}
+.qr.dead svg{filter:grayscale(1);opacity:.22;transition:opacity .4s,filter .4s}
+.qr .qok{position:absolute;inset:0;display:grid;place-items:center;background:rgba(11,11,13,.86);opacity:0;animation:fade .35s forwards}
+.qr .qok svg{width:70px;height:70px;animation:none;filter:none;opacity:1}
+.qd{width:14px;height:14px;border-radius:50%;flex:none;position:relative}
+.qd.ld{border:2px solid var(--line2);border-top-color:var(--accent);animation:rot .8s linear infinite}
+.qd.wt,.qd.bad,.qd.ok{width:8px;height:8px;margin:3px;background:var(--accent)}
+.qd.bad{background:var(--bad)}.qd.ok{background:var(--green)}
+.qd.wt:before,.qd.wt:after{content:"";position:absolute;inset:0;border-radius:50%;border:1.5px solid var(--accent);animation:radar 2s ease-out infinite}
+.qd.wt:after{animation-delay:1s}
+@keyframes radar{from{transform:scale(1);opacity:.85}to{transform:scale(3.6);opacity:0}}
+@keyframes rot{to{transform:rotate(360deg)}}
+#qrSt.sw{animation:rise .4s var(--ease)}
+.chk circle,.okcheck circle{fill:none;stroke:var(--green);stroke-width:2.5;stroke-dasharray:152;stroke-dashoffset:152;animation:d0 .6s .05s cubic-bezier(.65,0,.35,1) forwards}
+.chk path,.okcheck path{fill:none;stroke:var(--green);stroke-width:3.2;stroke-linecap:round;stroke-linejoin:round;stroke-dasharray:44;stroke-dashoffset:44;animation:d0 .4s .5s cubic-bezier(.65,0,.35,1) forwards}
+@keyframes d0{to{stroke-dashoffset:0}}
+.okcheck{width:72px;height:72px;margin:6px 0 14px}.okcheck svg{width:100%;height:100%}
+.okcheck{animation:pop .5s var(--ease) both}
+.mrow{display:flex;align-items:center;gap:12px;margin-top:8px}
+.ms{width:38px;height:38px;border-radius:13px;flex:none;display:grid;place-items:center;background:var(--tile2);border:1px solid var(--line);position:relative;color:var(--mute);transition:background .3s,color .3s,border-color .3s}
+.ms.ld svg{animation:fly 1.2s ease-in-out infinite}
+@keyframes fly{50%{transform:translateY(-4px) rotate(-6deg)}}
+.ms.ld:after{content:"";position:absolute;inset:-1px;border-radius:13px;border:1.5px solid var(--accent);animation:radar2 1.4s ease-out infinite}
+@keyframes radar2{from{transform:scale(1);opacity:.6}to{transform:scale(1.55);opacity:0}}
+.ms.ok{background:rgba(52,211,153,.14);border-color:transparent;color:var(--green);animation:popb .55s cubic-bezier(.34,1.56,.64,1)}
+.ms.bad{background:rgba(251,113,133,.13);border-color:transparent;color:var(--bad);animation:shake .45s}
+@keyframes popb{0%{transform:scale(.7)}60%{transform:scale(1.14)}}
+.codes input.f{border-color:var(--line2);animation:cpop .3s cubic-bezier(.34,1.56,.64,1)}
+@keyframes cpop{50%{transform:scale(1.12)}}
+.codes.vf input{border-color:var(--accent);animation:wave .9s ease-in-out infinite;animation-delay:calc(var(--k)*90ms)}
+@keyframes wave{50%{transform:translateY(-6px);background:rgba(var(--accent-rgb),.14)}}
+.codes.bad input{border-color:var(--bad);animation:shake .45s}
+@keyframes shake{20%{transform:translateX(-7px)}40%{transform:translateX(6px)}60%{transform:translateX(-4px)}80%{transform:translateX(2px)}}
+.codes.okc input{border-color:var(--green);color:var(--green);background:rgba(52,211,153,.1);animation:okp .55s cubic-bezier(.34,1.56,.64,1) both;animation-delay:calc(var(--k)*70ms)}
+@keyframes okp{50%{transform:translateY(-7px) scale(1.1)}}
+.btn.ld{pointer-events:none;color:transparent!important;position:relative}
+.btn.ld:after{content:"";position:absolute;width:16px;height:16px;border-radius:50%;border:2px solid var(--line2);border-top-color:var(--fg);animation:rot .7s linear infinite}
+.btn.pri.ld:after{border-color:rgba(128,128,128,.3);border-top-color:var(--on-accent)}
+.btn.cd{background:linear-gradient(90deg,var(--tile3) calc(var(--p,0)*100%),var(--tile2) 0)}
+@media(max-width:860px){.lwrap{grid-template-columns:1fr}.lcol{order:2}}
 @media(max-width:1100px){#main{padding:26px 22px 60px}}
 @media(max-width:860px){
  #app{display:block}
@@ -302,8 +375,16 @@ section.pg{display:grid;gap:14px;align-content:start}
 <!-- ВХОД -->
 <main id="login" hidden>
   <div class="lwrap">
+  <div class="lcol">
+    <div class="tile lbrand"><span data-mark="64"></span><div><div class="lt1">VOOB CORE</div><div class="lt2">панель создателя</div></div></div>
+    <div class="tile guard"><h3>Что защищает вход</h3><ul>
+      <li style="--i:0">Пускает только твой аккаунт Telegram, чужой даже не получает сессию.</li>
+      <li style="--i:1">Одноразовый код с почты действует 10 минут, на него три попытки.</li>
+      <li style="--i:2">Сессия гаснет через 30 минут без действий и через 8 часов в любом случае.</li>
+      <li style="--i:3">Возвраты, рассылки и блокировки просят код ещё раз.</li>
+    </ul></div>
+  </div>
   <div class="tile lcard">
-    <div class="lhead"><span data-mark="64"></span><div class="lt1">VOOB CORE</div><div class="lt2">панель создателя</div></div>
     <div class="steps"><i id="s1" class="on">Telegram</i><i id="s2">Почта</i><i id="s3">Готово</i></div>
 
     <section id="p1">
@@ -313,7 +394,7 @@ section.pg{display:grid;gap:14px;align-content:start}
         <div class="qr" id="qr" aria-label="QR-код входа"></div>
         <div class="qside">
           <a class="btn pri" id="tgLink" href="#" target="_blank" rel="noopener">Открыть в Telegram</a>
-          <div class="status"><span class="dot"></span><span id="qrSt">Создаю код…</span></div>
+          <div class="status"><span class="qd ld" id="qrD"></span><span id="qrSt">Создаю код…</span></div>
           <button class="btn" id="qrNew" type="button" hidden>Новый код</button>
         </div>
       </div>
@@ -322,7 +403,7 @@ section.pg{display:grid;gap:14px;align-content:start}
 
     <section id="p2" hidden>
       <h2>Код с почты</h2>
-      <p class="hint" id="mailHint">Отправляю письмо…</p>
+      <div class="mrow"><span class="ms ld" id="mailIc"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="14" rx="3"/><path d="m4 7 8 6 8-6"/></svg></span><p class="hint" id="mailHint" style="margin:0">Отправляю письмо…</p></div>
       <div class="codes" id="codes"></div>
       <p class="err" id="e2"></p>
       <div class="row">
@@ -333,16 +414,11 @@ section.pg{display:grid;gap:14px;align-content:start}
     </section>
 
     <section id="p3" hidden>
+      <div class="okcheck"><svg viewBox="0 0 52 52"><circle cx="26" cy="26" r="24"/><path d="M15 27l8 8 14-16"/></svg></div>
       <h2 class="ok">Вход выполнен</h2>
       <p class="hint">Открываю VOOB CORE…</p>
     </section>
   </div>
-  <ul class="lguard">
-    <li>Пускает только твой аккаунт Telegram.</li>
-    <li>Код с почты живёт 10 минут, на него три попытки.</li>
-    <li>Сессия гаснет через 30 минут без действий и через 8 часов в любом случае.</li>
-    <li>Возвраты, рассылки и блокировки просят код ещё раз.</li>
-  </ul>
   </div>
 </main>
 
@@ -521,31 +597,41 @@ function api(action,extra,fn){
     return j;
   });
 }
-function show(id){["login","app"].forEach(function(x){$("#"+x).hidden=x!==id});bootOff()}
+function show(id){["login","app"].forEach(function(x){$("#"+x).hidden=x!==id});$("#login").classList.remove("lout");bootOff()}
 function bye(expired){setToken(null);stopPoll();show("login");stage(1);startQr();if(expired)$("#e1").textContent="Сессия закончилась. Войди заново."}
 
 /* ---------- поля для шестизначного кода ---------- */
 function mkCodes(host,onFull){
   host.innerHTML="";var inp=[];
-  for(var i=0;i<6;i++){var el=document.createElement("input");el.inputMode="numeric";el.maxLength=1;el.autocomplete=i?"off":"one-time-code";el.setAttribute("aria-label","Цифра "+(i+1));host.appendChild(el);inp.push(el)}
+  for(var i=0;i<6;i++){var el=document.createElement("input");el.inputMode="numeric";el.maxLength=1;el.autocomplete=i?"off":"one-time-code";el.setAttribute("aria-label","Цифра "+(i+1));el.style.setProperty("--k",i);host.appendChild(el);inp.push(el)}
   function val(){return inp.map(function(x){return x.value}).join("")}
   inp.forEach(function(el,i){
     el.addEventListener("input",function(){
       var d=el.value.replace(/\D/g,"");
       if(d.length>1){d.split("").slice(0,6-i).forEach(function(c,k){inp[i+k].value=c});}else el.value=d;
+      inp.forEach(function(x){x.classList.toggle("f",!!x.value)});
       var n=inp.findIndex(function(x){return !x.value});(n<0?inp[5]:inp[n]).focus();
       if(val().length===6&&onFull)onFull(val());
     });
     el.addEventListener("keydown",function(e){if(e.key==="Backspace"&&!el.value&&i)inp[i-1].focus()});
-    el.addEventListener("paste",function(e){var t=(e.clipboardData||window.clipboardData).getData("text").replace(/\D/g,"");if(!t)return;e.preventDefault();t.split("").slice(0,6).forEach(function(c,k){inp[k].value=c});inp[Math.min(t.length,5)].focus();if(t.length>=6&&onFull)onFull(val())});
+    el.addEventListener("paste",function(e){var t=(e.clipboardData||window.clipboardData).getData("text").replace(/\D/g,"");if(!t)return;e.preventDefault();t.split("").slice(0,6).forEach(function(c,k){inp[k].value=c});inp.forEach(function(x){x.classList.toggle("f",!!x.value)});inp[Math.min(t.length,5)].focus();if(t.length>=6&&onFull)onFull(val())});
   });
-  return {val:val,clear:function(){inp.forEach(function(x){x.value=""});inp[0].focus()},focus:function(){inp[0].focus()}};
+  return {val:val,clear:function(){inp.forEach(function(x){x.value="";x.classList.remove("f")});host.className="codes";inp[0].focus()},state:function(c){host.className="codes"+(c?" "+c:"")},focus:function(){inp[0].focus()}};
 }
 var mailMsg={wrong:function(j){return "Не тот код. Осталось попыток: "+j.left},spent:function(){return "Попытки кончились. Отправь новый код."},expired:function(){return "Код устарел. Отправь новый."},locked:function(){return "Слишком много ошибок. Подожди 15 минут."}};
 
 /* ---------- шаг 1: QR ---------- */
 var qrCode=null,pollT=null,qrTimer=null;
-function stage(n){["s1","s2","s3"].forEach(function(x,i){$("#"+x).classList.toggle("on",i<n)});["p1","p2","p3"].forEach(function(x,i){$("#"+x).hidden=i!==n-1})}
+function stage(n){
+  ["s1","s2","s3"].forEach(function(x,i){$("#"+x).classList.toggle("on",i<n)});
+  var ps=["p1","p2","p3"].map(function(x){return $("#"+x)}),prev=ps.filter(function(p){return !p.hidden&&!p.classList.contains("out")})[0];
+  function apply(){ps.forEach(function(p,i){p.classList.remove("out");p.hidden=i!==n-1})}
+  if(prev&&prev!==ps[n-1]&&!$("#login").hidden){prev.classList.add("out");setTimeout(apply,200)}else apply();
+}
+function qs(t,k){var d=$("#qrD"),e=$("#qrSt");d.className="qd "+k;e.textContent=t;e.classList.remove("sw");void e.offsetWidth;e.classList.add("sw")}
+function qrOk(){var q=$("#qr");if(q.querySelector(".qok"))return;var o=document.createElement("div");o.className="qok chk";o.innerHTML='<svg viewBox="0 0 52 52"><circle cx="26" cy="26" r="24"/><path d="M15 27l8 8 14-16"/></svg>';q.appendChild(o)}
+function busy(b,on){b.classList.toggle("ld",!!on)}
+function mailIc(k){var e=$("#mailIc");e.className="ms "+k}
 function stopPoll(){clearTimeout(pollT);clearTimeout(qrTimer);pollT=null}
 function drawQr(text){
   var q=qrcode(0,"M");q.addData(text);q.make();
@@ -554,17 +640,17 @@ function drawQr(text){
   $("#qr").innerHTML='<svg viewBox="0 0 '+n+' '+n+'" shape-rendering="crispEdges"><path d="'+d+'" fill="#0c0d0f"/></svg>';
 }
 function startQr(){
-  stopPoll();$("#e1").textContent="";$("#qrNew").hidden=true;$("#qrSt").textContent="Создаю код…";$("#qr").innerHTML="";
+  stopPoll();$("#e1").textContent="";$("#qrNew").hidden=true;qs("Создаю код…","ld");$("#qr").className="qr ld";$("#qr").innerHTML="";
   call("core_login_start").then(function(j){
-    if(j.error||!j.code){$("#e1").textContent=j.error||"Не удалось создать код";$("#qrSt").textContent="Ошибка";$("#qrNew").hidden=false;return}
-    qrCode=j.code;$("#tgLink").href=j.link;drawQr(j.link);
+    if(j.error||!j.code){$("#e1").textContent=j.error||"Не удалось создать код";qs("Ошибка","bad");$("#qr").className="qr dead";$("#qrNew").hidden=false;return}
+    qrCode=j.code;$("#tgLink").href=j.link;$("#qr").className="qr";drawQr(j.link);
     var until=Date.now()+(j.expires_in||600)*1000;
-    $("#qrSt").textContent="Ждём подтверждения в Telegram";
+    qs("Ждём подтверждения в Telegram","wt");
     (function tick(){
       if(Date.now()>until){expireQr();return}
       call("core_login_poll",{code:qrCode}).then(function(r){
-        if(r.status==="ok"&&r.token){stopPoll();setToken(r.token);stage(2);beginMail();return}
-        if(r.status==="forbidden"){stopPoll();$("#qrSt").textContent="Отказано";$("#e1").textContent="Этот аккаунт Telegram не имеет доступа.";$("#qrNew").hidden=false;return}
+        if(r.status==="ok"&&r.token){stopPoll();setToken(r.token);qs("Подтверждено","ok");qrOk();setTimeout(function(){stage(2);beginMail()},900);return}
+        if(r.status==="forbidden"){stopPoll();qs("Отказано","bad");$("#qr").classList.add("dead");$("#e1").textContent="Этот аккаунт Telegram не имеет доступа.";$("#qrNew").hidden=false;return}
         if(r.status==="expired"){expireQr();return}
         if(r.error&&!r.status){$("#e1").textContent=r.error}
         pollT=setTimeout(tick,2000);
@@ -572,7 +658,7 @@ function startQr(){
     })();
   });
 }
-function expireQr(){stopPoll();$("#qrSt").textContent="Код устарел";$("#qrNew").hidden=false}
+function expireQr(){stopPoll();qs("Код устарел","bad");$("#qr").classList.add("dead");$("#qrNew").hidden=false}
 $("#qrNew").onclick=startQr;
 
 /* ---------- шаг 2: почта ---------- */
@@ -584,7 +670,7 @@ function beginMail(){
   mc.clear();sendMail();
 }
 function sendMail(){
-  $("#mailHint").textContent="Отправляю письмо…";$("#mailAgain").disabled=true;
+  $("#mailHint").textContent="Отправляю письмо…";mailIc("ld");$("#mailAgain").disabled=true;
   call("mail_start",{purpose:"login"}).then(function(j){
     if(j._http===401){bye(true);return}
     if(j.status==="sent")$("#mailHint").textContent="Письмо с кодом ушло на "+j.to+". Оно действует 10 минут.";
@@ -592,19 +678,19 @@ function sendMail(){
     else if(j.status==="locked")$("#e2").textContent=mailMsg.locked();
     else if(j.status==="undelivered"){$("#mailHint").textContent="Письмо не ушло.";$("#e2").textContent="Не удалось доставить письмо. Попробуй ещё раз чуть позже."}
     else $("#e2").textContent=j.error||"Не удалось отправить код";
-    var t=30;clearInterval(cool);cool=setInterval(function(){t--;$("#mailAgain").textContent=t>0?"Ещё раз через "+t+" с":"Отправить ещё раз";if(t<=0){clearInterval(cool);$("#mailAgain").disabled=false}},1000);$("#mailAgain").textContent="Ещё раз через 30 с";
+    mailIc(j.status==="sent"||j.status==="soon"?"ok":"bad");var t=30,mb=$("#mailAgain");mb.classList.add("cd");mb.style.setProperty("--p",0);clearInterval(cool);cool=setInterval(function(){t--;mb.style.setProperty("--p",(30-t)/30);mb.textContent=t>0?"Ещё раз через "+t+" с":"Отправить ещё раз";if(t<=0){clearInterval(cool);mb.disabled=false;mb.classList.remove("cd")}},1000);$("#mailAgain").textContent="Ещё раз через 30 с";
   });
 }
 $("#mailAgain").onclick=function(){$("#e2").textContent="";mc.clear();sendMail()};
 $("#mailOut").onclick=function(){call("logout").then(function(){bye(false)})};
 $("#mailGo").onclick=function(){
   var v=mc.val();if(v.length<6){$("#e2").textContent="Введи все шесть цифр";return}
-  $("#mailGo").disabled=true;
+  busy($("#mailGo"),1);mc.state("vf");
   call("mail_verify",{purpose:"login",code:v}).then(function(j){
-    $("#mailGo").disabled=false;
-    if(j.status==="ok"){stage(3);setTimeout(enter,500);return}
+    busy($("#mailGo"),0);
+    if(j.status==="ok"){mc.state("okc");setTimeout(function(){stage(3)},700);setTimeout(function(){$("#login").classList.add("lout");setTimeout(enter,430)},1800);return}
     if(j._http===401){bye(true);return}
-    $("#e2").textContent=(mailMsg[j.status]?mailMsg[j.status](j):(j.error||"Не получилось"));mc.clear();
+    $("#e2").textContent=(mailMsg[j.status]?mailMsg[j.status](j):(j.error||"Не получилось"));mc.state("bad");setTimeout(function(){mc.clear()},500);
   });
 };
 
@@ -625,9 +711,10 @@ function closeStep(ok){$("#modal").hidden=true;var r=stepRes;stepRes=null;if(r)r
 $("#mdNo").onclick=function(){closeStep(false)};
 $("#mdGo").onclick=function(){
   var v=sc.val();if(v.length<6){$("#mdErr").textContent="Введи все шесть цифр";return}
+  sc.state("vf");
   call("mail_verify",{purpose:"step",code:v}).then(function(j){
-    if(j.status==="ok"){closeStep(true);return}
-    $("#mdErr").textContent=(mailMsg[j.status]?mailMsg[j.status](j):(j.error||"Не получилось"));sc.clear();
+    if(j.status==="ok"){sc.state("okc");setTimeout(function(){closeStep(true)},520);return}
+    $("#mdErr").textContent=(mailMsg[j.status]?mailMsg[j.status](j):(j.error||"Не получилось"));sc.state("bad");setTimeout(function(){sc.clear()},500);
   });
 };
 
