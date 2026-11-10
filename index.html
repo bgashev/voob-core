@@ -42,6 +42,10 @@ h2{font-size:20px;font-weight:800}
 .up{color:var(--green)}.dn{color:var(--bad)}
 .stack{display:grid;gap:14px;align-content:start}
 #main section.stack{justify-items:stretch}
+.lback{position:absolute;left:20px;top:20px;z-index:3;display:inline-flex;align-items:center;gap:7px;height:38px;padding:0 16px 0 12px;border-radius:999px;border:1px solid var(--line);background:rgba(21,21,24,.6);-webkit-backdrop-filter:blur(14px);backdrop-filter:blur(14px);color:var(--mute);font:600 13px var(--sans);text-decoration:none;transition:color .2s,border-color .2s,background .2s,transform .3s var(--ease);animation:rise .7s .3s var(--ease) both}
+.lback svg{transition:transform .3s var(--ease)}
+.lback:hover{color:var(--fg);border-color:var(--line2);background:var(--tile2)}.lback:hover svg{transform:translateX(-3px)}
+.lback:active{transform:scale(.96)}
 /* ---------- медали достижений ---------- */
 .achg{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:10px}
 .atl{all:unset;box-sizing:border-box;cursor:pointer;display:grid;justify-items:center;gap:4px;text-align:center;padding:16px 10px 12px;border-radius:20px;border:1px solid color-mix(in srgb,var(--c1) 40%,var(--line));background:linear-gradient(135deg,color-mix(in srgb,var(--c2) 14%,transparent),color-mix(in srgb,var(--c1) 8%,transparent));animation:rise .5s var(--ease) backwards;transition:transform .2s var(--ease),border-color .2s,background .2s}
@@ -522,6 +526,7 @@ section[id^=p]>*:nth-child(2){--n:1}section[id^=p]>*:nth-child(3){--n:2}section[
 
 <!-- ВХОД -->
 <main id="login" hidden>
+  <a class="lback" href="https://voob.kz"><svg viewBox="0 0 18 18" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 3.5L5.5 9L11 14.5"/></svg><span>voob.kz</span></a>
   <div class="lwrap">
   <div class="lcol">
     <div class="tile lbrand"><span data-mark="64"></span><div><div class="lt1">VOOB CORE</div><div class="lt2">панель создателя</div></div></div>
