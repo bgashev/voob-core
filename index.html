@@ -152,6 +152,8 @@ section[id^=p]{animation:rise .42s var(--ease) both}
 @keyframes scan{0%,100%{transform:translateY(0);opacity:0}10%,90%{opacity:.9}50%{transform:translateY(168px)}}
 .qside{flex:1;min-width:190px;display:grid;gap:12px}
 .qside .btn{justify-self:stretch;text-align:center}
+.btn.lnk{display:block;margin:14px auto 0;background:none;border:0;color:var(--mute);font-size:13px;padding:6px 12px;height:auto}.btn.lnk:hover{color:var(--fg)}
+#pwBox{margin-top:6px}
 .status{display:flex;justify-content:center;gap:8px;align-items:center;color:var(--mute);font-size:13px}
 .dot{width:8px;height:8px;border-radius:50%;background:var(--accent);animation:p 1.4s infinite}
 @keyframes p{50%{opacity:.25}}
@@ -558,6 +560,13 @@ section[id^=p]>*:nth-child(2){--n:1}section[id^=p]>*:nth-child(3){--n:2}section[
           <button class="btn" id="qrNew" type="button" hidden>Новый код</button>
         </div>
       </div>
+      <div id="pwBox" hidden>
+        <div class="stack">
+          <input class="field" id="pwIn" type="password" placeholder="Пароль" autocomplete="current-password">
+          <button class="btn pri" id="pwGo" type="button">Войти</button>
+        </div>
+      </div>
+      <button class="btn lnk" id="pwSw" type="button" hidden>Войти по паролю</button>
       <p class="err" id="e1"></p>
     </section>
 
@@ -691,6 +700,23 @@ section[id^=p]>*:nth-child(2){--n:1}section[id^=p]>*:nth-child(3){--n:2}section[
         <div id="chgCancelBox" class="row" hidden><button class="btn bad" id="chgCancel" type="button">Отменить смену</button></div>
         <p class="err" id="eset"></p>
       </div>
+      <div class="tile">
+        <h3>Пароль для входа</h3>
+        <dl class="kv"><dt>Сейчас</dt><dd id="pwNow">—</dd></dl>
+        <p class="hint" style="margin:14px 0 0">Пароль — второй способ входа вместо QR. Код с почты после него всё равно нужен. Добавить, сменить или удалить пароль можно только с PIN, который придёт на почту.</p>
+        <div id="pwIdle" class="row" style="margin-top:14px"><button class="btn" id="pwAdd" type="button">Добавить пароль</button><button class="btn bad" id="pwDel" type="button" hidden>Удалить пароль</button></div>
+        <div id="pwForm" class="stack" style="margin-top:14px" hidden>
+          <div id="pwFields" class="stack">
+            <input class="field" id="pwN1" type="password" placeholder="Новый пароль (от 10 символов)" autocomplete="new-password">
+            <input class="field" id="pwN2" type="password" placeholder="Повтори пароль" autocomplete="new-password">
+          </div>
+          <div id="pwPinRow" class="stack" hidden>
+            <input class="field mono" id="pwPin" inputmode="numeric" maxlength="6" placeholder="PIN с почты" autocomplete="one-time-code">
+          </div>
+          <div class="row" style="margin:0"><button class="btn pri" id="pwNext" type="button">Отправить PIN на почту</button><button class="btn" id="pwNo" type="button">Отмена</button></div>
+        </div>
+        <p class="err" id="epw"></p>
+      </div>
     </div>
   </section>
 </main>
@@ -714,7 +740,7 @@ section[id^=p]>*:nth-child(2){--n:1}section[id^=p]>*:nth-child(3){--n:2}section[
 <script>
 (function(){
 "use strict";
-var API="https://nszndchtspjtlravojda.supabase.co/functions/v1/voob-core",API_X="https://nszndchtspjtlravojda.supabase.co/functions/v1/voob-extra";
+var API="https://nszndchtspjtlravojda.supabase.co/functions/v1/voob-core",API_X="https://nszndchtspjtlravojda.supabase.co/functions/v1/voob-extra",API_P="https://nszndchtspjtlravojda.supabase.co/functions/v1/voob-core-pwd";
 var $=function(s,r){return (r||document).querySelector(s)};
 var $$=function(s,r){return Array.prototype.slice.call((r||document).querySelectorAll(s))};
 var TK="voobcore.t";
@@ -745,7 +771,7 @@ setInterval(idleTick,1000);
 function setToken(t){token=t;try{t?sessionStorage.setItem(TK,t):sessionStorage.removeItem(TK)}catch(e){}}
 function call(action,extra,fn){
   var b=Object.assign({action:action},extra||{});if(token)b.token=token;
-  return fetch(fn==="x"?API_X:API,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(b)})
+  return fetch(fn==="x"?API_X:fn==="p"?API_P:API,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(b)})
     .then(function(r){setConn(true);if(r.status!==401)lastAct=Date.now();return r.json().catch(function(){return {error:"Сервер ответил не так, как ждали"}}).then(function(j){j._http=r.status;return j})})
     .catch(function(){setConn(false);return {error:"Нет связи с сервером",_http:0}});
 }
@@ -800,7 +826,29 @@ function drawQr(text){
   for(var y=0;y<n;y++)for(var x=0;x<n;x++)if(q.isDark(y,x))d+="M"+x+" "+y+"h1v1h-1z";
   $("#qr").innerHTML='<svg viewBox="0 0 '+n+' '+n+'" shape-rendering="crispEdges"><path d="'+d+'" fill="#0c0d0f"/></svg>';
 }
+var pwOn=false;
+function pwView(on){
+  pwOn=on;$(".qrrow").style.display=on?"none":"";$("#pwBox").hidden=!on;$("#pwSw").textContent=on?"Войти через QR":"Войти по паролю";$("#e1").textContent="";
+  var h=$("#p1 h2"),t=$("#p1 .hint");if(h)h.textContent=on?"Войди по паролю":"Войди через Telegram";if(t)t.textContent=on?"После пароля нужен код с почты.":"Наведи камеру телефона на код или открой бота с телефона, на котором он установлен.";
+  if(on){stopPoll();setTimeout(function(){$("#pwIn").focus()},50)}else startQr();
+}
+function pwProbe(){call("pwd_public",null,"p").then(function(j){$("#pwSw").hidden=!j.has_pwd;if(!j.has_pwd&&pwOn)pwView(false)})}
+$("#pwSw").onclick=function(){pwView(!pwOn)};
+function pwLogin(){
+  var v=$("#pwIn").value;if(!v){$("#e1").textContent="Введи пароль";return}
+  busy($("#pwGo"),1);$("#e1").textContent="";
+  call("pwd_login",{password:v},"p").then(function(j){
+    busy($("#pwGo"),0);
+    if(j.status==="ok"&&j.token){$("#pwIn").value="";setToken(j.token);showMail();return}
+    $("#pwIn").value="";
+    $("#e1").textContent=j.status==="locked"?mailMsg.locked():j.status==="wrong"||j.status==="nopwd"?"Неверный пароль":(j.error||"Не получилось");
+  });
+}
+$("#pwGo").onclick=pwLogin;
+$("#pwIn").addEventListener("keydown",function(e){if(e.key==="Enter")pwLogin()});
 function startQr(){
+  if(pwOn){pwView(false);return}
+  pwProbe();
   stopPoll();$("#e1").textContent="";$("#qrNew").hidden=true;qs("Создаю код…","ld");$("#qr").className="qr ld";$("#qr").innerHTML="";
   call("core_login_start").then(function(j){
     if(j.error||!j.code){$("#e1").textContent=j.error||"Не удалось создать код";qs("Ошибка","bad");$("#qr").className="qr dead";$("#qrNew").hidden=false;return}
@@ -1169,7 +1217,7 @@ function loadSessions(){
   });
 }
 $("#sessList").onclick=function(e){var b=e.target.closest("[data-e]");if(!b)return;api("sess_end",{id:b.dataset.e}).then(function(j){if(j.error)$("#eset").textContent=j.error;else loadSessions()})};
-function loadSet(){loadSessions();
+function loadSet(){loadSessions();loadPwd();
   call("whoami").then(function(j){
     if(j._http===401){bye(true);return}
     if(j.expires_at)$("#sExp").textContent=new Date(j.expires_at).toLocaleString("ru-RU");
@@ -1179,6 +1227,55 @@ function loadSet(){loadSessions();
     $("#chgCancelBox").hidden=!p;$("#chgIdle").hidden=!!p;
   });
 }
+/* ---------- пароль ---------- */
+var pwMode="set",pwSent=false,hasPwd=false;
+function pwMsg(j){return mailMsg[j.status]?mailMsg[j.status](j):(j.error||"Не получилось")}
+function loadPwd(){call("pwd_status",null,"p").then(function(j){
+  if(j._http===401)return;
+  hasPwd=!!j.has_pwd;
+  $("#pwNow").textContent=hasPwd?"Задан"+(j.updated?" · изменён "+new Date(j.updated).toLocaleString("ru-RU"):""):"Не задан";
+  $("#pwAdd").textContent=hasPwd?"Сменить пароль":"Добавить пароль";$("#pwDel").hidden=!hasPwd;
+})}
+function pwOpen(mode){
+  pwMode=mode;pwSent=false;$("#epw").textContent="";$("#pwN1").value=$("#pwN2").value=$("#pwPin").value="";
+  $("#pwIdle").hidden=true;$("#pwForm").hidden=false;$("#pwPinRow").hidden=true;$("#pwFields").hidden=mode==="remove";
+  $("#pwNext").textContent="Отправить PIN на почту";
+}
+function pwClose(){$("#pwForm").hidden=true;$("#pwIdle").hidden=false;pwSent=false;$("#epw").textContent="";loadPwd()}
+$("#pwAdd").onclick=function(){pwOpen("set")};
+$("#pwDel").onclick=function(){pwOpen("remove")};
+$("#pwNo").onclick=pwClose;
+$("#pwNext").onclick=function(){
+  var e=$("#epw");e.textContent="";
+  if(!pwSent){
+    if(pwMode==="set"){
+      var a=$("#pwN1").value;
+      if(a.length<10){e.textContent="Пароль: минимум 10 символов";return}
+      if(a!==$("#pwN2").value){e.textContent="Пароли не совпадают";return}
+    }
+    busy($("#pwNext"),1);
+    call("pwd_start",{kind:pwMode},"p").then(function(j){
+      busy($("#pwNext"),0);
+      if(j._http===401){bye(true);return}
+      if(j.status==="sent"||j.status==="soon"){
+        pwSent=true;$("#pwFields").hidden=true;$("#pwPinRow").hidden=false;$("#pwNext").textContent=pwMode==="remove"?"Удалить пароль":"Сохранить пароль";$("#pwPin").focus();
+        e.innerHTML='<span class="ok">'+(j.status==="sent"?"PIN отправлен на "+j.to+". Действует 10 минут.":"PIN уже отправлен, проверь почту.")+"</span>";
+      }else e.textContent=j.status==="locked"?mailMsg.locked():j.status==="undelivered"?"Письмо не доставлено":(j.error||"Не получилось");
+    });
+    return;
+  }
+  var pin=$("#pwPin").value.replace(/\D/g,"");if(pin.length<6){e.textContent="Введи шесть цифр PIN";return}
+  busy($("#pwNext"),1);
+  call(pwMode==="remove"?"pwd_remove":"pwd_set",{code:pin,password:$("#pwN1").value},"p").then(function(j){
+    busy($("#pwNext"),0);
+    if(j._http===401){bye(true);return}
+    if(j.status==="ok"){$("#pwN1").value=$("#pwN2").value="";pwClose();$("#epw").innerHTML='<span class="ok">'+(pwMode==="remove"?"Пароль удалён.":"Пароль сохранён.")+"</span>";return}
+    e.textContent=pwMsg(j);
+    if(j.status==="spent"||j.status==="expired"){pwSent=false;$("#pwPinRow").hidden=true;$("#pwFields").hidden=pwMode==="remove";$("#pwNext").textContent="Отправить PIN на почту"}
+  });
+};
+$("#pwN2").addEventListener("keydown",function(e){if(e.key==="Enter")$("#pwNext").click()});
+$("#pwPin").addEventListener("keydown",function(e){if(e.key==="Enter")$("#pwNext").click()});
 $("#logout").onclick=function(){call("logout").then(function(){bye(false)})};
 $("#chgGo").onclick=function(){
   var m=$("#newMail").value.trim();$("#eset").textContent="";if(!m){$("#eset").textContent="Введи новый адрес";return}
