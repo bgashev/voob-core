@@ -7,9 +7,10 @@
 <meta name="referrer" content="no-referrer">
 <meta name="color-scheme" content="dark">
 <title>VOOB CORE</title>
-<link rel="icon" href="favicon.svg" type="image/svg+xml">
-<link rel="apple-touch-icon" href="apple-touch-icon.png">
-<link rel="manifest" href="manifest.webmanifest">
+<script>try{var __r=sessionStorage.getItem("voobcore.r");if(__r){sessionStorage.removeItem("voobcore.r");history.replaceState(null,"",new URL(__r).pathname)}}catch(e){}</script>
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<link rel="manifest" href="/manifest.webmanifest">
 <meta name="theme-color" content="#0c0d0f">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="CORE">
@@ -465,7 +466,9 @@ $("#mdGo").onclick=function(){
 
 /* ---------- приложение ---------- */
 var ov=null,serSel="new",daysSel=30,SN={new:"Новые пользователи",active:"Активные пользователи",workouts:"Тренировки",stars:"Выручка, Stars"};
-function enter(){show("app");tab("ov")}
+function enter(){show("app");route()}
+function route(){var r=pathTab();tab(r.k,true);if(r.uid)openUser(r.uid,true);else $("#dlg").hidden=true}
+window.addEventListener("popstate",function(){if(!$("#app").hidden)route();else{}});
 function fmt(n){return Number(n||0).toLocaleString("ru-RU")}
 function delta(a,b){if(!b)return a?'<b class="up">новое</b>':"";var p=Math.round((a-b)/b*100);return '<b class="'+(p>=0?"up":"dn")+'">'+(p>=0?"+":"")+p+"%</b> к прошлому периоду"}
 
@@ -513,7 +516,11 @@ function drawChart(){
 $("#chSeries").onclick=function(e){var b=e.target.closest("button");if(!b)return;serSel=b.dataset.s;$$("button",this).forEach(function(x){x.setAttribute("aria-pressed",x===b)});drawChart()};
 $("#chDays").onclick=function(e){var b=e.target.closest("button");if(!b)return;daysSel=+b.dataset.d;$$("button",this).forEach(function(x){x.setAttribute("aria-pressed",x===b)});loadOv()};
 var TABS=["ov","us","fb","pay","bc","pr","lg","set"],loaded={};
-function tab(k){
+var PATHS={ov:"/",us:"/users",fb:"/feedback",pay:"/payments",bc:"/broadcast",pr:"/promo",lg:"/log",set:"/settings"};
+function pathTab(){var p=location.pathname.replace(/\/+$/,"")||"/";var m=p.match(/^\/users\/(\d+)$/);if(m)return{k:"us",uid:m[1]};for(var k in PATHS)if(PATHS[k]===p)return{k:k};return{k:"ov"}}
+function tab(k,keep){
+  if(!keep&&location.pathname.replace(/\/+$/,"")!==PATHS[k].replace(/\/+$/,"")&&!(PATHS[k]==="/"&&location.pathname==="/"))history.pushState(null,"",PATHS[k]);
+  var tt=$("#dlg");if(tt&&!tt.hidden&&!keep)tt.hidden=true;
   $$("#nav button").forEach(function(x){x.setAttribute("aria-selected",x.dataset.tab===k)});
   TABS.forEach(function(t){$("#t-"+t).hidden=t!==k});
   if(k==="set")loadSet();if(k==="ov")loadOv();
@@ -571,13 +578,14 @@ function loadUsers(){
 }
 $("#ulist").onclick=function(e){var it=e.target.closest("[data-id]");if(it)openUser(+it.dataset.id)};
 function dlg(html){$("#dbody").innerHTML=html;$("#dlg").hidden=false}
-function closeDlg(){$("#dlg").hidden=true}
+function closeDlg(){$("#dlg").hidden=true;if(/^\/users\//.test(location.pathname))history.replaceState(null,"","/users")}
 $("#dlg").onclick=function(e){if(e.target.id==="dlg"||e.target.closest("[data-close]"))closeDlg()};
 var ACHN={"first": "Первый шаг", "ten": "Десятка", "hundred": "Сотня", "km50": "Полсотни", "marathon": "Марафон в рассрочку", "km500": "Путешественник", "hours10": "10 часов", "kcal10k": "Печка", "goat": "Горный козёл", "long": "Черепаха-марафонец", "streak7": "Неделя без пропусков", "norm": "Нормальный", "norm30": "Железная воля", "early": "Ранняя пташка", "weigh10": "Взвешенное решение", "wgoal": "В яблочко", "plan": "По плану", "friends3": "Своя компания", "friends5": "Душа компании", "str10": "Железо", "reps1k": "Тысяча повторов", "tonne": "Тонна", "pro": "В клубе", "friends10": "Своя тусовка"},GT=null,FRAMES=["classic", "ears", "orbit", "pulse", "sparkle", "flame", "glitch", "crystal", "comet", "vine", "autumn", "daisy", "jelly", "runes", "sigil", "radar", "lights", "halo", "sakura", "stars", "fireflies", "wave", "bubbles", "frost", "antlers", "hearts", "cloud", "bow", "eclipse", "lava", "hud", "laurel", "wind", "pixring", "coins", "crown8", "hologram", "circuit", "eye3", "phases", "fairywing", "gummy", "blackhole", "clockwork", "neonportal", "ribbons", "waterblade", "arcflash", "paws", "matrix", "dice", "cards", "lockon", "telemetry", "claw", "doodlespace", "corrupt", "aurora", "gold", "neon", "ocean", "cyber", "emerald", "galaxy", "ice", "storm", "pixel", "plasma", "atom", "holo", "moon", "prism"];
 function armed(btn,fn){var t=btn.textContent;btn.onclick=function(){if(btn.dataset.a){fn();return}btn.dataset.a=1;btn.textContent="Точно?";setTimeout(function(){btn.dataset.a="";btn.textContent=t},3500)}}
 function sec(t,body){return '<div style="margin-top:20px"><div class="k mono" style="font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--mute);margin-bottom:8px">'+t+"</div>"+body+"</div>"}
 function sumW(w){var o=[];Object.keys(w).forEach(function(k){if(k==="rid"||k==="date"||o.length>=3)return;var v=w[k];if(typeof v==="number"||(typeof v==="string"&&v.length<18))o.push(esc(k)+" "+esc(v))});return o.join(" · ")}
-function openUser(id){
+function openUser(id,np){
+  if(!np&&location.pathname!=="/users/"+id)history.pushState(null,"","/users/"+id);
   Promise.all([api("user",{tg_id:id}),GT?Promise.resolve(GT):api("gift_types")]).then(function(r){
     var j=r[0];if(j.error){$("#eus").textContent=j.error;return}
     if(!GT)GT=r[1].items||[];
