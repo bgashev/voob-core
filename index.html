@@ -223,6 +223,7 @@ textarea.field{min-height:110px;resize:vertical}
       <div class="two"><select class="field" id="ak"><option value="notice">Уведомление</option><option value="gift">Подарок</option><option value="promo">Акция</option></select>
       <select class="field" id="aa"><option value="me">Только мне (проверка)</option><option value="all">Всем</option><option value="pro">Только PRO</option><option value="free">Только без PRO</option><option value="list">Списком</option></select></div>
       <textarea class="field" id="alist" style="min-height:70px" placeholder="Ники или ID через пробел или запятую" hidden></textarea>
+      <button class="btn sm" id="achk" type="button" hidden>Проверить список</button><p class="hint" id="achkr" style="margin:0" hidden></p>
       <select class="field" id="agk" hidden></select>
       <input class="field" id="at" maxlength="80" placeholder="Заголовок">
       <textarea class="field" id="ab" maxlength="600" placeholder="Текст"></textarea>
@@ -659,7 +660,13 @@ function giftOpts(sel){
   if(GT2)return fill();api("gift_types").then(function(r){GT2=r.items||[];fill()});
 }
 $("#ak").onchange=function(){$("#agk").hidden=this.value!=="gift";if(this.value==="gift")giftOpts($("#agk"))};
-$("#aa").onchange=function(){$("#alist").hidden=this.value!=="list"};
+$("#aa").onchange=function(){var l=this.value==="list";$("#alist").hidden=!l;$("#achk").hidden=!l;$("#achkr").hidden=!l};
+$("#achk").onclick=function(){
+  api("resolve",{targets:$("#alist").value},"x").then(function(j){
+    if(j.error){$("#achkr").textContent=j.error;return}
+    $("#achkr").innerHTML="Найдено: "+(j.ok||[]).length+(j.miss&&j.miss.length?'. <span class="dn">Не найдены: '+j.miss.map(esc).join(", ")+"</span>":"");
+  });
+};
 function loadAnn(){
   api("audience",{},"x").then(function(j){if(j&&j.all!=null)$("#acnt").textContent="Сейчас в приложении: всего "+j.all+", PRO "+j.pro+", без PRO "+j.free});
   api("announces",{},"x").then(function(j){
