@@ -186,12 +186,13 @@ textarea.field{min-height:110px;resize:vertical}
 <div id="app" class="wrap" hidden>
   <header>
     <div class="logo" style="flex-direction:row;align-items:center;gap:14px"><span data-logo></span><span class="tag">CORE</span></div>
-    <nav role="tablist" id="nav"><button data-tab="ov" aria-selected="true">Обзор</button><button data-tab="us" aria-selected="false">Люди</button><button data-tab="fb" aria-selected="false">Обращения</button><button data-tab="pay" aria-selected="false">Платежи</button><button data-tab="bc" aria-selected="false">Рассылка</button><button data-tab="lg" aria-selected="false">Журнал</button><button data-tab="set" aria-selected="false">Настройки</button></nav>
+    <nav role="tablist" id="nav"><button data-tab="ov" aria-selected="true">Обзор</button><button data-tab="us" aria-selected="false">Люди</button><button data-tab="fb" aria-selected="false">Обращения</button><button data-tab="pay" aria-selected="false">Платежи</button><button data-tab="bc" aria-selected="false">Рассылка</button><button data-tab="pr" aria-selected="false">Промокоды</button><button data-tab="lg" aria-selected="false">Журнал</button><button data-tab="set" aria-selected="false">Настройки</button></nav>
   </header>
 
   <section id="t-ov" class="stack">
     <div class="tile" id="evbox" hidden><h3>Нового с прошлого визита</h3><div class="list" id="evlist" style="margin-top:12px"></div></div>
     <div class="grid" id="stats"></div>
+    <div class="tile" id="plat" hidden><h3>Платформы за 7 дней</h3><div class="grid" id="platG" style="margin-top:12px"></div></div>
     <div class="tile">
       <div class="chartT"><h3 id="chTitle">Новые пользователи</h3>
         <div class="seg" id="chSeries"><button data-s="new" aria-pressed="true">Новые</button><button data-s="active" aria-pressed="false">Активные</button><button data-s="workouts" aria-pressed="false">Тренировки</button><button data-s="stars" aria-pressed="false">Stars</button></div>
@@ -217,13 +218,42 @@ textarea.field{min-height:110px;resize:vertical}
   </section>
   <section id="t-bc" class="stack" hidden>
     <div class="tile stack">
-      <h3>Рассылка в Telegram</h3>
+      <h3>Объявление в приложении</h3>
+      <p class="hint" style="margin:0">Появится окном при следующем входе в VOOB. Подарок сразу попадёт в коллекцию.</p>
+      <div class="two"><select class="field" id="ak"><option value="notice">Уведомление</option><option value="gift">Подарок</option><option value="promo">Акция</option></select>
+      <select class="field" id="aa"><option value="me">Только мне (проверка)</option><option value="all">Всем</option><option value="pro">Только PRO</option><option value="free">Только без PRO</option><option value="list">Списком</option></select></div>
+      <textarea class="field" id="alist" style="min-height:70px" placeholder="Ники или ID через пробел или запятую" hidden></textarea>
+      <select class="field" id="agk" hidden></select>
+      <input class="field" id="at" maxlength="80" placeholder="Заголовок">
+      <textarea class="field" id="ab" maxlength="600" placeholder="Текст"></textarea>
+      <input class="field" id="ac" placeholder="Кнопка: pro или ссылка https:// (не обязательно)">
+      <label class="hint" style="display:flex;gap:8px;align-items:center;margin:0"><input type="checkbox" id="an" checked> Ещё и сообщением в Telegram</label>
+      <p class="hint" id="acnt" style="margin:0"></p>
+      <div class="row" style="margin:0"><button class="btn pri" id="ago" type="button">Отправить</button></div>
+      <p class="err" id="eab"></p>
+    </div>
+    <div class="tile stack"><h3>Прошлые объявления</h3><div class="list" id="alog"></div></div>
+    <div class="tile stack">
+      <h3>Сообщение в Telegram всем</h3>
       <select class="field" id="bt"><option value="me">Только мне (проверка)</option><option value="pro">Всем с PRO</option><option value="all">Всем пользователям</option></select>
       <textarea class="field" id="btext" maxlength="3500" placeholder="Текст сообщения"></textarea>
-      <p class="hint" style="margin:0">Сначала отправь себе, потом остальным. Рассылка просит код с почты.</p>
       <div class="row" style="margin:0"><button class="btn pri" id="bgo" type="button">Отправить</button></div>
       <p class="err" id="ebc"></p>
     </div>
+  </section>
+  <section id="t-pr" class="stack" hidden>
+    <div class="tile stack">
+      <h3>Новые промокоды</h3>
+      <div class="two"><select class="field" id="pk"><option value="pro">PRO, дней</option><option value="gift">Подарок</option></select>
+      <input class="field" id="pv" type="number" min="1" max="3650" placeholder="Дней PRO" value="30"><select class="field" id="pgk" hidden></select></div>
+      <div class="two"><input class="field" id="pc" type="number" min="1" max="5000" placeholder="Сколько кодов" value="1"><input class="field" id="pu" type="number" min="1" placeholder="Использований на код" value="1"></div>
+      <div class="two"><input class="field" id="pe" type="number" min="0" placeholder="Срок, дней (0 без срока)" value="0"><input class="field" id="pcu" placeholder="Свой код, если один (не обязательно)"></div>
+      <input class="field" id="pn" maxlength="120" placeholder="Заметка (не обязательно)">
+      <div class="row" style="margin:0"><button class="btn pri" id="pgo" type="button">Создать</button></div>
+      <p class="err" id="epr"></p>
+      <textarea class="field mono" id="pout" readonly hidden style="min-height:120px"></textarea>
+    </div>
+    <div class="tile stack"><h3>Все коды</h3><div class="list" id="plst"></div></div>
   </section>
   <section id="t-lg" class="stack" hidden>
     <div class="list" id="glist"></div><p class="err" id="elg"></p>
@@ -274,7 +304,7 @@ textarea.field{min-height:110px;resize:vertical}
 <script>
 (function(){
 "use strict";
-var API="https://nszndchtspjtlravojda.supabase.co/functions/v1/voob-core";
+var API="https://nszndchtspjtlravojda.supabase.co/functions/v1/voob-core",API_X="https://nszndchtspjtlravojda.supabase.co/functions/v1/voob-extra";
 var $=function(s,r){return (r||document).querySelector(s)};
 var $$=function(s,r){return Array.prototype.slice.call((r||document).querySelectorAll(s))};
 var TK="voobcore.t";
@@ -303,18 +333,18 @@ function idleTick(){
 }
 setInterval(idleTick,1000);
 function setToken(t){token=t;try{t?sessionStorage.setItem(TK,t):sessionStorage.removeItem(TK)}catch(e){}}
-function call(action,extra){
+function call(action,extra,fn){
   var b=Object.assign({action:action},extra||{});if(token)b.token=token;
-  return fetch(API,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(b)})
+  return fetch(fn==="x"?API_X:API,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(b)})
     .then(function(r){if(r.status!==401)lastAct=Date.now();return r.json().catch(function(){return {error:"Сервер ответил не так, как ждали"}}).then(function(j){j._http=r.status;return j})})
     .catch(function(){return {error:"Нет связи с сервером",_http:0}});
 }
 // запрос с автоподтверждением: если нужен свежий код с почты, спрашиваем его в окне и повторяем
-function api(action,extra){
-  return call(action,extra).then(function(j){
+function api(action,extra,fn){
+  return call(action,extra,fn).then(function(j){
     if(j.expired||(j._http===401&&!j.need_otp&&!j.need_step)){bye(true);return j}
     if(j.need_otp){showMail();return j}
-    if(j.need_step)return askStep().then(function(ok){return ok?call(action,extra):j});
+    if(j.need_step)return askStep().then(function(ok){return ok?call(action,extra,fn):j});
     return j;
   });
 }
@@ -445,7 +475,14 @@ function loadEvents(){
     try{localStorage.setItem(SK,new Date().toISOString())}catch(e){}
   });
 }
-function loadOv(){loadEvents();
+function loadPlat(){
+  api("usage",{hours:168},"x").then(function(j){
+    if(j.error||!j.platforms)return;
+    var P=j.platforms,t=function(k,v){return '<div class="item"><div class="m"><div class="s">'+k+'</div><div class="t" style="font-size:22px">'+fmt(v)+"</div></div></div>"};
+    $("#platG").innerHTML=t("Mini App",P.miniapp.users)+t("WEB",P.web.users)+t("Windows",P.desktop.users)+t("Входов",j.logins);$("#plat").hidden=false;
+  });
+}
+function loadOv(){loadEvents();loadPlat();
   api("overview",{days:daysSel}).then(function(j){
     if(j.error){$("#eov").textContent=j.error;return}
     $("#eov").textContent="";ov=j;
@@ -470,12 +507,12 @@ function drawChart(){
 }
 $("#chSeries").onclick=function(e){var b=e.target.closest("button");if(!b)return;serSel=b.dataset.s;$$("button",this).forEach(function(x){x.setAttribute("aria-pressed",x===b)});drawChart()};
 $("#chDays").onclick=function(e){var b=e.target.closest("button");if(!b)return;daysSel=+b.dataset.d;$$("button",this).forEach(function(x){x.setAttribute("aria-pressed",x===b)});loadOv()};
-var TABS=["ov","us","fb","pay","bc","lg","set"],loaded={};
+var TABS=["ov","us","fb","pay","bc","pr","lg","set"],loaded={};
 function tab(k){
   $$("#nav button").forEach(function(x){x.setAttribute("aria-selected",x.dataset.tab===k)});
   TABS.forEach(function(t){$("#t-"+t).hidden=t!==k});
   if(k==="set")loadSet();if(k==="ov")loadOv();
-  if(k==="us")loadUsers();if(k==="fb")loadFb();if(k==="pay")loadPay();if(k==="lg")loadLog();
+  if(k==="us")loadUsers();if(k==="fb")loadFb();if(k==="pay")loadPay();if(k==="bc")loadAnn();if(k==="pr")loadPromo();if(k==="lg")loadLog();
 }
 $("#nav").onclick=function(e){var b=e.target.closest("button");if(b)tab(b.dataset.tab)};
 function esc(x){return String(x==null?"":x).replace(/[&<>"']/g,function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]})}
@@ -520,8 +557,11 @@ function openUser(id){
     h+=sec("Профиль",'<div class="stack"><div class="bar"><input class="field" id="ename" placeholder="Имя" value="'+esc(nameNow)+'"><button class="btn sm" id="ename_go">Сохранить имя</button></div><div class="bar"><input class="field" id="ehandle" placeholder="Ник без @" value="'+esc(u.handle||"")+'"><button class="btn sm" id="ehandle_go">Сохранить ник</button></div>'+
       '<div class="row" style="margin:0"><button class="btn sm" id="epriv">Профиль: '+(u.private?"закрытый":"открытый")+'</button><button class="btn sm" id="efeed">Лента: '+(u.hide_feed?"скрыт":"виден")+'</button><button class="btn sm" id="esoc">Сбросить соцсети</button></div></div>');
     h+=sec("Рамка и значок",'<div class="stack"><div class="bar"><select class="field" id="efr"><option value="">Без рамки</option>'+FRAMES.map(function(f){return '<option value="'+f+'"'+(j.frame===f?" selected":"")+">"+f+"</option>"}).join("")+'</select><button class="btn sm" id="efr_go">Сохранить рамку</button></div><div class="bar"><input class="field" id="ebd" placeholder="Значок, латиница 3–12, пусто = Печать" value="'+esc((meta.settings&&meta.settings.badge)||"")+'"><button class="btn sm" id="ebd_go">Сохранить значок</button></div></div>');
+    h+=sec("Достижения",'<div class="row" id="achBox" style="margin:0"><span class="hint" style="margin:0">Загружаю…</span></div><p class="hint" style="margin:8px 0 0">Нажми на достижение, чтобы отозвать или вернуть. Выключенные отмечены.</p>');
     h+=sec("Подарок",'<div class="bar"><select class="field" id="gk">'+GT.filter(function(g){return g.kind!=="pro"}).map(function(g){return '<option value="'+esc(g.kind)+'">'+esc(g.emoji)+" "+esc(g.title)+"</option>"}).join("")+'</select><button class="btn sm" id="ggo">Подарить</button></div>'+
       (j.gifts_in.length?'<p class="hint">Получил: '+j.gifts_in.length+(j.gifts_out.length?", подарил: "+j.gifts_out.length:"")+"</p>":""));
+    var st=[];if(u.frozen_until)st.push("PRO заморожен до "+dt(u.frozen_until));if(u.delete_at)st.push("Удаление аккаунта запланировано на "+dt(u.delete_at));
+    if(st.length)h+=sec("Состояние",'<p class="hint dn" style="margin:0">'+esc(st.join(" · "))+"</p>");
     h+=sec("Тренировки (последние 15)",j.workouts.length?'<div class="list">'+j.workouts.slice(0,15).map(function(w){return '<div class="item"><div class="m"><div class="t">'+esc(w.date||"без даты")+'</div><div class="s">'+sumW(w)+'</div></div><button class="btn sm bad" data-w="'+esc(w.rid)+'">Удалить</button></div>'}).join("")+"</div>":'<p class="hint">Нет</p>');
     if(j.weights.length)h+=sec("Вес",'<p class="hint" style="margin:0">'+j.weights.slice(0,10).map(function(w){return esc(w.date)+": "+esc(w.kg!=null?w.kg:(w.value!=null?w.value:""))}).join(" · ")+"</p>");
     if(j.friends.length)h+=sec("Друзья ("+j.friends.length+")",'<p class="hint" style="margin:0">'+j.friends.slice(0,30).map(nm).join(", ")+"</p>");
@@ -539,6 +579,12 @@ function openUser(id){
     $("#pgo").onclick=function(){var d=parseInt($("#pdays").value,10);if(!d)return say({error:"Введи число дней"});api("pro",{tg_id:id,days:d}).then(again)};
     $("#ename_go").onclick=function(){api("edit",{tg_id:id,field:"name",value:$("#ename").value}).then(function(r){say(r,"Имя сохранено")})};
     $("#ehandle_go").onclick=function(){api("edit",{tg_id:id,field:"handle",value:$("#ehandle").value}).then(function(r){say(r,"Ник сохранён");loadUsers()})};
+    var ACH=["first","ten","hundred","km50","marathon","km500","hours10","kcal10k","goat","long","streak7","norm","norm30","early","weigh10","wgoal","plan","friends3","friends5","str10","reps1k","tonne","pro","friends10"];
+    api("user_extra",{tg_id:id},"x").then(function(x){
+      var off=x.ach_off||[];
+      $("#achBox").innerHTML=ACH.map(function(k){var o=off.indexOf(k)>=0;return '<button class="chip'+(o?" r":"")+'" style="cursor:pointer;background:none" data-ach="'+k+'" data-on="'+(o?"1":"0")+'">'+(o?"✕ ":"")+k+"</button>"}).join(" ");
+      $("#achBox").onclick=function(e){var b=e.target.closest("[data-ach]");if(!b)return;api("ach",{tg_id:id,key:b.dataset.ach,on:b.dataset.on==="1",notify:true},"x").then(function(r){if(r.error)say(r);else openUser(id)})};
+    });
     $("#efr_go").onclick=function(){api("edit",{tg_id:id,field:"frame",value:$("#efr").value}).then(function(r){say(r,"Рамка сохранена")})};
     $("#ebd_go").onclick=function(){api("edit",{tg_id:id,field:"badge",value:$("#ebd").value.trim()}).then(function(r){say(r,"Значок сохранён")})};
     $("#epriv").onclick=function(){api("edit",{tg_id:id,field:"private",value:!u.private}).then(again)};
@@ -605,6 +651,48 @@ $("#bgo").onclick=function(){
 
 $("#uexp").onclick=function(){csv("voob-users.csv",[["id","имя","ник","регистрация","был","тренировок","PRO до","блок"]].concat(lastUsers.map(function(u){return [u.tg_id,u.first_name,u.handle,u.created_at,u.last_seen,u.workouts,u.pro_until,u.blocked?"да":""]})))};
 $("#pexp").onclick=function(){csv("voob-payments.csv",[["дата","id","звёзд","план","дней","возврат"]].concat(lastPay.map(function(p){return [p.created_at,p.tg_id,p.stars,p.plan,p.days,p.refunded_at]})))};
+
+/* ---------- объявления и промокоды (voob-extra) ---------- */
+var GT2=null;
+function giftOpts(sel){
+  var fill=function(){sel.innerHTML=GT2.filter(function(g){return g.kind!=="pro"}).map(function(g){return '<option value="'+esc(g.kind)+'">'+esc(g.emoji)+" "+esc(g.title)+"</option>"}).join("")};
+  if(GT2)return fill();api("gift_types").then(function(r){GT2=r.items||[];fill()});
+}
+$("#ak").onchange=function(){$("#agk").hidden=this.value!=="gift";if(this.value==="gift")giftOpts($("#agk"))};
+$("#aa").onchange=function(){$("#alist").hidden=this.value!=="list"};
+function loadAnn(){
+  api("audience",{},"x").then(function(j){if(j&&j.all!=null)$("#acnt").textContent="Сейчас в приложении: всего "+j.all+", PRO "+j.pro+", без PRO "+j.free});
+  api("announces",{},"x").then(function(j){
+    if(j.error)return;
+    var K={gift:"подарок",notice:"уведомление",promo:"акция"},A={all:"всем",pro:"PRO",free:"без PRO",me:"мне",list:"список"};
+    $("#alog").innerHTML=(j.items||[]).length?j.items.map(function(x){return '<div class="item"><div class="m"><div class="t">'+esc(x.title)+'</div><div class="s">'+esc(K[x.kind]||x.kind)+" · "+esc(A[x.audience]||x.audience)+" · "+dt(x.created_at)+" · получателей "+x.recipients+", открыли "+x.seen+"</div></div></div>"}).join(""):'<p class="hint">Пока ничего</p>';
+  });
+}
+$("#ago").onclick=function(){
+  var aud=$("#aa").value,kind=$("#ak").value,b={kind:kind,audience:aud,title:$("#at").value.trim(),body:$("#ab").value.trim(),cta:$("#ac").value.trim()||null,notify:$("#an").checked};
+  if(kind==="gift")b.gift_kind=$("#agk").value;if(aud==="list")b.targets=$("#alist").value;
+  $("#eab").textContent="";if(b.title.length<2){$("#eab").textContent="Нужен заголовок";return}
+  var go=function(){$("#ago").disabled=true;api("announce",b,"x").then(function(j){$("#ago").disabled=false;
+    $("#eab").innerHTML=j.error?esc(j.error):'<span class="ok">Отправлено: '+j.total+", в Telegram дошло "+j.sent+"</span>";if(!j.error){if(aud!=="me"){$("#at").value=$("#ab").value=""}loadAnn()}})};
+  if(aud==="me")return go();
+  dlg('<h3>Отправить объявление?</h3><p class="hint">'+esc(b.title)+". Остановить после старта нельзя.</p><div class=\"row\"><button class=\"btn pri sm\" id=\"any\">Отправить</button><button class=\"btn sm\" data-close>Отмена</button></div>");
+  $("#any").onclick=function(){closeDlg();go()};
+};
+$("#pk").onchange=function(){var g=this.value==="gift";$("#pgk").hidden=!g;$("#pv").hidden=g;if(g)giftOpts($("#pgk"))};
+function loadPromo(){
+  api("promo_list",{},"x").then(function(j){
+    if(j.error)return;
+    $("#plst").innerHTML=(j.items||[]).length?j.items.slice(0,200).map(function(x){return '<div class="item"><div class="m"><div class="t mono" style="font-weight:500">'+esc(x.code)+'</div><div class="s">'+(x.kind==="pro"?esc(x.value)+" дн. PRO":"подарок "+esc(x.value))+" · использовано "+(x.used||0)+" из "+x.max_uses+(x.note?" · "+esc(x.note):"")+(x.expires_at?" · до "+dt(x.expires_at):"")+'</div></div><button class="btn sm '+(x.active?"":"")+'" data-p="'+esc(x.code)+'" data-on="'+(x.active?"0":"1")+'">'+(x.active?"Выключить":"Включить")+"</button></div>"}).join(""):'<p class="hint">Кодов пока нет</p>';
+  });
+}
+$("#plst").onclick=function(e){var b=e.target.closest("[data-p]");if(!b)return;api("promo_off",{code:b.dataset.p,on:b.dataset.on==="1"},"x").then(function(j){if(!j.error)loadPromo()})};
+$("#pgo").onclick=function(){
+  var k=$("#pk").value,b={kind:k,value:k==="gift"?$("#pgk").value:$("#pv").value,count:+$("#pc").value||1,uses:+$("#pu").value||1,expires_days:+$("#pe").value||0,custom:$("#pcu").value.trim(),note:$("#pn").value.trim()};
+  $("#epr").textContent="";api("promo_create",b,"x").then(function(j){
+    if(j.error){$("#epr").textContent=j.error;return}
+    $("#pout").hidden=false;$("#pout").value=j.codes.join("\n");$("#epr").innerHTML='<span class="ok">Создано кодов: '+j.codes.length+". Скопируй список ниже.</span>";loadPromo();
+  });
+};
 /* ---------- журнал ---------- */
 function loadLog(){
   api("log").then(function(j){
