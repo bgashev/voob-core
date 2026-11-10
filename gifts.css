@@ -1,0 +1,18 @@
+.gka-bob{animation:gkbob 3.6s ease-in-out infinite}@keyframes gkbob{50%{transform:translateY(-3.5px)}}
+.gka-wig{animation:gkwig 3.2s ease-in-out infinite;transform-origin:50% 90%}@keyframes gkwig{25%{transform:rotate(-5deg)}75%{transform:rotate(5deg)}}
+.gka-pul{animation:gkpul 2.8s ease-in-out infinite;transform-origin:50% 60%}@keyframes gkpul{50%{transform:scale(1.07)}}
+.gka-hop{animation:gkhop 2.4s ease-in-out infinite;transform-origin:50% 95%}@keyframes gkhop{0%,60%,100%{transform:none}25%{transform:translateY(-6px) scale(.96,1.05)}45%{transform:translateY(0) scale(1.06,.94)}}
+.gka-swg{animation:gkswg 3.4s ease-in-out infinite;transform-origin:50% 8%}@keyframes gkswg{25%{transform:rotate(-6deg)}75%{transform:rotate(6deg)}}
+.gka-rol{animation:gkrol 5s ease-in-out infinite;transform-origin:50% 55%}@keyframes gkrol{0%,100%{transform:rotate(-8deg)}50%{transform:rotate(8deg)}}
+.gkp-spin{animation:gkspin 6s linear infinite}@keyframes gkspin{to{transform:rotate(360deg)}}
+.gkp-spin2{animation:gkspin 2.2s linear infinite}
+.gkp-tick{animation:gkspin 8s steps(60) infinite}
+.gkp-tw{animation:gktw 2.4s ease-in-out infinite;transform-origin:center;transform-box:fill-box}@keyframes gktw{0%,100%{opacity:.25;transform:scale(.6)}50%{opacity:1;transform:scale(1.15)}}
+.gkp-blink{animation:gkbl 4.5s infinite;transform-origin:center;transform-box:fill-box}@keyframes gkbl{0%,92%,100%{transform:scaleY(1)}95%{transform:scaleY(.1)}}
+.gkp-bub{animation:gkbub 2.6s ease-in infinite;transform-box:fill-box;transform-origin:center}@keyframes gkbub{0%{transform:translateY(3px) scale(.5);opacity:0}30%{opacity:1}100%{transform:translateY(-9px) scale(1);opacity:0}}
+.gkp-sway{animation:gksway 3s ease-in-out infinite}@keyframes gksway{25%{transform:rotate(-8deg)}75%{transform:rotate(8deg)}}
+.gkp-flick{animation:gkflick 1.4s ease-in-out infinite;transform-origin:center;transform-box:fill-box}@keyframes gkflick{50%{transform:scale(1.12,.92)}}
+.gkp-glow{animation:gkglw 2.6s ease-in-out infinite}@keyframes gkglw{50%{opacity:.35}}
+.gkp-drift{animation:gkdrf 3.5s ease-in-out infinite}@keyframes gkdrf{50%{transform:translateX(-5px)}}
+.gkp-slide{animation:gksld 3s ease-in-out infinite}@keyframes gksld{50%{transform:translateX(4px)}}
+@media (prefers-reduced-motion:reduce){[class^="gka-"],[class^="gkp-"]{animation:none!important}}

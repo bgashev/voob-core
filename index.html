@@ -10,6 +10,8 @@
 <script>try{var __r=sessionStorage.getItem("voobcore.r");if(__r){sessionStorage.removeItem("voobcore.r");history.replaceState(null,"",new URL(__r).pathname)}}catch(e){}</script>
 <script>if(/[?&]f=s\b/.test(location.search)){document.documentElement.classList.add("arr");try{history.replaceState(null,"",location.pathname+location.hash)}catch(e){}}</script>
 <link rel="stylesheet" href="/frames.css">
+<link rel="stylesheet" href="/gifts.css">
+<script src="/gifts.js"></script>
 <link rel="icon" href="/favicon.svg" type="image/svg+xml">
 <link rel="apple-touch-icon" href="/apple-touch-icon.png">
 <link rel="manifest" href="/manifest.webmanifest">
@@ -429,9 +431,9 @@ section[id^=p]>*:nth-child(2){--n:1}section[id^=p]>*:nth-child(3){--n:2}section[
 .fp i{font-style:normal;font-size:10.5px;font-weight:600;color:var(--mute);text-align:center;line-height:1.2;max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .fp .av{width:34px;height:34px}.fpa{background:var(--tile3)}.fpa.no{border:2px dashed var(--line2);background:none}
 .fp .avr{--w:2.5px}
-.uhero.pbg{position:relative;overflow:hidden;border-color:transparent;background:var(--pg);animation:fade .8s}
-.uhero.pbg:before{content:"";position:absolute;inset:-20%;background:radial-gradient(40% 55% at 20% 25%,color-mix(in srgb,var(--pgl) 55%,transparent),transparent 70%),radial-gradient(35% 50% at 85% 80%,color-mix(in srgb,var(--pgl) 40%,transparent),transparent 70%);animation:pbd 16s ease-in-out infinite alternate}
-.uhero.pbg:after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgba(11,11,13,.2),rgba(11,11,13,.62))}
+.uhero.pbg{position:relative;overflow:hidden;overflow:clip;border-color:transparent;background:var(--tile);animation:fade .8s}
+.uhero.pbg:before{content:"";position:absolute;inset:-30%;background:radial-gradient(40% 55% at 20% 25%,color-mix(in srgb,var(--pgl) 60%,transparent),transparent 70%),radial-gradient(35% 50% at 85% 80%,color-mix(in srgb,var(--pgl) 45%,transparent),transparent 70%),var(--pg);filter:blur(34px) saturate(1.25);animation:pbd 16s ease-in-out infinite alternate}
+.uhero.pbg:after{content:"";position:absolute;inset:0;background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 1 0 0 0 0 1 0 0 0 0 1 0 0 0 .7 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E"),linear-gradient(180deg,rgba(11,11,13,.12),rgba(11,11,13,.5));background-blend-mode:soft-light,normal;opacity:1}
 .uhero.pbg>*{position:relative;z-index:1}
 .uhero.pbg .fct{background:rgba(11,11,13,.45);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px)}
 @keyframes pbd{to{transform:translate3d(6%,-5%,0) scale(1.12)}}
@@ -448,7 +450,34 @@ section[id^=p]>*:nth-child(2){--n:1}section[id^=p]>*:nth-child(3){--n:2}section[
 .pvscr:after{content:"";position:absolute;inset:0;background:rgba(0,0,0,.55)}
 .pva{position:relative;z-index:2;width:100%;border-radius:22px;background:#171922;border:1px solid #ffffff1c;padding:18px 16px 14px;text-align:center;display:grid;gap:8px;justify-items:center;animation:pop .5s var(--ease)}
 .pvab{font:700 10px var(--sans);letter-spacing:.14em;text-transform:uppercase;color:#a1a1aa;background:#ffffff12;border-radius:999px;padding:4px 11px}
-.pvag{font-size:46px;line-height:1.1;filter:drop-shadow(0 6px 14px rgba(0,0,0,.5));animation:bob 2.6s ease-in-out infinite}
+.ufoot{display:flex;align-items:center;justify-content:space-between;gap:12px}
+textarea.field{resize:none;line-height:1.5;min-height:84px;padding:12px 15px;font-family:inherit}
+.inl{display:flex;gap:8px;align-items:center}.inl .field,.inl .pfx{flex:1;min-width:0}
+.fld{display:grid;gap:6px}.lbl{font-size:10.5px;font-weight:700;letter-spacing:.09em;text-transform:uppercase;color:var(--dim)}
+.pfx{position:relative;display:block}.pfx i{position:absolute;left:15px;top:50%;transform:translateY(-50%);font-style:normal;color:var(--dim);font-size:13px;pointer-events:none}.pfx .field{padding-left:30px}
+.ustat{display:flex;align-items:center;gap:10px;font-size:13px;color:var(--mute)}.ustat b{color:var(--fg)}
+.ustat i{width:8px;height:8px;border-radius:50%;background:var(--dim);flex:none}.ustat.on i{background:var(--accent);box-shadow:0 0 0 4px rgba(var(--accent-rgb),.16)}
+.qchips{display:flex;flex-wrap:wrap;gap:8px}
+.qchips button{height:34px;padding:0 14px;border-radius:999px;border:1px solid var(--line2);background:var(--tile2);color:var(--fg);font:700 12.5px var(--sans);cursor:pointer;transition:background .16s,border-color .16s,transform .16s}
+.qchips button:hover{background:var(--tile3);border-color:var(--accent);transform:translateY(-1px)}
+.qchips button.neg{color:var(--bad)}.qchips button.neg:hover{border-color:var(--bad)}
+.swrow{display:flex;align-items:center;justify-content:space-between;gap:14px;padding:10px 14px;border-radius:16px;background:var(--tile2);border:1px solid var(--line)}
+.swrow b{display:block;font-size:13px}.swrow small{display:block;font-size:11.5px;color:var(--mute);margin-top:2px}
+.swt{position:relative;flex:none;width:44px;height:26px;border-radius:13px;border:0;background:var(--tile3);cursor:pointer;transition:background .22s}
+.swt i{position:absolute;left:3px;top:3px;width:20px;height:20px;border-radius:50%;background:var(--mute);transition:transform .28s var(--ease),background .22s}
+.swt.on{background:var(--accent)}.swt.on i{transform:translateX(18px);background:var(--on-accent)}
+.gart{display:block;width:100%;height:100%}.gart svg{width:100%;height:100%;display:block;overflow:visible}
+.gpk{display:grid;grid-template-columns:repeat(auto-fill,minmax(84px,1fr));gap:8px;max-height:300px;overflow:auto;padding:2px}
+.gpi{border:1px solid var(--line);background:var(--tile2);border-radius:16px;padding:10px 4px 8px;cursor:pointer;display:grid;gap:6px;justify-items:center;color:var(--mute);transition:background .16s,border-color .16s,transform .16s,color .16s}
+.gpi:hover{background:var(--tile3);transform:translateY(-2px);color:var(--fg)}
+.gpi .gart{width:46px;height:46px}.gpi i{font-style:normal;font-size:10.5px;font-weight:600;text-align:center;line-height:1.15}
+.gpi[aria-pressed=true]{border-color:var(--accent);background:rgba(var(--accent-rgb),.1);color:var(--fg)}
+.gpi.pr:after{content:"PRO";position:absolute}
+.gsh{display:flex;flex-wrap:wrap;gap:10px;margin-top:12px}
+.gsh .g1{position:relative;width:54px;height:54px;border-radius:16px;background:var(--tile2);border:1px solid var(--line);padding:6px;display:grid}
+.gsh .g1 b{position:absolute;right:-5px;top:-5px;min-width:18px;height:18px;border-radius:9px;background:var(--accent);color:var(--on-accent);font:800 10.5px var(--sans);display:grid;place-items:center;padding:0 4px}
+.gsh+.hint{margin-top:10px}
+.pvag{width:70px;height:70px;margin:0 auto;line-height:1.1;filter:drop-shadow(0 6px 14px rgba(0,0,0,.5));animation:bob 2.6s ease-in-out infinite}
 @keyframes bob{50%{transform:translateY(-5px) rotate(-3deg)}}
 .pvat{font:800 16px/1.2 var(--disp);color:#f4f4f5;word-break:break-word}
 .pvaw{font-size:12px;color:#c4c4cc;line-height:1.45;word-break:break-word;max-height:150px;overflow:hidden}
@@ -486,7 +515,7 @@ section[id^=p]>*:nth-child(2){--n:1}section[id^=p]>*:nth-child(3){--n:2}section[
 .pgifts{display:grid;grid-template-columns:repeat(auto-fill,minmax(82px,1fr));gap:8px;max-height:230px;overflow:auto}
 .pgb{border:1px solid var(--line);background:var(--tile2);border-radius:16px;padding:10px 4px;cursor:pointer;display:grid;gap:4px;justify-items:center;transition:background .16s,border-color .16s,transform .16s}
 .pgb:hover{background:var(--tile3);transform:translateY(-2px)}
-.pgb b{font-size:26px;line-height:1.1}.pgb i{font-style:normal;font-size:10.5px;font-weight:600;color:var(--mute);text-align:center}
+.pgb b{width:46px;height:46px;display:block}.pgb i{font-style:normal;font-size:10.5px;font-weight:600;color:var(--mute);text-align:center}
 .pgb[aria-pressed=true]{border-color:var(--accent);background:rgba(var(--accent-rgb),.1)}
 .ppv{display:grid;gap:14px;position:sticky;top:20px}
 .tkt{display:flex;border-radius:22px;background:var(--tile2);border:1px solid var(--line);overflow:hidden;position:relative;animation:pop .5s var(--ease)}
@@ -649,7 +678,7 @@ section[id^=p]>*:nth-child(2){--n:1}section[id^=p]>*:nth-child(3){--n:2}section[
       <select class="field" id="aa"><option value="me">Только мне (проверка)</option><option value="all">Всем</option><option value="pro">Только PRO</option><option value="free">Только без PRO</option><option value="list">Списком</option></select></div>
       <textarea class="field" id="alist" style="min-height:70px" placeholder="Ники или ID через пробел или запятую" hidden></textarea>
       <button class="btn sm" id="achk" type="button" hidden>Проверить список</button><p class="hint" id="achkr" style="margin:0" hidden></p>
-      <select class="field" id="agk" hidden></select>
+      <div class="gpk" id="agk" hidden></div>
       <input class="field" id="at" maxlength="80" placeholder="Заголовок">
       <textarea class="field" id="ab" maxlength="600" placeholder="Текст"></textarea>
       <input class="field" id="ac" placeholder="Кнопка: pro или ссылка https:// (не обязательно)">
@@ -673,7 +702,7 @@ section[id^=p]>*:nth-child(2){--n:1}section[id^=p]>*:nth-child(3){--n:2}section[
     <div class="tile stack">
       <h3>Новые промокоды</h3>
       <div class="two"><select class="field" id="pk"><option value="pro">PRO, дней</option><option value="gift">Подарок</option></select>
-      <input class="field" id="pv" type="number" min="1" max="3650" placeholder="Дней PRO" value="30"><select class="field" id="pgk" hidden></select></div>
+      <input class="field" id="pv" type="number" min="1" max="3650" placeholder="Дней PRO" value="30"><div class="gpk" id="pgk" hidden></div></div>
       <div class="two"><input class="field" id="pc" type="number" min="1" max="5000" placeholder="Сколько кодов" value="1"><input class="field" id="pu" type="number" min="1" placeholder="Использований на код" value="1"></div>
       <div class="two"><input class="field" id="pe" type="number" min="0" placeholder="Срок, дней (0 без срока)" value="0"><input class="field" id="pcu" placeholder="Свой код, если один (не обязательно)"></div>
       <input class="field" id="pn" maxlength="120" placeholder="Заметка (не обязательно)">
@@ -1052,6 +1081,19 @@ function showUserPage(sy){
   window.scrollTo(0,sy||0);
 }
 document.addEventListener("click",function(e){if(e.target.closest("[data-uback]"))tab("us")});
+var _gz=0;
+function gArt(k,emo){var t=window.GIFT_SVG&&GIFT_SVG[k];if(!t)return '<span class="gart" style="display:grid;place-items:center;font-size:30px">'+(emo||"🎁")+"</span>";
+  if(t.indexOf("clipPath")>=0){var u="_"+(++_gz);t=t.replace(/id='(c\d+)'/g,"id='$1"+u+"'").replace(/url\(#(c\d+)\)/g,"url(#$1"+u+")")}
+  return '<span class="gart">'+t+"</span>"}
+function gTitle(k,list){var g=(list||[]).filter(function(x){return x.kind===k})[0];return g?g.title:(window.GIFT_T&&GIFT_T[k]?GIFT_T[k][1]:k)}
+function gpick(host,list,cur){
+  var arr=list.filter(function(g){return g.kind!=="pro"});host.value=cur||(arr[0]&&arr[0].kind)||"";
+  host.innerHTML=arr.map(function(g){return '<button type="button" class="gpi" data-g="'+esc(g.kind)+'" aria-pressed="'+(g.kind===host.value)+'" title="'+esc(g.title)+'">'+gArt(g.kind,g.emoji)+"<i>"+esc(g.title)+"</i></button>"}).join("");
+  host.onclick=function(e){var b=e.target.closest("[data-g]");if(!b)return;host.value=b.dataset.g;$$(".gpi",host).forEach(function(x){x.setAttribute("aria-pressed",x===b)});host.dispatchEvent(new Event("change"))};
+  host.dispatchEvent(new Event("change"));
+}
+function gShelf(items,list){var c={},o=[];items.forEach(function(g){if(!c[g.kind]){c[g.kind]=0;o.push(g.kind)}c[g.kind]++});
+  return '<div class="gsh">'+o.map(function(k){return '<span class="g1" title="'+esc(gTitle(k,list))+'">'+gArt(k)+(c[k]>1?"<b>"+c[k]+"</b>":"")+"</span>"}).join("")+"</div>"}
 function openUser(id,np){
   if(!np&&location.pathname!=="/users/"+id)history.pushState(null,"","/users/"+id);
   Promise.all([api("user",{tg_id:id}),GT?Promise.resolve(GT):api("gift_types")]).then(function(r){
@@ -1064,14 +1106,21 @@ function openUser(id,np){
     var fc=function(k,v,c){return '<div class="fct"><div class="fk">'+k+'</div><div class="fv'+(c?" "+c:"")+'">'+v+"</div></div>"};
     var h='<div class="tile uhero">'+uav+'<div class="uinfo"><div class="crumb">VOOB CORE / люди / '+u.tg_id+'</div><div class="ptitle" style="font-size:28px">'+nm(u)+'</div><div class="uchips">'+chips+'</div></div><button class="btn sm" type="button" data-uback>← Все пользователи</button>'+
       '<div class="facts">'+fc("ID",'<span class="mono">'+u.tg_id+"</span>")+fc("Ник",u.handle?"@"+esc(u.handle):"—")+fc("Регистрация",dt(u.created_at))+fc("Был",dt(u.last_seen))+fc("Тренировок",j.workouts_total)+fc("PRO",pro?"до "+dt(j.pro.until):"нет")+(u.blocked?fc("Блок",esc(u.block_reason||"без причины"),"dn"):"")+"</div></div>";
-    L+=tl("Сообщение",'<div class="bar"><input class="field" id="umsg" placeholder="Текст в Telegram"><button class="btn sm" id="usend">Отправить</button></div>');
-    L+=tl("PRO",'<div class="bar"><input class="field" id="pdays" type="number" placeholder="дней, можно с минусом" style="max-width:200px"><button class="btn sm" id="pgo">Выдать</button><button class="btn sm" id="p7">+7</button><button class="btn sm" id="p30">+30</button></div>');
-    L+=tl("Профиль",'<div class="stack"><div class="bar"><input class="field" id="ename" placeholder="Имя" value="'+esc(nameNow)+'"><button class="btn sm" id="ename_go">Сохранить имя</button></div><div class="bar"><input class="field" id="ehandle" placeholder="Ник без @" value="'+esc(u.handle||"")+'"><button class="btn sm" id="ehandle_go">Сохранить ник</button></div>'+
-      '<div class="row" style="margin:0"><button class="btn sm" id="epriv">Профиль: '+(u.private?"закрытый":"открытый")+'</button><button class="btn sm" id="efeed">Лента: '+(u.hide_feed?"скрыт":"виден")+'</button><button class="btn sm" id="esoc">Сбросить соцсети</button></div></div>');
+    L+=tl("Сообщение",'<div class="stack"><textarea class="field" id="umsg" rows="3" maxlength="3500" placeholder="Текст, который придёт человеку в Telegram от имени VOOB"></textarea><div class="ufoot"><span class="hint" id="umc" style="margin:0">0 / 3500 · Ctrl+Enter — отправить</span><button class="btn pri sm" id="usend" type="button">Отправить</button></div></div>');
+    var pLeft=pro?Math.max(0,Math.ceil((Date.parse(j.pro.until)-Date.now())/86400000)):0;
+    L+=tl("PRO",'<div class="stack"><div class="ustat'+(pro?" on":"")+'"><i></i><span>'+(pro?"Активен до <b>"+dt(j.pro.until)+"</b> · осталось "+pLeft+" "+plural(pLeft,"день","дня","дней"):"Нет подписки")+'</span></div>'+
+      '<div class="qchips" id="pq"><button type="button" data-d="7">+7 дн.</button><button type="button" data-d="30">+30 дн.</button><button type="button" data-d="90">+90 дн.</button><button type="button" data-d="365">+365 дн.</button><button type="button" data-d="-7" class="neg">−7 дн.</button></div>'+
+      '<div class="inl"><input class="field" id="pdays" type="number" placeholder="Своё число дней (минус — забрать)"><button class="btn sm" id="pgo" type="button">Применить</button></div></div>');
+    L+=tl("Профиль",'<div class="stack ufm"><label class="fld"><span class="lbl">Имя</span><span class="inl"><input class="field" id="ename" placeholder="Имя" value="'+esc(nameNow)+'"><button class="btn sm" id="ename_go" type="button">Сохранить</button></span></label>'+
+      '<label class="fld"><span class="lbl">Ник</span><span class="inl"><span class="pfx"><i>@</i><input class="field" id="ehandle" placeholder="без @" value="'+esc(u.handle||"")+'"></span><button class="btn sm" id="ehandle_go" type="button">Сохранить</button></span></label>'+
+      '<div class="swrow"><div><b>Закрытый профиль</b><small>Его не видят чужие, только друзья</small></div><button type="button" class="swt'+(u.private?" on":"")+'" id="epriv" role="switch" aria-checked="'+(!!u.private)+'" aria-label="Закрытый профиль"><i></i></button></div>'+
+      '<div class="swrow"><div><b>Скрыт из ленты</b><small>Его тренировки не попадают в ленту друзей</small></div><button type="button" class="swt'+(u.hide_feed?" on":"")+'" id="efeed" role="switch" aria-checked="'+(!!u.hide_feed)+'" aria-label="Скрыт из ленты"><i></i></button></div>'+
+      '<div><button class="btn sm bad" id="esoc" type="button">Сбросить соцсети</button></div></div>');
     L+=tl("Рамка и значок",'<div class="stack"><input type="hidden" id="efr" value="'+esc(j.frame||"")+'"><div class="fpick" id="fpick">'+framePick(j.frame||"")+'</div><div class="bar"><button class="btn sm" id="efr_go">Сохранить рамку</button></div><div class="bar"><input class="field" id="ebd" placeholder="Значок, латиница 3–12, пусто = Печать" value="'+esc((meta.settings&&meta.settings.badge)||"")+'"><button class="btn sm" id="ebd_go">Сохранить значок</button></div></div>');
     R+=tl("Достижения",'<div class="achg" id="achBox"><span class="hint" style="margin:0">Загружаю…</span></div><p class="hint" style="margin:8px 0 0">Нажми на достижение, чтобы отозвать или вернуть. Выключенные отмечены.</p>');
-    L+=tl("Подарок",'<div class="bar"><select class="field" id="gk">'+GT.filter(function(g){return g.kind!=="pro"}).map(function(g){return '<option value="'+esc(g.kind)+'">'+esc(g.emoji)+" "+esc(g.title)+"</option>"}).join("")+'</select><button class="btn sm" id="ggo">Подарить</button></div>'+
-      (j.gifts_in.length?'<p class="hint">Получил: '+j.gifts_in.length+(j.gifts_out.length?", подарил: "+j.gifts_out.length:"")+"</p>":""));
+    L+=tl("Подарок",'<div class="stack"><div class="gpk" id="gk"></div><div class="bar"><button class="btn sm" id="ggo">Подарить</button></div></div>'+
+      (j.gifts_in.length?'<p class="hint" style="margin-top:14px">Получил: '+j.gifts_in.length+"</p>"+gShelf(j.gifts_in,GT):"")+
+      (j.gifts_out.length?'<p class="hint" style="margin-top:14px">Подарил: '+j.gifts_out.length+"</p>"+gShelf(j.gifts_out,GT):""));
     var st=[];if(u.frozen_until)st.push("PRO заморожен до "+dt(u.frozen_until));if(u.delete_at)st.push("Удаление аккаунта запланировано на "+dt(u.delete_at));
     if(st.length)L+=tl("Состояние",'<p class="hint dn" style="margin:0">'+esc(st.join(" · "))+"</p>");
     R+=tl("Тренировки (последние 15)",j.workouts.length?'<div class="list">'+j.workouts.slice(0,15).map(function(w){return '<div class="item"><div class="m"><div class="t">'+esc(w.date||"без даты")+'</div><div class="s">'+sumW(w)+'</div></div><button class="btn sm bad" data-w="'+esc(w.rid)+'">Удалить</button></div>'}).join("")+"</div>":'<p class="hint">Нет</p>');
@@ -1082,14 +1131,15 @@ function openUser(id,np){
     R+=tl("Сессии",'<p class="hint" style="margin:0 0 8px">'+(j.sessions.length?j.sessions.map(function(x){return esc(x.device||"?")+" · "+dt(x.last_seen)}).join("<br>"):"Нет активных")+"</p>"+(u.creator?"":'<button class="btn sm bad" id="ukick">Завершить все сессии</button>'));
     if(!u.creator)L+=tl("Доступ",u.blocked?'<button class="btn sm" id="ublk">Разблокировать</button>':'<button class="btn sm bad" id="ublk">Заблокировать</button>');
     h+='<div class="upage"><div class="ucol">'+L+'</div><div class="ucol">'+R+'</div></div><p class="err" id="eu"></p>';
-    var sy=window.scrollY;$("#ubody").innerHTML=h;showUserPage(sy);
-    api("bgs",{ids:[id]},"x").then(function(r){var k=r&&r.bgs&&r.bgs[id],st=k&&pbgStyle(k);if(st){var hr=$(".uhero");if(!hr)return;hr.style.cssText+=st;hr.classList.add("pbg");$(".uchips").insertAdjacentHTML("beforeend",'<span class="chip">Фон: '+esc(PBN[PBO[k]||k]||k)+"</span>")}});
+    var sy=window.scrollY;$("#ubody").innerHTML=h;showUserPage(sy);gpick($("#gk"),GT);
+    api("bgs",{ids:[id]},"x").then(function(r){var k=r&&r.bgs&&r.bgs[id],st=k&&pbgStyle(k);if(st){var hr=$(".uhero");if(!hr)return;hr.style.cssText+=st;hr.classList.add("pbg");if(!$(".uchips .chip[data-bg]"))$(".uchips").insertAdjacentHTML("beforeend",'<span class="chip" data-bg="1">Фон: '+esc(PBN[PBO[k]||k]||k)+"</span>")}});
     api("photo",{tg_id:id,big:true}).then(function(p){if(p&&p.ok)$("#uph").innerHTML='<img alt="" style="width:100%;height:100%;object-fit:cover" src="data:image/jpeg;base64,'+p.b64+'">'});
     var say=function(r,ok){$("#eu").innerHTML=r&&r.error?esc(r.error):'<span class="ok">'+ok+"</span>"},again=function(r,ok){if(r&&r.error)say(r);else{openUser(id);loadUsers()}};
-    $("#usend").onclick=function(){var t=$("#umsg").value.trim();if(!t)return;api("message",{tg_id:id,text:t}).then(function(r){say(r,r.status==="ok"?"Отправлено":"Не доставлено");$("#umsg").value=""})};
-    $("#p7").onclick=function(){api("pro",{tg_id:id,days:7}).then(again)};
-    $("#p30").onclick=function(){api("pro",{tg_id:id,days:30}).then(again)};
-    $("#pgo").onclick=function(){var d=parseInt($("#pdays").value,10);if(!d)return say({error:"Введи число дней"});api("pro",{tg_id:id,days:d}).then(again)};
+    $("#usend").onclick=function(){var t=$("#umsg").value.trim();if(!t)return;var b=$("#usend");busy(b,1);api("message",{tg_id:id,text:t}).then(function(r){busy(b,0);if(r&&r.status==="ok"){say(r,"Отправлено");$("#umsg").value="";$("#umsg").dispatchEvent(new Event("input"))}else say(r&&r.error?r:{error:"Не доставлено: человек мог не запускать бота"})})};
+    $("#pq").onclick=function(e){var b=e.target.closest("[data-d]");if(!b)return;busy(b,1);api("pro",{tg_id:id,days:+b.dataset.d}).then(function(r){busy(b,0);again(r,"Готово")})};
+    var um=$("#umsg"),umc=$("#umc"),fit=function(){um.style.height="auto";um.style.height=Math.min(220,um.scrollHeight+2)+"px";umc.textContent=um.value.length+" / 3500 · Ctrl+Enter — отправить"};
+    um.addEventListener("input",fit);um.addEventListener("keydown",function(e){if(e.key==="Enter"&&(e.ctrlKey||e.metaKey)){e.preventDefault();$("#usend").click()}});
+    $("#pgo").onclick=function(){var d=parseInt($("#pdays").value,10);if(!d)return say({error:"Введи число дней"});api("pro",{tg_id:id,days:d}).then(function(r){again(r,"Готово")})};
     $("#ename_go").onclick=function(){api("edit",{tg_id:id,field:"name",value:$("#ename").value}).then(function(r){say(r,"Имя сохранено")})};
     $("#ehandle_go").onclick=function(){api("edit",{tg_id:id,field:"handle",value:$("#ehandle").value}).then(function(r){say(r,"Ник сохранён");loadUsers()})};
     var ACH=["first","ten","hundred","km50","marathon","km500","hours10","kcal10k","goat","long","streak7","norm","norm30","early","weigh10","wgoal","plan","friends3","friends5","str10","reps1k","tonne","pro","friends10"];
@@ -1168,7 +1218,7 @@ $("#pexp").onclick=function(){csv("voob-payments.csv",[["дата","id","звё�
 /* ---------- объявления и промокоды (voob-extra) ---------- */
 var GT2=null;
 function giftOpts(sel){
-  var fill=function(){sel.innerHTML=GT2.filter(function(g){return g.kind!=="pro"}).map(function(g){return '<option value="'+esc(g.kind)+'">'+esc(g.emoji)+" "+esc(g.title)+"</option>"}).join("")};
+  var fill=function(){gpick(sel,GT2,sel.value)};
   if(GT2)return fill();api("gift_types").then(function(r){GT2=r.items||[];fill()});
 }
 $("#ak").onchange=function(){$("#agk").hidden=this.value!=="gift";if(this.value==="gift")giftOpts($("#agk"))};
@@ -1691,7 +1741,7 @@ function annRender(){
   var g=null;if(kind==="gift"&&GT2)g=GT2.filter(function(x){return x.kind===gk})[0]||null;
   var ctaT=cta==="pro"?"Оформить PRO":cta?"Открыть":"";
   $("#pvApp").innerHTML='<div class="pvphone"><div class="pvnotch"></div><div class="pvscr"><div class="pvbg"></div><div class="pva kd-'+kind+'"><div class="pvab">'+k[0]+" "+k[1]+"</div>"+
-    (kind==="gift"?'<div class="pvag">'+(g?esc(g.emoji):"🎁")+"</div>":"")+
+    (kind==="gift"?'<div class="pvag">'+(g?gArt(g.kind,g.emoji):"🎁")+"</div>":"")+
     '<div class="pvat">'+(title?esc(title):'<span class="ph">Заголовок</span>')+"</div>"+
     '<div class="pvaw">'+(body?esc2(body):'<span class="ph">Текст объявления</span>')+"</div>"+
     (kind==="gift"?'<div class="pvas">'+(g?esc(g.title)+" · уже в коллекции":"Подарок уже в коллекции")+"</div>":"")+
@@ -1739,8 +1789,8 @@ function audRefresh(){api("audience",{},"x").then(function(j){if(j&&j.all!=null)
   chipsOf($("#pDayCh"),function(v){sd.set(v)});chipsOf($("#pCntCh"),function(v){sc.set(v)});chipsOf($("#pUseCh"),function(v){su.set(v)});chipsOf($("#pExpCh"),function(v){se.set(v)});
   $("#pKind").onclick=function(e){var b=e.target.closest("button");if(!b)return;kind=b.dataset.k;$$("button",this).forEach(function(x){x.setAttribute("aria-pressed",x===b)});$("#pProBox").hidden=kind!=="pro";$("#pGiftBox").hidden=kind!=="gift";if(kind==="gift")gifts(drawGifts);upd()};
   function drawGifts(list){
-    var arr=list.filter(function(g){return g.kind!=="pro"});if(!gift&&arr[0]){gift=arr[0].kind;gname=arr[0].emoji+" "+arr[0].title}
-    $("#pGifts").innerHTML=arr.map(function(g){return '<button type="button" class="pgb" data-g="'+esc(g.kind)+'" data-n="'+esc(g.emoji+" "+g.title)+'" aria-pressed="'+(g.kind===gift)+'"><b>'+esc(g.emoji)+"</b><i>"+esc(g.title)+"</i></button>"}).join("");upd();
+    var arr=list.filter(function(g){return g.kind!=="pro"});if(!gift&&arr[0]){gift=arr[0].kind;gname=arr[0].title}
+    $("#pGifts").innerHTML=arr.map(function(g){return '<button type="button" class="pgb" data-g="'+esc(g.kind)+'" data-n="'+esc(g.title)+'" aria-pressed="'+(g.kind===gift)+'"><b>'+gArt(g.kind,g.emoji)+"</b><i>"+esc(g.title)+"</i></button>"}).join("");upd();
   }
   $("#pGifts").onclick=function(e){var b=e.target.closest("[data-g]");if(!b)return;gift=b.dataset.g;gname=b.dataset.n;$$(".pgb",this).forEach(function(x){x.setAttribute("aria-pressed",x===b)});upd()};
   function rnd(){var A="ABCDEFGHJKMNPQRSTUVWXYZ23456789",s="";for(var i=0;i<8;i++)s+=A[Math.floor(Math.random()*A.length)];return "VOOB-"+s.slice(0,4)+"-"+s.slice(4)}
