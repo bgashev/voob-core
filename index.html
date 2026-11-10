@@ -73,6 +73,16 @@ input[type=checkbox]{accent-color:var(--accent)}
 /* ---------- заставка и вход ---------- */
 #boot{position:fixed;inset:0;z-index:100;background:var(--bg);display:grid;place-items:center;transition:opacity .45s var(--ease),visibility .45s}
 #boot.off{opacity:0;visibility:hidden;pointer-events:none}
+#boot{animation:bfade .5s ease both}
+@keyframes bfade{from{opacity:0}}
+.bbox{animation:bin .9s var(--ease) both}
+@keyframes bin{from{opacity:0;transform:translateY(22px) scale(.94);filter:blur(14px)}}
+.bbox>*{animation:bchild .8s var(--ease) both}
+.bbox>*:nth-child(1){animation-delay:.12s}.bbox>*:nth-child(2){animation-delay:.22s}.bbox>*:nth-child(3){animation-delay:.3s}.bbox>*:nth-child(4){animation-delay:.38s}.bbox>*:nth-child(5){animation-delay:.46s}
+@keyframes bchild{from{opacity:0;transform:translateY(12px);filter:blur(8px)}}
+#boot.off .bbox{animation:bout .5s var(--ease) both}
+@keyframes bout{to{opacity:0;transform:scale(1.05) translateY(-10px);filter:blur(12px)}}
+#boot.off .bbox>*{animation:none}
 .bbox{width:min(448px,calc(100vw - 32px));background:var(--tile);border:1px solid var(--line);border-radius:30px;padding:48px 44px 40px;text-align:center;display:grid;gap:10px;justify-items:center}
 .bbox .bt,.lt1{font:800 22px var(--disp);letter-spacing:.27em;padding-left:.27em}
 .bbox .bs,.lt2{font-size:12.5px;font-weight:500;color:var(--mute)}
