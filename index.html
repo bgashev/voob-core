@@ -206,14 +206,14 @@ textarea.field{min-height:110px;resize:vertical}
   <section id="t-us" class="stack" hidden>
     <div class="bar"><input class="field" id="uq" placeholder="Имя, @ник или ID" autocomplete="off">
       <div class="seg" id="uf"><button data-f="all" aria-pressed="true">Все</button><button data-f="pro" aria-pressed="false">PRO</button><button data-f="new" aria-pressed="false">Новые</button><button data-f="inactive" aria-pressed="false">Спят</button><button data-f="blocked" aria-pressed="false">Блок</button></div></div>
-    <div class="list" id="ulist"></div><p class="err" id="eus"></p>
+    <div class="row" style="margin:0"><button class="btn sm" id="uexp">Скачать таблицу</button></div><div class="list" id="ulist"></div><p class="err" id="eus"></p>
   </section>
   <section id="t-fb" class="stack" hidden>
     <div class="seg" id="ff"><button data-s="new" aria-pressed="true">Новые</button><button data-s="done" aria-pressed="false">Закрытые</button><button data-s="all" aria-pressed="false">Все</button></div>
     <div class="list" id="flist"></div><p class="err" id="efb"></p>
   </section>
   <section id="t-pay" class="stack" hidden>
-    <div class="list" id="plist"></div><p class="err" id="epay"></p>
+    <div class="row" style="margin:0"><button class="btn sm" id="pexp">Скачать таблицу</button></div><div class="list" id="plist"></div><p class="err" id="epay"></p>
   </section>
   <section id="t-bc" class="stack" hidden>
     <div class="tile stack">
@@ -256,6 +256,7 @@ textarea.field{min-height:110px;resize:vertical}
   </section>
 </div>
 
+<div id="idle" hidden style="position:fixed;left:50%;bottom:max(16px,env(safe-area-inset-bottom,0px));transform:translateX(-50%);z-index:30;background:var(--tile);border:1px solid var(--line);border-radius:16px;padding:12px 16px;display:flex;gap:14px;align-items:center;box-shadow:0 8px 30px #0008"><span id="idleT" class="mono"></span><button class="btn pri sm" id="idleOk" type="button">Остаться</button></div>
 <div id="dlg" hidden><div class="tile" id="dbody"></div></div>
 <!-- подтверждение опасного действия -->
 <div id="modal" hidden>
@@ -291,11 +292,20 @@ $$("[data-logo]").forEach(function(h){
   h.appendChild(f);
 });
 
+var lastAct=Date.now(),IDLE=30*60000;
+function idleTick(){
+  if(!token||$("#app").hidden){$("#idle").hidden=true;return}
+  var left=lastAct+IDLE-Date.now();
+  if(left<=0){$("#idle").hidden=true;bye(true);return}
+  $("#idle").hidden=left>3*60000;
+  if(left<=3*60000){var m=Math.floor(left/60000),sc=Math.floor(left%60000/1000);$("#idleT").textContent="Сессия закончится через "+m+":"+String(sc).padStart(2,"0")}
+}
+setInterval(idleTick,1000);
 function setToken(t){token=t;try{t?sessionStorage.setItem(TK,t):sessionStorage.removeItem(TK)}catch(e){}}
 function call(action,extra){
   var b=Object.assign({action:action},extra||{});if(token)b.token=token;
   return fetch(API,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(b)})
-    .then(function(r){return r.json().catch(function(){return {error:"Сервер ответил не так, как ждали"}}).then(function(j){j._http=r.status;return j})})
+    .then(function(r){if(r.status!==401)lastAct=Date.now();return r.json().catch(function(){return {error:"Сервер ответил не так, как ждали"}}).then(function(j){j._http=r.status;return j})})
     .catch(function(){return {error:"Нет связи с сервером",_http:0}});
 }
 // запрос с автоподтверждением: если нужен свежий код с почты, спрашиваем его в окне и повторяем
@@ -473,13 +483,18 @@ function dt(x){return x?new Date(x).toLocaleString("ru-RU",{day:"2-digit",month:
 function seg(host,cb){host.onclick=function(e){var b=e.target.closest("button");if(!b)return;$$("button",host).forEach(function(x){x.setAttribute("aria-pressed",x===b)});cb(b)}}
 
 /* ---------- люди ---------- */
+function csv(name,rows){
+  var t="\ufeff"+rows.map(function(r){return r.map(function(c){c=String(c==null?"":c);return /[",;\n]/.test(c)?'"'+c.replace(/"/g,'""')+'"':c}).join(";")}).join("\n");
+  var a=document.createElement("a");a.href=URL.createObjectURL(new Blob([t],{type:"text/csv;charset=utf-8"}));a.download=name;document.body.appendChild(a);a.click();a.remove();
+}
+var lastUsers=[],lastPay=[];
 var uf="all",uT=null;
 seg($("#uf"),function(b){uf=b.dataset.f;loadUsers()});
 $("#uq").oninput=function(){clearTimeout(uT);uT=setTimeout(loadUsers,350)};
 function loadUsers(){
   api("users",{q:$("#uq").value,filter:uf}).then(function(j){
     if(j.error){$("#eus").textContent=j.error;return}$("#eus").textContent="";
-    $("#ulist").innerHTML=j.users.length?j.users.map(function(u){
+    lastUsers=j.users;$("#ulist").innerHTML=j.users.length?j.users.map(function(u){
       return '<div class="item click" data-id="'+u.tg_id+'"><div class="m"><div class="t">'+nm(u)+(u.handle?' <span class="mono" style="color:var(--mute);font-weight:400">@'+esc(u.handle)+'</span>':"")+'</div><div class="s">был '+dt(u.last_seen)+" · тренировок "+u.workouts+'</div></div>'+
         (u.blocked?'<span class="chip r">блок</span>':"")+(u.pro?'<span class="chip g">PRO</span>':"")+(u.creator?'<span class="chip">создатель</span>':"")+"</div>"}).join(""):'<p class="hint">Никого не нашлось</p>';
   });
@@ -488,7 +503,7 @@ $("#ulist").onclick=function(e){var it=e.target.closest("[data-id]");if(it)openU
 function dlg(html){$("#dbody").innerHTML=html;$("#dlg").hidden=false}
 function closeDlg(){$("#dlg").hidden=true}
 $("#dlg").onclick=function(e){if(e.target.id==="dlg"||e.target.closest("[data-close]"))closeDlg()};
-var GT=null;
+var GT=null,FRAMES=["classic", "ears", "orbit", "pulse", "sparkle", "flame", "glitch", "crystal", "comet", "vine", "autumn", "daisy", "jelly", "runes", "sigil", "radar", "lights", "halo", "sakura", "stars", "fireflies", "wave", "bubbles", "frost", "antlers", "hearts", "cloud", "bow", "eclipse", "lava", "hud", "laurel", "wind", "pixring", "coins", "crown8", "hologram", "circuit", "eye3", "phases", "fairywing", "gummy", "blackhole", "clockwork", "neonportal", "ribbons", "waterblade", "arcflash", "paws", "matrix", "dice", "cards", "lockon", "telemetry", "claw", "doodlespace", "corrupt", "aurora", "gold", "neon", "ocean", "cyber", "emerald", "galaxy", "ice", "storm", "pixel", "plasma", "atom", "holo", "moon", "prism"];
 function armed(btn,fn){var t=btn.textContent;btn.onclick=function(){if(btn.dataset.a){fn();return}btn.dataset.a=1;btn.textContent="Точно?";setTimeout(function(){btn.dataset.a="";btn.textContent=t},3500)}}
 function sec(t,body){return '<div style="margin-top:20px"><div class="k mono" style="font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--mute);margin-bottom:8px">'+t+"</div>"+body+"</div>"}
 function sumW(w){var o=[];Object.keys(w).forEach(function(k){if(k==="rid"||k==="date"||o.length>=3)return;var v=w[k];if(typeof v==="number"||(typeof v==="string"&&v.length<18))o.push(esc(k)+" "+esc(v))});return o.join(" · ")}
@@ -503,6 +518,7 @@ function openUser(id){
     h+=sec("PRO",'<div class="bar"><input class="field" id="pdays" type="number" placeholder="дней, можно с минусом" style="max-width:200px"><button class="btn sm" id="pgo">Выдать</button><button class="btn sm" id="p7">+7</button><button class="btn sm" id="p30">+30</button></div>');
     h+=sec("Профиль",'<div class="stack"><div class="bar"><input class="field" id="ename" placeholder="Имя" value="'+esc(nameNow)+'"><button class="btn sm" id="ename_go">Сохранить имя</button></div><div class="bar"><input class="field" id="ehandle" placeholder="Ник без @" value="'+esc(u.handle||"")+'"><button class="btn sm" id="ehandle_go">Сохранить ник</button></div>'+
       '<div class="row" style="margin:0"><button class="btn sm" id="epriv">Профиль: '+(u.private?"закрытый":"открытый")+'</button><button class="btn sm" id="efeed">Лента: '+(u.hide_feed?"скрыт":"виден")+'</button><button class="btn sm" id="esoc">Сбросить соцсети</button></div></div>');
+    h+=sec("Рамка и значок",'<div class="stack"><div class="bar"><select class="field" id="efr"><option value="">Без рамки</option>'+FRAMES.map(function(f){return '<option value="'+f+'"'+(j.frame===f?" selected":"")+">"+f+"</option>"}).join("")+'</select><button class="btn sm" id="efr_go">Сохранить рамку</button></div><div class="bar"><input class="field" id="ebd" placeholder="Значок, латиница 3–12, пусто = Печать" value="'+esc((meta.settings&&meta.settings.badge)||"")+'"><button class="btn sm" id="ebd_go">Сохранить значок</button></div></div>');
     h+=sec("Подарок",'<div class="bar"><select class="field" id="gk">'+GT.filter(function(g){return g.kind!=="pro"}).map(function(g){return '<option value="'+esc(g.kind)+'">'+esc(g.emoji)+" "+esc(g.title)+"</option>"}).join("")+'</select><button class="btn sm" id="ggo">Подарить</button></div>'+
       (j.gifts_in.length?'<p class="hint">Получил: '+j.gifts_in.length+(j.gifts_out.length?", подарил: "+j.gifts_out.length:"")+"</p>":""));
     h+=sec("Тренировки (последние 15)",j.workouts.length?'<div class="list">'+j.workouts.slice(0,15).map(function(w){return '<div class="item"><div class="m"><div class="t">'+esc(w.date||"без даты")+'</div><div class="s">'+sumW(w)+'</div></div><button class="btn sm bad" data-w="'+esc(w.rid)+'">Удалить</button></div>'}).join("")+"</div>":'<p class="hint">Нет</p>');
@@ -522,6 +538,8 @@ function openUser(id){
     $("#pgo").onclick=function(){var d=parseInt($("#pdays").value,10);if(!d)return say({error:"Введи число дней"});api("pro",{tg_id:id,days:d}).then(again)};
     $("#ename_go").onclick=function(){api("edit",{tg_id:id,field:"name",value:$("#ename").value}).then(function(r){say(r,"Имя сохранено")})};
     $("#ehandle_go").onclick=function(){api("edit",{tg_id:id,field:"handle",value:$("#ehandle").value}).then(function(r){say(r,"Ник сохранён");loadUsers()})};
+    $("#efr_go").onclick=function(){api("edit",{tg_id:id,field:"frame",value:$("#efr").value}).then(function(r){say(r,"Рамка сохранена")})};
+    $("#ebd_go").onclick=function(){api("edit",{tg_id:id,field:"badge",value:$("#ebd").value.trim()}).then(function(r){say(r,"Значок сохранён")})};
     $("#epriv").onclick=function(){api("edit",{tg_id:id,field:"private",value:!u.private}).then(again)};
     $("#efeed").onclick=function(){api("edit",{tg_id:id,field:"hide_feed",value:!u.hide_feed}).then(again)};
     armed($("#esoc"),function(){api("edit",{tg_id:id,field:"socials"}).then(function(r){say(r,"Соцсети сброшены")})});
@@ -562,7 +580,7 @@ $("#flist").onclick=function(e){
 function loadPay(){
   api("payments").then(function(j){
     if(j.error){$("#epay").textContent=j.error;return}$("#epay").textContent="";
-    $("#plist").innerHTML=j.items.length?j.items.map(function(p){
+    lastPay=j.items;$("#plist").innerHTML=j.items.length?j.items.map(function(p){
       return '<div class="item"><div class="m"><div class="t">'+p.stars+" ⭐ · "+esc(p.plan)+" · "+nm(p.user)+'</div><div class="s">'+dt(p.created_at)+(p.payer&&p.payer.tg_id!==p.tg_id?" · оплатил "+nm(p.payer):"")+(p.refunded_at?" · возврат "+dt(p.refunded_at):"")+'</div></div>'+
         (p.refunded_at?'<span class="chip r">возврат</span>':'<button class="btn sm bad" data-c="'+esc(p.charge_id)+'">Вернуть</button>')+"</div>"}).join(""):'<p class="hint">Платежей нет</p>';
   });
@@ -584,15 +602,18 @@ $("#bgo").onclick=function(){
   $("#bcy").onclick=function(){closeDlg();go()};
 };
 
+$("#uexp").onclick=function(){csv("voob-users.csv",[["id","имя","ник","регистрация","был","тренировок","PRO до","блок"]].concat(lastUsers.map(function(u){return [u.tg_id,u.first_name,u.handle,u.created_at,u.last_seen,u.workouts,u.pro_until,u.blocked?"да":""]})))};
+$("#pexp").onclick=function(){csv("voob-payments.csv",[["дата","id","звёзд","план","дней","возврат"]].concat(lastPay.map(function(p){return [p.created_at,p.tg_id,p.stars,p.plan,p.days,p.refunded_at]})))};
 /* ---------- журнал ---------- */
 function loadLog(){
   api("log").then(function(j){
     if(j.error){$("#elg").textContent=j.error;return}$("#elg").textContent="";
     $("#glist").innerHTML=j.items.map(function(x){
-      return '<div class="item"><div class="m"><div class="t mono" style="font-weight:500">'+esc(x.action)+'</div><div class="s">'+dt(x.at)+(x.target?" · "+x.target:"")+'</div></div></div>'}).join("")||'<p class="hint">Пусто</p>';
+      return '<div class="item"><div class="m"><div class="t mono" style="font-weight:500">'+esc(x.action)+'</div><div class="s">'+dt(x.at)+(x.target?" · "+x.target:"")+'</div>'+(x.details&&Object.keys(x.details).length?'<div class="s mono wrap">'+esc(JSON.stringify(x.details))+"</div>":"")+"</div></div>"}).join("")||'<p class="hint">Пусто</p>';
   });
 }
 
+$("#idleOk").onclick=function(){call("whoami").then(function(){idleTick()})};
 /* ---------- настройки ---------- */
 function loadSet(){
   call("whoami").then(function(j){
