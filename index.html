@@ -62,7 +62,7 @@ h1,h2,h3{margin:0}
 #app header{display:flex;align-items:center;gap:14px;flex-wrap:wrap;margin-bottom:16px}
 #app header .tag{font:500 11px var(--mono);letter-spacing:.5em;color:var(--mute)}
 nav{display:flex;gap:6px;background:var(--tile);border:1px solid var(--line);border-radius:16px;padding:4px;margin-left:auto}
-nav button{border:0;background:none;border-radius:12px;padding:8px 16px;font-weight:600;color:var(--mute);cursor:pointer}
+nav{overflow-x:auto;max-width:100%}nav button{flex:none;border:0;background:none;border-radius:12px;padding:8px 16px;font-weight:600;color:var(--mute);cursor:pointer}
 nav button[aria-selected=true]{background:var(--accent);color:var(--on-accent)}
 .grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px}
 .stat .k{font:500 11px var(--mono);letter-spacing:.14em;text-transform:uppercase;color:var(--mute)}
@@ -85,11 +85,26 @@ nav button[aria-selected=true]{background:var(--accent);color:var(--on-accent)}
 .stack{display:grid;gap:12px}
 .two{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
 
+
+.bar{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+.bar .field{flex:1;min-width:180px}
+.list{display:grid;gap:8px}
+.item{display:flex;gap:12px;align-items:center;justify-content:space-between;background:var(--tile2);border:1px solid var(--line);border-radius:14px;padding:12px 14px;min-width:0;cursor:default}
+.item.click{cursor:pointer}.item.click:hover{border-color:#3a4049}
+.item .m{min-width:0;flex:1}.item .t{font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.item .s{color:var(--mute);font-size:13px;overflow:hidden;text-overflow:ellipsis}
+.item .s.wrap{white-space:normal;overflow:visible}
+.chip{font:500 11px var(--mono);letter-spacing:.06em;border:1px solid var(--line);border-radius:999px;padding:3px 9px;color:var(--mute);white-space:nowrap}
+.chip.g{color:var(--accent);border-color:#c8f25a55}.chip.r{color:var(--bad);border-color:#ff7a6b55}
+textarea.field{min-height:110px;resize:vertical}
+.sm{padding:7px 12px;font-size:13px;border-radius:11px}
+#dlg{position:fixed;inset:0;background:#000a;display:grid;place-items:center;padding:16px;z-index:15;overflow:auto}
+#dlg .tile{max-width:560px;width:100%;max-height:92vh;overflow:auto}
 /* окно подтверждения */
 #modal{position:fixed;inset:0;background:#000a;display:grid;place-items:center;padding:16px;z-index:20}
 #modal .tile{max-width:420px;width:100%}
 
-@media(max-width:860px){#login{grid-template-columns:1fr;min-height:0;align-content:start}.grid{grid-template-columns:repeat(2,minmax(0,1fr))}.two{grid-template-columns:1fr}nav{margin-left:0;width:100%}nav button{flex:1}}
+@media(max-width:860px){#login{grid-template-columns:1fr;min-height:0;align-content:start}.grid{grid-template-columns:repeat(2,minmax(0,1fr))}.two{grid-template-columns:1fr}nav{margin-left:0;width:100%}}
 @media(max-width:480px){.tile{padding:18px;border-radius:18px}.qr{width:100%;height:auto;aspect-ratio:1;max-width:240px}.stat .v{font-size:28px}}
 @media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
 </style>
@@ -164,7 +179,7 @@ nav button[aria-selected=true]{background:var(--accent);color:var(--on-accent)}
 <div id="app" class="wrap" hidden>
   <header>
     <div class="logo" style="flex-direction:row;align-items:center;gap:14px"><span data-logo></span><span class="tag">CORE</span></div>
-    <nav role="tablist"><button data-tab="ov" aria-selected="true">Обзор</button><button data-tab="set" aria-selected="false">Настройки</button></nav>
+    <nav role="tablist" id="nav"><button data-tab="ov" aria-selected="true">Обзор</button><button data-tab="us" aria-selected="false">Люди</button><button data-tab="fb" aria-selected="false">Обращения</button><button data-tab="pay" aria-selected="false">Платежи</button><button data-tab="bc" aria-selected="false">Рассылка</button><button data-tab="lg" aria-selected="false">Журнал</button><button data-tab="set" aria-selected="false">Настройки</button></nav>
   </header>
 
   <section id="t-ov" class="stack">
@@ -177,6 +192,33 @@ nav button[aria-selected=true]{background:var(--accent);color:var(--on-accent)}
       <div class="bars" id="bars"></div><div class="axis"><span id="ax1"></span><span id="ax2"></span></div>
     </div>
     <p class="err" id="eov"></p>
+  </section>
+
+
+  <section id="t-us" class="stack" hidden>
+    <div class="bar"><input class="field" id="uq" placeholder="Имя, @ник или ID" autocomplete="off">
+      <div class="seg" id="uf"><button data-f="all" aria-pressed="true">Все</button><button data-f="pro" aria-pressed="false">PRO</button><button data-f="new" aria-pressed="false">Новые</button><button data-f="inactive" aria-pressed="false">Спят</button><button data-f="blocked" aria-pressed="false">Блок</button></div></div>
+    <div class="list" id="ulist"></div><p class="err" id="eus"></p>
+  </section>
+  <section id="t-fb" class="stack" hidden>
+    <div class="seg" id="ff"><button data-s="new" aria-pressed="true">Новые</button><button data-s="done" aria-pressed="false">Закрытые</button><button data-s="all" aria-pressed="false">Все</button></div>
+    <div class="list" id="flist"></div><p class="err" id="efb"></p>
+  </section>
+  <section id="t-pay" class="stack" hidden>
+    <div class="list" id="plist"></div><p class="err" id="epay"></p>
+  </section>
+  <section id="t-bc" class="stack" hidden>
+    <div class="tile stack">
+      <h3>Рассылка в Telegram</h3>
+      <select class="field" id="bt"><option value="me">Только мне (проверка)</option><option value="pro">Всем с PRO</option><option value="all">Всем пользователям</option></select>
+      <textarea class="field" id="btext" maxlength="3500" placeholder="Текст сообщения"></textarea>
+      <p class="hint" style="margin:0">Сначала отправь себе, потом остальным. Рассылка просит код с почты.</p>
+      <div class="row" style="margin:0"><button class="btn pri" id="bgo" type="button">Отправить</button></div>
+      <p class="err" id="ebc"></p>
+    </div>
+  </section>
+  <section id="t-lg" class="stack" hidden>
+    <div class="list" id="glist"></div><p class="err" id="elg"></p>
   </section>
 
   <section id="t-set" class="stack" hidden>
@@ -206,6 +248,7 @@ nav button[aria-selected=true]{background:var(--accent);color:var(--on-accent)}
   </section>
 </div>
 
+<div id="dlg" hidden><div class="tile" id="dbody"></div></div>
 <!-- подтверждение опасного действия -->
 <div id="modal" hidden>
   <div class="tile">
@@ -368,7 +411,7 @@ $("#mdGo").onclick=function(){
 
 /* ---------- приложение ---------- */
 var ov=null,serSel="new",daysSel=30,SN={new:"Новые пользователи",active:"Активные пользователи",workouts:"Тренировки",stars:"Выручка, Stars"};
-function enter(){show("app");loadOv();loadSet()}
+function enter(){show("app");tab("ov")}
 function fmt(n){return Number(n||0).toLocaleString("ru-RU")}
 function delta(a,b){if(!b)return a?'<b class="up">новое</b>':"";var p=Math.round((a-b)/b*100);return '<b class="'+(p>=0?"up":"dn")+'">'+(p>=0?"+":"")+p+"%</b> к прошлому периоду"}
 function loadOv(){
@@ -396,7 +439,117 @@ function drawChart(){
 }
 $("#chSeries").onclick=function(e){var b=e.target.closest("button");if(!b)return;serSel=b.dataset.s;$$("button",this).forEach(function(x){x.setAttribute("aria-pressed",x===b)});drawChart()};
 $("#chDays").onclick=function(e){var b=e.target.closest("button");if(!b)return;daysSel=+b.dataset.d;$$("button",this).forEach(function(x){x.setAttribute("aria-pressed",x===b)});loadOv()};
-$("nav").onclick=function(e){var b=e.target.closest("button");if(!b)return;$$("button",this).forEach(function(x){x.setAttribute("aria-selected",x===b)});$("#t-ov").hidden=b.dataset.tab!=="ov";$("#t-set").hidden=b.dataset.tab!=="set";if(b.dataset.tab==="set")loadSet()};
+var TABS=["ov","us","fb","pay","bc","lg","set"],loaded={};
+function tab(k){
+  $$("#nav button").forEach(function(x){x.setAttribute("aria-selected",x.dataset.tab===k)});
+  TABS.forEach(function(t){$("#t-"+t).hidden=t!==k});
+  if(k==="set")loadSet();if(k==="ov")loadOv();
+  if(k==="us")loadUsers();if(k==="fb")loadFb();if(k==="pay")loadPay();if(k==="lg")loadLog();
+}
+$("#nav").onclick=function(e){var b=e.target.closest("button");if(b)tab(b.dataset.tab)};
+function esc(x){return String(x==null?"":x).replace(/[&<>"']/g,function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]})}
+function nm(u){return u?esc(u.first_name||u.username||u.handle||u.tg_id):"—"}
+function dt(x){return x?new Date(x).toLocaleString("ru-RU",{day:"2-digit",month:"2-digit",year:"2-digit",hour:"2-digit",minute:"2-digit"}):"—"}
+function seg(host,cb){host.onclick=function(e){var b=e.target.closest("button");if(!b)return;$$("button",host).forEach(function(x){x.setAttribute("aria-pressed",x===b)});cb(b)}}
+
+/* ---------- люди ---------- */
+var uf="all",uT=null;
+seg($("#uf"),function(b){uf=b.dataset.f;loadUsers()});
+$("#uq").oninput=function(){clearTimeout(uT);uT=setTimeout(loadUsers,350)};
+function loadUsers(){
+  api("users",{q:$("#uq").value,filter:uf}).then(function(j){
+    if(j.error){$("#eus").textContent=j.error;return}$("#eus").textContent="";
+    $("#ulist").innerHTML=j.users.length?j.users.map(function(u){
+      return '<div class="item click" data-id="'+u.tg_id+'"><div class="m"><div class="t">'+nm(u)+(u.handle?' <span class="mono" style="color:var(--mute);font-weight:400">@'+esc(u.handle)+'</span>':"")+'</div><div class="s">был '+dt(u.last_seen)+" · тренировок "+u.workouts+'</div></div>'+
+        (u.blocked?'<span class="chip r">блок</span>':"")+(u.pro?'<span class="chip g">PRO</span>':"")+(u.creator?'<span class="chip">создатель</span>':"")+"</div>"}).join(""):'<p class="hint">Никого не нашлось</p>';
+  });
+}
+$("#ulist").onclick=function(e){var it=e.target.closest("[data-id]");if(it)openUser(+it.dataset.id)};
+function dlg(html){$("#dbody").innerHTML=html;$("#dlg").hidden=false}
+function closeDlg(){$("#dlg").hidden=true}
+$("#dlg").onclick=function(e){if(e.target.id==="dlg"||e.target.closest("[data-close]"))closeDlg()};
+function openUser(id){
+  api("user",{tg_id:id}).then(function(j){
+    if(j.error){$("#eus").textContent=j.error;return}
+    var u=j.user,pro=j.pro&&j.pro.until&&Date.parse(j.pro.until)>Date.now();
+    dlg('<div class="chartT"><h3>'+nm(u)+'</h3><button class="btn sm" data-close>Закрыть</button></div>'+
+      '<dl class="kv"><dt>ID</dt><dd class="mono">'+u.tg_id+'</dd><dt>Ник</dt><dd>'+(u.handle?"@"+esc(u.handle):"—")+'</dd><dt>Регистрация</dt><dd>'+dt(u.created_at)+'</dd><dt>Был</dt><dd>'+dt(u.last_seen)+'</dd><dt>Тренировок</dt><dd>'+j.workouts_total+'</dd><dt>PRO</dt><dd>'+(pro?"до "+dt(j.pro.until):"нет")+'</dd><dt>Платежей</dt><dd>'+j.payments.length+'</dd><dt>Друзей</dt><dd>'+j.friends.length+'</dd>'+(u.blocked?'<dt>Блок</dt><dd class="dn">'+esc(u.block_reason||"без причины")+"</dd>":"")+"</dl>"+
+      '<div class="stack" style="margin-top:16px"><input class="field" id="umsg" placeholder="Сообщение пользователю в Telegram"><div class="row" style="margin:0"><button class="btn sm" id="usend">Отправить</button>'+
+      (u.creator?"":(u.blocked?'<button class="btn sm" id="ublk">Разблокировать</button>':'<button class="btn sm bad" id="ublk">Заблокировать</button>'))+
+      '<button class="btn sm" id="upro7">PRO +7 д</button><button class="btn sm" id="upro30">PRO +30 д</button></div><p class="err" id="eu"></p></div>');
+    var done=function(r,ok){$("#eu").innerHTML=r&&r.error?esc(r.error):'<span class="ok">'+ok+"</span>"};
+    $("#usend").onclick=function(){var t=$("#umsg").value.trim();if(!t)return;api("message",{tg_id:id,text:t}).then(function(r){done(r,r.status==="ok"?"Отправлено":"Не доставлено");$("#umsg").value=""})};
+    if($("#ublk"))$("#ublk").onclick=function(){
+      if(u.blocked)api("unblock",{tg_id:id}).then(function(r){if(r.error)done(r);else{closeDlg();loadUsers()}});
+      else{var why=prompt2();why.then(function(w){if(w===null)return;api("block",{tg_id:id,reason:w}).then(function(r){if(r.error)done(r);else{closeDlg();loadUsers()}})})}
+    };
+    $("#upro7").onclick=function(){api("pro",{tg_id:id,days:7}).then(function(r){done(r,"Выдано +7 дней")})};
+    $("#upro30").onclick=function(){api("pro",{tg_id:id,days:30}).then(function(r){done(r,"Выдано +30 дней")})};
+  });
+}
+// своё окно вместо prompt(): причина блокировки
+function prompt2(){
+  return new Promise(function(res){
+    var old=$("#dbody").innerHTML;
+    $("#dbody").innerHTML='<h3>Причина блокировки</h3><div class="stack" style="margin-top:12px"><input class="field" id="why" placeholder="Коротко, пользователь её увидит"><div class="row" style="margin:0"><button class="btn bad sm" id="whyGo">Заблокировать</button><button class="btn sm" id="whyNo">Назад</button></div></div>';
+    $("#whyGo").onclick=function(){res($("#why").value.trim())};
+    $("#whyNo").onclick=function(){$("#dbody").innerHTML=old;res(null);closeDlg()};
+  });
+}
+
+/* ---------- обращения ---------- */
+var fs="new";
+seg($("#ff"),function(b){fs=b.dataset.s;loadFb()});
+var TYPES={idea:"идея",bug:"баг",complaint:"жалоба",other:"другое"};
+function loadFb(){
+  api("feedback",{status:fs}).then(function(j){
+    if(j.error){$("#efb").textContent=j.error;return}$("#efb").textContent="";
+    $("#flist").innerHTML=j.items.length?j.items.map(function(x){
+      return '<div class="item" style="align-items:flex-start"><div class="m"><div class="t" style="white-space:normal">'+esc(x.text)+'</div><div class="s wrap">'+nm(x.from)+" · "+dt(x.created_at)+(x.target?" · на "+nm(x.target):"")+(x.reply?"<br>Ответ: "+esc(x.reply):"")+'</div>'+
+        '<div class="row"><span class="chip">'+esc(TYPES[x.type]||x.type)+'</span>'+(x.status==="new"?'<button class="btn sm" data-r="'+x.id+'">Ответить</button><button class="btn sm" data-d="'+x.id+'">Закрыть</button>':"")+"</div></div></div>"}).join(""):'<p class="hint">Пусто</p>';
+  });
+}
+$("#flist").onclick=function(e){
+  var r=e.target.closest("[data-r]"),d=e.target.closest("[data-d]");
+  if(d)api("fb_status",{id:+d.dataset.d,status:"done"}).then(loadFb);
+  if(r){dlg('<h3>Ответ пользователю</h3><div class="stack" style="margin-top:12px"><textarea class="field" id="rtext" placeholder="Текст ответа"></textarea><div class="row" style="margin:0"><button class="btn pri sm" id="rgo">Отправить</button><button class="btn sm" data-close>Отмена</button></div><p class="err" id="er"></p></div>');
+    $("#rgo").onclick=function(){var t=$("#rtext").value.trim();if(!t)return;api("fb_reply",{id:+r.dataset.r,text:t}).then(function(j){if(j.error)$("#er").textContent=j.error;else{closeDlg();loadFb()}})}}
+};
+
+/* ---------- платежи ---------- */
+function loadPay(){
+  api("payments").then(function(j){
+    if(j.error){$("#epay").textContent=j.error;return}$("#epay").textContent="";
+    $("#plist").innerHTML=j.items.length?j.items.map(function(p){
+      return '<div class="item"><div class="m"><div class="t">'+p.stars+" ⭐ · "+esc(p.plan)+" · "+nm(p.user)+'</div><div class="s">'+dt(p.created_at)+(p.payer&&p.payer.tg_id!==p.tg_id?" · оплатил "+nm(p.payer):"")+(p.refunded_at?" · возврат "+dt(p.refunded_at):"")+'</div></div>'+
+        (p.refunded_at?'<span class="chip r">возврат</span>':'<button class="btn sm bad" data-c="'+esc(p.charge_id)+'">Вернуть</button>')+"</div>"}).join(""):'<p class="hint">Платежей нет</p>';
+  });
+}
+$("#plist").onclick=function(e){
+  var b=e.target.closest("[data-c]");if(!b)return;
+  dlg('<h3>Вернуть платёж?</h3><p class="hint">Звёзды вернутся пользователю, PRO сократится. Это нельзя отменить.</p><div class="row"><button class="btn bad sm" id="rfy">Вернуть</button><button class="btn sm" data-close>Отмена</button></div><p class="err" id="erf"></p>');
+  $("#rfy").onclick=function(){api("refund",{charge:b.dataset.c}).then(function(j){if(j.error)$("#erf").textContent=j.error;else{closeDlg();loadPay()}})};
+};
+
+/* ---------- рассылка ---------- */
+$("#bgo").onclick=function(){
+  var t=$("#btext").value.trim(),tg=$("#bt").value;$("#ebc").textContent="";
+  if(t.length<2){$("#ebc").textContent="Напиши текст";return}
+  var go=function(){$("#bgo").disabled=true;api("broadcast",{text:t,target:tg}).then(function(j){$("#bgo").disabled=false;
+    $("#ebc").innerHTML=j.error?esc(j.error):'<span class="ok">Доставлено '+j.sent+" из "+j.total+(j.failed?", не дошло "+j.failed:"")+"</span>";if(!j.error&&tg!=="me")$("#btext").value=""})};
+  if(tg==="me")return go();
+  dlg('<h3>Отправить рассылку?</h3><p class="hint">'+(tg==="pro"?"Всем с PRO":"Всем пользователям")+'. Остановить после старта нельзя.</p><div class="row"><button class="btn pri sm" id="bcy">Отправить</button><button class="btn sm" data-close>Отмена</button></div>');
+  $("#bcy").onclick=function(){closeDlg();go()};
+};
+
+/* ---------- журнал ---------- */
+function loadLog(){
+  api("log").then(function(j){
+    if(j.error){$("#elg").textContent=j.error;return}$("#elg").textContent="";
+    $("#glist").innerHTML=j.items.map(function(x){
+      return '<div class="item"><div class="m"><div class="t mono" style="font-weight:500">'+esc(x.action)+'</div><div class="s">'+dt(x.at)+(x.target?" · "+x.target:"")+'</div></div></div>'}).join("")||'<p class="hint">Пусто</p>';
+  });
+}
 
 /* ---------- настройки ---------- */
 function loadSet(){
