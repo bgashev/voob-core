@@ -40,6 +40,7 @@ h2{font-size:20px;font-weight:800}
 .ok{color:var(--accent)}
 .up{color:var(--green)}.dn{color:var(--bad)}
 .stack{display:grid;gap:14px;align-content:start}
+#main section.stack{justify-items:stretch}
 .two{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}
 .grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:14px}
 .row{display:flex;gap:12px;align-items:center;flex-wrap:wrap;margin-top:14px}
@@ -334,7 +335,7 @@ section[id^=p]>*:nth-child(2){--n:1}section[id^=p]>*:nth-child(3){--n:2}section[
 .btn.cd{background:linear-gradient(90deg,var(--tile3) calc(var(--p,0)*100%),var(--tile2) 0)}
 @media(max-width:860px){.lwrap{grid-template-columns:1fr}.lcol{order:2}}
 
-.av img:not(.c),.uav img:not(.c),.who i img:not(.c){animation:imgin .7s var(--ease) both}
+.pb{opacity:0;filter:blur(16px);transform:scale(1.2);transition:opacity .8s var(--ease),filter .9s var(--ease),transform .9s var(--ease)}.pb.q{transition-duration:.4s,.5s,.5s}.pb.on{opacity:1;filter:blur(0);transform:none}
 @keyframes imgin{from{opacity:0;filter:blur(14px);transform:scale(1.18)}}
 .uhero{display:flex;align-items:center;gap:20px;flex-wrap:wrap}
 .uav{width:96px;height:96px;border-radius:50%;background:var(--tile3);flex:none;overflow:hidden;display:grid;place-items:center;font:800 36px var(--disp);color:var(--mute)}
@@ -349,6 +350,99 @@ section[id^=p]>*:nth-child(2){--n:1}section[id^=p]>*:nth-child(3){--n:2}section[
 .ucol{display:grid;gap:14px;min-width:0}
 #ubody.enter>*{animation:rise .42s var(--ease) both;animation-delay:calc(var(--i,0)*60ms)}
 @media(max-width:1000px){.upage{grid-template-columns:1fr}}
+/* ---------- рамки, фоны ---------- */
+@property --a{syntax:"<angle>";inherits:false;initial-value:0deg}
+@keyframes fra{to{--a:360deg}}
+@keyframes frg{from{box-shadow:0 0 6px 0 color-mix(in srgb,var(--g1,transparent) 30%,transparent)}to{box-shadow:0 0 15px 2px color-mix(in srgb,var(--g2,transparent) 60%,transparent)}}
+.avr{padding:var(--w,3px);background:var(--bg);animation:fra var(--sp,0s) linear infinite,frg var(--gp,0s) ease-in-out infinite alternate;display:inline-block;line-height:0}
+.avr.big{--w:6px}.avr.big .uav{border:4px solid var(--tile)}
+.avr .av{border:2px solid var(--tile2)}
+.uhero .avr{flex:none}
+.fpick{display:grid;grid-template-columns:repeat(auto-fill,minmax(74px,1fr));gap:10px;max-height:330px;overflow:auto;padding:4px;margin:-4px}
+.fp{border:1px solid var(--line);background:var(--tile2);border-radius:16px;padding:10px 4px 8px;cursor:pointer;display:grid;justify-items:center;gap:6px;transition:background .16s,border-color .16s,transform .16s}
+.fp:hover{background:var(--tile3);transform:translateY(-2px)}
+.fp[aria-pressed=true]{border-color:var(--accent);background:rgba(var(--accent-rgb),.1)}
+.fp i{font-style:normal;font-size:10.5px;font-weight:600;color:var(--mute);text-align:center;line-height:1.2;max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.fp .av{width:34px;height:34px}.fpa{background:var(--tile3)}.fpa.no{border:2px dashed var(--line2);background:none}
+.fp .avr{--w:2.5px}
+.uhero.pbg{position:relative;overflow:hidden;border-color:transparent;background:var(--pg);animation:fade .8s}
+.uhero.pbg:before{content:"";position:absolute;inset:-20%;background:radial-gradient(40% 55% at 20% 25%,color-mix(in srgb,var(--pgl) 55%,transparent),transparent 70%),radial-gradient(35% 50% at 85% 80%,color-mix(in srgb,var(--pgl) 40%,transparent),transparent 70%);animation:pbd 16s ease-in-out infinite alternate}
+.uhero.pbg:after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgba(11,11,13,.2),rgba(11,11,13,.62))}
+.uhero.pbg>*{position:relative;z-index:1}
+.uhero.pbg .fct{background:rgba(11,11,13,.45);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px)}
+@keyframes pbd{to{transform:translate3d(6%,-5%,0) scale(1.12)}}
+
+/* ---------- визуализатор ---------- */
+.split{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,.9fr);gap:14px;align-items:start}
+.pvbox{position:sticky;top:20px}
+.pvstage{display:grid;place-items:center;background:var(--tile2);border-radius:20px;padding:22px 14px;min-height:300px}
+.pvpane{width:100%;display:grid;place-items:center}
+.pvphone{position:relative;width:min(270px,100%);aspect-ratio:9/17;border-radius:34px;padding:8px;background:linear-gradient(160deg,#343a4b,#10131b);box-shadow:0 30px 60px -24px rgba(0,0,0,.7)}
+.pvnotch{position:absolute;top:14px;left:50%;width:70px;height:18px;margin-left:-35px;border-radius:12px;background:#05060a;z-index:3}
+.pvscr{position:relative;height:100%;border-radius:27px;overflow:hidden;background:#0d0f16;display:grid;place-items:center;padding:14px}
+.pvbg{position:absolute;inset:0;background:radial-gradient(70% 40% at 30% 10%,rgba(139,92,246,.25),transparent),radial-gradient(60% 40% at 80% 90%,rgba(34,211,238,.18),transparent);opacity:.8}
+.pvscr:after{content:"";position:absolute;inset:0;background:rgba(0,0,0,.55)}
+.pva{position:relative;z-index:2;width:100%;border-radius:22px;background:#171922;border:1px solid #ffffff1c;padding:18px 16px 14px;text-align:center;display:grid;gap:8px;justify-items:center;animation:pop .5s var(--ease)}
+.pvab{font:700 10px var(--sans);letter-spacing:.14em;text-transform:uppercase;color:#a1a1aa;background:#ffffff12;border-radius:999px;padding:4px 11px}
+.pvag{font-size:46px;line-height:1.1;filter:drop-shadow(0 6px 14px rgba(0,0,0,.5));animation:bob 2.6s ease-in-out infinite}
+@keyframes bob{50%{transform:translateY(-5px) rotate(-3deg)}}
+.pvat{font:800 16px/1.2 var(--disp);color:#f4f4f5;word-break:break-word}
+.pvaw{font-size:12px;color:#c4c4cc;line-height:1.45;word-break:break-word;max-height:150px;overflow:hidden}
+.pvas{font-size:11px;color:#34D399;font-weight:600}
+.pvac{margin-top:4px;width:100%;border-radius:999px;background:linear-gradient(135deg,#8b5cf6,#22d3ee);color:#fff;font:700 12.5px var(--sans);padding:9px 0}
+.pvax{font-size:11.5px;color:#8a8a94;font-weight:600;padding:2px 0}
+.ph{color:#6b6b76;font-weight:500}
+.tgc{width:min(360px,100%);display:grid;gap:6px}
+.tgh{display:flex;align-items:center;gap:10px;margin-bottom:6px}
+.tgh b{display:block;font-size:13.5px}.tgh i{display:block;font-style:normal;font-size:11px;color:var(--dim)}
+.tga{display:inline-flex;border-radius:50%;overflow:hidden}
+.tgm{background:#212d3b;border-radius:16px 16px 16px 4px;padding:10px 13px 6px;color:#f1f4f8;font-size:13.5px;line-height:1.4;position:relative;animation:pop .45s var(--ease);transition:opacity .3s}
+.tgm.dim{opacity:.35}
+.tgb{word-break:break-word}
+.tgt{text-align:right;font-size:10.5px;color:#7e92a6;margin-top:4px}.tgt span{color:#5fb3f0}
+.tgk span{display:block;text-align:center;background:#2b3a4d;border-radius:12px;padding:8px;font-weight:600;font-size:13px;color:#8cc9ff}
+@media(max-width:1000px){.split{grid-template-columns:1fr}.pvbox{position:static}}
+
+/* ---------- конструктор промокодов ---------- */
+.pgrid{display:grid;grid-template-columns:minmax(0,1.15fr) minmax(0,.85fr);gap:22px;align-items:start}
+.pform{display:grid;gap:18px}
+.plb{font:700 10.5px var(--sans);letter-spacing:.12em;text-transform:uppercase;color:var(--dim);margin-bottom:8px}
+.plb .dm{text-transform:none;letter-spacing:0;font-weight:500}
+.pch{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:8px}
+.pch button{border:1px solid var(--line);background:var(--tile2);color:var(--mute);border-radius:999px;padding:5px 13px;font-size:12.5px;font-weight:650;cursor:pointer;transition:background .16s,color .16s,border-color .16s,transform .1s}
+.pch button:hover{background:var(--tile3);color:var(--fg)}.pch button:active{transform:scale(.95)}
+.pch button[aria-pressed=true]{background:var(--accent);color:var(--on-accent);border-color:transparent}
+.step{display:flex;align-items:center;gap:8px}
+.step button{width:36px;height:36px;border-radius:12px;border:1px solid var(--line);background:var(--tile2);font-size:18px;line-height:1;cursor:pointer;color:var(--fg);transition:background .16s,transform .1s}
+.step button:hover{background:var(--tile3)}.step button:active{transform:scale(.92)}
+.step input{width:92px;height:36px;border-radius:12px;border:1px solid var(--line);background:var(--tile2);text-align:center;font:600 15px var(--sans);outline:none;-moz-appearance:textfield}
+.step input:focus{border-color:var(--accent)}
+.step input::-webkit-outer-spin-button,.step input::-webkit-inner-spin-button{-webkit-appearance:none;margin:0}
+.step span{color:var(--dim);font-size:12px}
+.pgifts{display:grid;grid-template-columns:repeat(auto-fill,minmax(82px,1fr));gap:8px;max-height:230px;overflow:auto}
+.pg{border:1px solid var(--line);background:var(--tile2);border-radius:16px;padding:10px 4px;cursor:pointer;display:grid;gap:4px;justify-items:center;transition:background .16s,border-color .16s,transform .16s}
+.pg:hover{background:var(--tile3);transform:translateY(-2px)}
+.pg b{font-size:26px;line-height:1.1}.pg i{font-style:normal;font-size:10.5px;font-weight:600;color:var(--mute);text-align:center}
+.pg[aria-pressed=true]{border-color:var(--accent);background:rgba(var(--accent-rgb),.1)}
+.ppv{display:grid;gap:14px;position:sticky;top:20px}
+.tkt{display:flex;border-radius:22px;background:var(--tile2);border:1px solid var(--line);overflow:hidden;position:relative;animation:pop .5s var(--ease)}
+.tkl{flex:1;min-width:0;padding:18px 18px 18px 20px;background:linear-gradient(135deg,rgba(var(--accent-rgb),.16),transparent 70%)}
+.tks{font:700 10px var(--sans);letter-spacing:.14em;text-transform:uppercase;color:var(--mute)}
+.tkb{font:800 24px/1.15 var(--disp);letter-spacing:-.02em;margin-top:6px;word-break:break-word}
+.tkr{width:46%;padding:18px 16px;border-left:2px dashed var(--line2);display:grid;align-content:center;gap:6px;position:relative}
+.tkr:before,.tkr:after{content:"";position:absolute;left:-9px;width:16px;height:16px;border-radius:50%;background:var(--tile)}
+.tkr:before{top:-9px}.tkr:after{bottom:-9px}
+.tkc{font-size:13px;font-weight:600;letter-spacing:.04em;word-break:break-all}
+.tkm{font-size:11px;color:var(--mute)}
+.psum{font-size:13px;color:var(--mute);line-height:1.55}.psum b{color:var(--fg);font:inherit;font-weight:700}
+.pres{margin-top:20px;border-top:1px solid var(--line);padding-top:18px;animation:rise .45s var(--ease)}
+.codes2{display:flex;flex-wrap:wrap;gap:8px}
+.cd2{border:1px solid var(--line);background:var(--tile2);color:var(--fg);border-radius:12px;padding:7px 12px;font-size:12.5px;cursor:pointer;transition:background .16s,border-color .16s,transform .1s}
+.cd2:hover{background:var(--tile3);border-color:var(--line2)}.cd2:active{transform:scale(.95)}
+.plb2{height:5px;border-radius:3px;background:var(--tile3);margin:8px 0 6px;overflow:hidden;max-width:260px}
+.plb2 i{display:block;height:100%;border-radius:3px;background:var(--accent);transition:width .7s var(--ease)}
+.pli .row{flex:none}
+@media(max-width:1000px){.pgrid{grid-template-columns:1fr}.ppv{position:static}}
 @media(max-width:1100px){#main{padding:26px 22px 60px}}
 @media(max-width:860px){
  #app{display:block}
@@ -770,7 +864,7 @@ function tab(k,keep){
   $$("#nav button").forEach(function(x){x.setAttribute("aria-selected",x.dataset.tab===k)});
   TABS.forEach(function(t){$("#t-"+t).hidden=t!==k});$("#t-user").hidden=true;
   if(k==="set")loadSet();if(k==="ov")loadOv();
-  if(k==="us")loadUsers();if(k==="fb")loadFb();if(k==="pay")loadPay();if(k==="an")loadAnn();if(k==="pr")loadPromo();if(k==="lg")loadLog();
+  if(k==="us")loadUsers();if(k==="fb")loadFb();if(k==="pay")loadPay();if(k==="an")loadAnn();if(k==="bc")audRefresh();if(k==="pr")loadPromo();if(k==="lg")loadLog();
   uiTab(k);
 }
 $("#nav").onclick=function(e){var b=e.target.closest("button");if(b)tab(b.dataset.tab)};
@@ -787,12 +881,17 @@ function av(u){
   if(!u)return "";
   var ini=esc(String(u.first_name||u.username||u.handle||"?").trim().charAt(0).toUpperCase()||"?");
   var core='<span class="av" data-av="'+u.tg_id+'">'+ini+"</span>";
-  return u.frame?'<span class="avr" style="--h:'+hue(String(u.frame))+'">'+core+"</span>":core;
+  return u.frame?frWrap(u.frame,core):core;
+}
+function putImg(el,src,fast){
+  var im=new Image();im.alt="";im.className="pb"+(fast?" q":"");
+  var go=function(){el.innerHTML="";el.appendChild(im);void im.offsetWidth;requestAnimationFrame(function(){im.classList.add("on")})};
+  im.onload=go;im.onerror=function(){};im.src=src;if(im.complete&&im.naturalWidth&&!im.parentNode)go();
 }
 function hydrate(root){
   $$("[data-av]",root||document).forEach(function(el){
     var id=el.dataset.av,p=PH[id];
-    if(p){if(p!==1&&!el.querySelector("img"))el.innerHTML='<img class="c" alt="" src="'+p+'">';return}
+    if(p){if(p!==1&&!el.querySelector("img"))putImg(el,p,1);return}
     if(p===undefined){PH[id]=1;phQ.push(id);phPump()}
   });
 }
@@ -801,7 +900,7 @@ function phPump(){
     var id=phQ.shift();phBusy++;
     (function(id){api("photo",{tg_id:+id}).then(function(j){
       phBusy--;PH[id]=j&&j.ok?"data:image/jpeg;base64,"+j.b64:0;
-      $$('[data-av="'+id+'"]').forEach(function(el){if(PH[id])el.innerHTML='<img alt="" src="'+PH[id]+'">'});
+      $$('[data-av="'+id+'"]').forEach(function(el){if(PH[id])putImg(el,PH[id])});
       phPump();
     })})(id);
   }
@@ -848,15 +947,16 @@ function openUser(id,np){
     if(!GT)GT=r[1].items||[];
     var u=j.user,pro=j.pro&&j.pro.until&&Date.parse(j.pro.until)>Date.now(),meta=j.meta||{},nameNow=(meta.profile&&meta.profile.name)||"";
     var ini=esc(String(u.first_name||u.username||u.handle||"?").trim().charAt(0).toUpperCase()||"?"),L="",R="";
-    var chips=(pro?'<span class="chip g">PRO</span>':"")+(u.blocked?'<span class="chip r">блок</span>':"")+(u.creator?'<span class="chip">создатель</span>':"")+(u.private?'<span class="chip">закрытый</span>':"");
+    var uavH='<div class="uav" id="uph">'+ini+"</div>",uav=j.frame?frWrap(j.frame,uavH,"big"):uavH;
+    var chips=(j.frame?'<span class="chip">Рамка: '+esc(FRN[frKey(j.frame)]||j.frame)+"</span>":"")+(pro?'<span class="chip g">PRO</span>':"")+(u.blocked?'<span class="chip r">блок</span>':"")+(u.creator?'<span class="chip">создатель</span>':"")+(u.private?'<span class="chip">закрытый</span>':"");
     var fc=function(k,v,c){return '<div class="fct"><div class="fk">'+k+'</div><div class="fv'+(c?" "+c:"")+'">'+v+"</div></div>"};
-    var h='<div class="tile uhero"><div class="uav" id="uph">'+ini+'</div><div class="uinfo"><div class="crumb">VOOB CORE / люди / '+u.tg_id+'</div><div class="ptitle" style="font-size:28px">'+nm(u)+'</div><div class="uchips">'+chips+'</div></div><button class="btn sm" type="button" data-uback>← Все пользователи</button>'+
+    var h='<div class="tile uhero">'+uav+'<div class="uinfo"><div class="crumb">VOOB CORE / люди / '+u.tg_id+'</div><div class="ptitle" style="font-size:28px">'+nm(u)+'</div><div class="uchips">'+chips+'</div></div><button class="btn sm" type="button" data-uback>← Все пользователи</button>'+
       '<div class="facts">'+fc("ID",'<span class="mono">'+u.tg_id+"</span>")+fc("Ник",u.handle?"@"+esc(u.handle):"—")+fc("Регистрация",dt(u.created_at))+fc("Был",dt(u.last_seen))+fc("Тренировок",j.workouts_total)+fc("PRO",pro?"до "+dt(j.pro.until):"нет")+(u.blocked?fc("Блок",esc(u.block_reason||"без причины"),"dn"):"")+"</div></div>";
     L+=tl("Сообщение",'<div class="bar"><input class="field" id="umsg" placeholder="Текст в Telegram"><button class="btn sm" id="usend">Отправить</button></div>');
     L+=tl("PRO",'<div class="bar"><input class="field" id="pdays" type="number" placeholder="дней, можно с минусом" style="max-width:200px"><button class="btn sm" id="pgo">Выдать</button><button class="btn sm" id="p7">+7</button><button class="btn sm" id="p30">+30</button></div>');
     L+=tl("Профиль",'<div class="stack"><div class="bar"><input class="field" id="ename" placeholder="Имя" value="'+esc(nameNow)+'"><button class="btn sm" id="ename_go">Сохранить имя</button></div><div class="bar"><input class="field" id="ehandle" placeholder="Ник без @" value="'+esc(u.handle||"")+'"><button class="btn sm" id="ehandle_go">Сохранить ник</button></div>'+
       '<div class="row" style="margin:0"><button class="btn sm" id="epriv">Профиль: '+(u.private?"закрытый":"открытый")+'</button><button class="btn sm" id="efeed">Лента: '+(u.hide_feed?"скрыт":"виден")+'</button><button class="btn sm" id="esoc">Сбросить соцсети</button></div></div>');
-    L+=tl("Рамка и значок",'<div class="stack"><div class="bar"><select class="field" id="efr"><option value="">Без рамки</option>'+FRAMES.map(function(f){return '<option value="'+f+'"'+(j.frame===f?" selected":"")+">"+f+"</option>"}).join("")+'</select><button class="btn sm" id="efr_go">Сохранить рамку</button></div><div class="bar"><input class="field" id="ebd" placeholder="Значок, латиница 3–12, пусто = Печать" value="'+esc((meta.settings&&meta.settings.badge)||"")+'"><button class="btn sm" id="ebd_go">Сохранить значок</button></div></div>');
+    L+=tl("Рамка и значок",'<div class="stack"><div class="bar"><input type="hidden" id="efr" value="'+esc(j.frame||"")+'"><div class="fpick" id="fpick">'+framePick(j.frame||"")+'</div><div class="bar"><button class="btn sm" id="efr_go">Сохранить рамку</button></div><div class="bar"><input class="field" id="ebd" placeholder="Значок, латиница 3–12, пусто = Печать" value="'+esc((meta.settings&&meta.settings.badge)||"")+'"><button class="btn sm" id="ebd_go">Сохранить значок</button></div></div>');
     R+=tl("Достижения",'<div class="row" id="achBox" style="margin:0"><span class="hint" style="margin:0">Загружаю…</span></div><p class="hint" style="margin:8px 0 0">Нажми на достижение, чтобы отозвать или вернуть. Выключенные отмечены.</p>');
     L+=tl("Подарок",'<div class="bar"><select class="field" id="gk">'+GT.filter(function(g){return g.kind!=="pro"}).map(function(g){return '<option value="'+esc(g.kind)+'">'+esc(g.emoji)+" "+esc(g.title)+"</option>"}).join("")+'</select><button class="btn sm" id="ggo">Подарить</button></div>'+
       (j.gifts_in.length?'<p class="hint">Получил: '+j.gifts_in.length+(j.gifts_out.length?", подарил: "+j.gifts_out.length:"")+"</p>":""));
@@ -871,6 +971,7 @@ function openUser(id,np){
     if(!u.creator)L+=tl("Доступ",u.blocked?'<button class="btn sm" id="ublk">Разблокировать</button>':'<button class="btn sm bad" id="ublk">Заблокировать</button>');
     h+='<div class="upage"><div class="ucol">'+L+'</div><div class="ucol">'+R+'</div></div><p class="err" id="eu"></p>';
     var sy=window.scrollY;$("#ubody").innerHTML=h;showUserPage(sy);
+    api("bgs",{ids:[id]},"x").then(function(r){var k=r&&r.bgs&&r.bgs[id],st=k&&pbgStyle(k);if(st){var hr=$(".uhero");if(!hr)return;hr.style.cssText+=st;hr.classList.add("pbg");$(".uchips").insertAdjacentHTML("beforeend",'<span class="chip">Фон: '+esc(PBN[PBO[k]||k]||k)+"</span>")}});
     api("photo",{tg_id:id,big:true}).then(function(p){if(p&&p.ok)$("#uph").innerHTML='<img alt="" style="width:100%;height:100%;object-fit:cover" src="data:image/jpeg;base64,'+p.b64+'">'});
     var say=function(r,ok){$("#eu").innerHTML=r&&r.error?esc(r.error):'<span class="ok">'+ok+"</span>"},again=function(r,ok){if(r&&r.error)say(r);else{openUser(id);loadUsers()}};
     $("#usend").onclick=function(){var t=$("#umsg").value.trim();if(!t)return;api("message",{tg_id:id,text:t}).then(function(r){say(r,r.status==="ok"?"Отправлено":"Не доставлено");$("#umsg").value=""})};
@@ -885,7 +986,7 @@ function openUser(id,np){
       $("#achBox").innerHTML=ACH.map(function(k){var o=off.indexOf(k)>=0;return '<button class="chip'+(o?" r":"")+'" style="cursor:pointer;background:none" data-ach="'+k+'" data-on="'+(o?"1":"0")+'">'+(o?"✕ ":"")+(ACHN[k]||k)+"</button>"}).join(" ");
       $("#achBox").onclick=function(e){var b=e.target.closest("[data-ach]");if(!b)return;api("ach",{tg_id:id,key:b.dataset.ach,on:b.dataset.on==="1",notify:true},"x").then(function(r){if(r.error)say(r);else openUser(id)})};
     });
-    $("#efr_go").onclick=function(){api("edit",{tg_id:id,field:"frame",value:$("#efr").value}).then(function(r){say(r,"Рамка сохранена")})};
+    $("#efr_go").onclick=function(){api("edit",{tg_id:id,field:"frame",value:$("#efr").value}).then(again)};
     $("#ebd_go").onclick=function(){api("edit",{tg_id:id,field:"badge",value:$("#ebd").value.trim()}).then(function(r){say(r,"Значок сохранён")})};
     $("#epriv").onclick=function(){api("edit",{tg_id:id,field:"private",value:!u.private}).then(again)};
     $("#efeed").onclick=function(){api("edit",{tg_id:id,field:"hide_feed",value:!u.hide_feed}).then(again)};
@@ -967,7 +1068,7 @@ $("#achk").onclick=function(){
   });
 };
 function loadAnn(){
-  api("audience",{},"x").then(function(j){if(j&&j.all!=null)$("#acnt").textContent="Сейчас в приложении: всего "+j.all+", PRO "+j.pro+", без PRO "+j.free});
+  api("audience",{},"x").then(function(j){if(j&&j.all!=null){AUD=j;annRender();bcRender()}if(j&&j.all!=null)$("#acnt").textContent="Сейчас в приложении: всего "+j.all+", PRO "+j.pro+", без PRO "+j.free});
   api("announces",{},"x").then(function(j){
     if(j.error)return;
     var K={gift:"подарок",notice:"уведомление",promo:"акция"},A={all:"всем",pro:"PRO",free:"без PRO",me:"мне",list:"список"};
@@ -988,7 +1089,7 @@ $("#pk").onchange=function(){var g=this.value==="gift";$("#pgk").hidden=!g;$("#p
 function loadPromo(){
   api("promo_list",{},"x").then(function(j){
     if(j.error)return;
-    $("#plst").innerHTML=(j.items||[]).length?j.items.slice(0,200).map(function(x){return '<div class="item"><div class="m"><div class="t mono" style="font-weight:500">'+esc(x.code)+'</div><div class="s">'+(x.kind==="pro"?esc(x.value)+" дн. PRO":"подарок "+esc(x.value))+" · использовано "+(x.used||0)+" из "+x.max_uses+(x.note?" · "+esc(x.note):"")+(x.expires_at?" · до "+dt(x.expires_at):"")+'</div></div><button class="btn sm '+(x.active?"":"")+'" data-p="'+esc(x.code)+'" data-on="'+(x.active?"0":"1")+'">'+(x.active?"Выключить":"Включить")+"</button></div>"}).join(""):'<p class="hint">Кодов пока нет</p>';
+    PL=j.items||[];plDraw();
   });
 }
 $("#plst").onclick=function(e){var b=e.target.closest("[data-p]");if(!b)return;api("promo_off",{code:b.dataset.p,on:b.dataset.on==="1"},"x").then(function(j){if(!j.error)loadPromo()})};
@@ -1320,6 +1421,184 @@ function loadOv(){
     setBadge(j.fb_new||0);
   });
 }
+
+var FRX={"ears":[8.0,[[0.0,"#FFD6EA"],[0.5,"#C4B2FF"],[1.0,"#FFD6EA"]]],"orbit":[8.0,[[0.0,"#B8D0FF"],[0.333,"#6F8FE8"],[0.667,"#3B4FA8"],[1.0,"#B8D0FF"]]],"pulse":[8.0,[[0.0,"#7CF3DE"],[0.5,"#38BDF8"],[1.0,"#7CF3DE"]]],"sparkle":[7.0,[[0.0,"#FFF4CC"],[0.25,"#E0A63A"],[0.5,"#FFF9E3"],[0.75,"#C98A22"],[1.0,"#FFF4CC"]]],"flame":[2.6,[[0.0,"#FF3D2E"],[0.25,"#FF9F1C"],[0.5,"#FFE066"],[0.75,"#FF6B1C"],[1.0,"#FF3D2E"]]],"glitch":[8.0,[[0.0,"#22E5F7"],[0.333,"#8B5CF6"],[0.667,"#FF4FD8"],[1.0,"#22E5F7"]]],"crystal":[9.0,[[0.0,"#BAE6FD"],[0.25,"#A78BFA"],[0.5,"#F9A8D4"],[0.75,"#7DD3FC"],[1.0,"#BAE6FD"]]],"comet":[8.0,[[0.0,"#E0F4FF"],[0.333,"#7DD3FC"],[0.667,"#3B82F6"],[1.0,"#E0F4FF"]]],"vine":[8.0,[[0.0,"#9BE39A"],[0.333,"#3FA05A"],[0.667,"#1F5A33"],[1.0,"#9BE39A"]]],"autumn":[8.0,[[0.0,"#FFD08A"],[0.333,"#E4571B"],[0.667,"#8A2A12"],[1.0,"#FFD08A"]]],"daisy":[8.0,[[0.0,"#FFFFFF"],[0.333,"#CFE9C0"],[0.667,"#7DBB70"],[1.0,"#FFFFFF"]]],"jelly":[7.0,[[0.0,"#F0ABFC"],[0.333,"#A78BFA"],[0.667,"#67E8F9"],[1.0,"#F0ABFC"]]],"runes":[10.0,[[0.0,"#0B3B3A"],[0.333,"#0FB5A0"],[0.667,"#E0B24A"],[1.0,"#0B3B3A"]]],"sigil":[9.0,[[0.0,"#4C1D95"],[0.25,"#C084FC"],[0.5,"#E0B24A"],[0.75,"#F472B6"],[1.0,"#4C1D95"]]],"radar":[8.0,[[0.0,"#BBF7D0"],[0.333,"#22C55E"],[0.667,"#14532D"],[1.0,"#BBF7D0"]]],"lights":[8.0,[[0.0,"#58B36E"],[0.333,"#17603A"],[0.667,"#0D3B24"],[1.0,"#58B36E"]]],"halo":[8.0,[[0.0,"#FFF3C4"],[0.333,"#F2B544"],[0.667,"#C98A22"],[1.0,"#FFF3C4"]]],"sakura":[8.0,[[0.0,"#FFE6F0"],[0.5,"#F6A6CB"],[1.0,"#FFE6F0"]]],"stars":[8.0,[[0.0,"#EAF0FF"],[0.333,"#9DB8F2"],[0.667,"#4F6FD0"],[1.0,"#EAF0FF"]]],"fireflies":[8.0,[[0.0,"#C6F25A"],[0.333,"#3F9B52"],[0.667,"#1F5A33"],[1.0,"#C6F25A"]]],"wave":[5.0,[[0.0,"#0EA5E9"],[0.25,"#22D3EE"],[0.5,"#1E40AF"],[0.75,"#38BDF8"],[1.0,"#0EA5E9"]]],"bubbles":[8.0,[[0.0,"#C8F2FF"],[0.333,"#58C4F0"],[0.667,"#2B7BC4"],[1.0,"#C8F2FF"]]],"frost":[9.0,[[0.0,"#E8F6FF"],[0.25,"#93C5FD"],[0.5,"#FFFFFF"],[0.75,"#BFE6FF"],[1.0,"#E8F6FF"]]],"antlers":[8.0,[[0.0,"#E7C98A"],[0.333,"#8A5A2B"],[0.667,"#3F6B3A"],[1.0,"#E7C98A"]]],"hearts":[8.0,[[0.0,"#FFD1DC"],[0.333,"#FB7185"],[0.667,"#E11D48"],[1.0,"#FFD1DC"]]],"cloud":[8.0,[[0.0,"#FFFFFF"],[0.333,"#BFDCFF"],[0.667,"#7BB4F5"],[1.0,"#FFFFFF"]]],"bow":[10.0,[[0.0,"#FFB3C7"],[0.25,"#E11D48"],[0.5,"#FFD1DC"],[0.75,"#FB7185"],[1.0,"#FFB3C7"]]],"eclipse":[12.0,[[0.0,"#140D04"],[0.333,"#F5B23C"],[0.667,"#FFE9A3"],[1.0,"#140D04"]]],"lava":[6.0,[[0.0,"#1A0904"],[0.25,"#7A1D05"],[0.5,"#FF5A1F"],[0.75,"#FFC93C"],[1.0,"#1A0904"]]],"hud":[8.0,[[0.0,"#FFE9B8"],[0.333,"#FFB020"],[0.667,"#C77700"],[1.0,"#FFE9B8"]]],"laurel":[8.0,[[0.0,"#FFF1B0"],[0.333,"#D99A2E"],[0.667,"#9A6212"],[1.0,"#FFF1B0"]]],"wind":[8.0,[[0.0,"#E4FBF6"],[0.333,"#8FE3D4"],[0.667,"#3EAFA0"],[1.0,"#E4FBF6"]]],"pixring":[8.0,[[0.0,"#FF2D95"],[0.333,"#FFF200"],[0.667,"#2DE2FF"],[1.0,"#FF2D95"]]],"coins":[8.0,[[0.0,"#FFE680"],[0.333,"#E0A020"],[0.667,"#8A4B0E"],[1.0,"#FFE680"]]],"crown8":[8.0,[[0.0,"#FFE680"],[0.333,"#E0A020"],[0.667,"#8A4B0E"],[1.0,"#FFE680"]]],"hologram":[8.0,[[0.0,"#9AF7FC"],[0.333,"#05D9E8"],[0.667,"#7B2FFF"],[1.0,"#9AF7FC"]]],"circuit":[8.0,[[0.0,"#7FF3FA"],[0.333,"#05D9E8"],[0.667,"#0B6E7A"],[1.0,"#7FF3FA"]]],"eye3":[8.0,[[0.0,"#D8C6FF"],[0.333,"#8E6BFF"],[0.667,"#E8C46A"],[1.0,"#D8C6FF"]]],"phases":[8.0,[[0.0,"#F7E7B0"],[0.333,"#C9A24A"],[0.667,"#6A4DBF"],[1.0,"#F7E7B0"]]],"fairywing":[8.0,[[0.0,"#FFD1F4"],[0.5,"#A8F0FF"],[1.0,"#FFD1F4"]]],"gummy":[8.0,[[0.0,"#FFE3A8"],[0.5,"#FF9FC0"],[1.0,"#FFE3A8"]]],"blackhole":[8.0,[[0.0,"#241228"],[0.5,"#000000"],[1.0,"#241228"]]],"clockwork":[8.0,[[0.0,"#FFE6B0"],[0.5,"#5C3D10"],[1.0,"#FFE6B0"]]],"neonportal":[8.0,[[0.0,"#B48CFF"],[0.5,"#2EE6D6"],[1.0,"#B48CFF"]]],"ribbons":[8.0,[[0.0,"#FFF3C8"],[0.5,"#9C6B1C"],[1.0,"#FFF3C8"]]],"waterblade":[8.0,[[0.0,"#D4FBFF"],[0.5,"#2FB6FF"],[1.0,"#D4FBFF"]]],"arcflash":[8.0,[[0.0,"#E8FDFF"],[0.5,"#1A5FD0"],[1.0,"#E8FDFF"]]],"paws":[8.0,[[0.0,"#FFF6EE"],[0.5,"#E3C9B5"],[1.0,"#FFF6EE"]]],"matrix":[8.0,[[0.0,"#B6FFD0"],[0.5,"#0D5A3A"],[1.0,"#B6FFD0"]]],"dice":[8.0,[[0.0,"#C9A6FF"],[0.5,"#3D1B91"],[1.0,"#C9A6FF"]]],"cards":[8.0,[[0.0,"#F7D7FF"],[0.5,"#7A3EE8"],[1.0,"#F7D7FF"]]],"lockon":[8.0,[[0.0,"#FF7AB8"],[0.5,"#7A1B5A"],[1.0,"#FF7AB8"]]],"telemetry":[8.0,[[0.0,"#7AF0FF"],[0.5,"#FF5CCF"],[1.0,"#7AF0FF"]]],"claw":[8.0,[[0.0,"#3B2623"],[0.5,"#0E0706"],[1.0,"#3B2623"]]],"doodlespace":[8.0,[[0.0,"#7AF0FF"],[0.5,"#A98BFF"],[1.0,"#7AF0FF"]]],"corrupt":[8.0,[[0.0,"#2EF2FF"],[0.5,"#FF2EA6"],[1.0,"#2EF2FF"]]]},FRG={"ears":[[196,178,255],[219,208,255],3.0],"orbit":[[184,208,255],[212,226,255],3.0],"pulse":[[124,243,222],[176,247,235],3.0],"sparkle":[[224,166,58],[236,201,136],3.0],"flame":[[255,224,102],[255,236,163],3.0],"glitch":[[255,79,216],[255,149,231],3.0],"crystal":[[186,230,253],[213,240,253],3.0],"comet":[[125,211,252],[177,228,253],3.0],"vine":[[155,227,154],[195,238,194],3.0],"autumn":[[255,208,138],[255,226,184],3.0],"daisy":[[207,233,192],[226,241,217],3.0],"jelly":[[240,171,252],[246,204,253],3.0],"runes":[[224,178,74],[236,208,146],3.0],"sigil":[[192,132,252],[217,181,253],3.0],"radar":[[187,247,208],[214,250,226],3.0],"lights":[[88,179,110],[154,209,168],3.0],"halo":[[255,243,196],[255,247,219],3.0],"sakura":[[246,166,203],[249,201,223],3.0],"stars":[[157,184,242],[196,212,247],3.0],"fireflies":[[198,242,90],[220,247,156],3.0],"wave":[[56,189,248],[135,215,250],3.0],"bubbles":[[200,242,255],[222,247,255],3.0],"frost":[[191,230,255],[216,240,255],3.0],"antlers":[[231,201,138],[240,222,184],3.0],"hearts":[[255,209,220],[255,227,234],3.0],"cloud":[[191,220,255],[216,234,255],3.0],"bow":[[255,209,220],[255,227,234],3.0],"eclipse":[[255,233,163],[255,241,199],3.0],"lava":[[255,201,60],[255,222,138],3.0],"hud":[[255,233,184],[255,241,212],3.0],"laurel":[[255,241,176],[255,246,207],3.0],"wind":[[143,227,212],[187,238,229],3.0],"pixring":[[45,226,255],[129,237,255],3.0],"coins":[[255,230,128],[255,240,178],3.0],"crown8":[[255,230,128],[255,240,178],3.0],"hologram":[[154,247,252],[194,250,253],3.0],"circuit":[[127,243,250],[178,247,252],3.0],"eye3":[[216,198,255],[231,220,255],3.0],"phases":[[247,231,176],[250,240,207],3.0],"fairywing":[[168,240,255],[202,246,255],3.0],"gummy":[[255,227,168],[255,238,202],3.0],"blackhole":[[36,18,40],[123,112,126],3.0],"clockwork":[[255,230,176],[255,240,207],3.0],"neonportal":[[180,140,255],[210,186,255],3.0],"ribbons":[[255,243,200],[255,247,222],3.0],"waterblade":[[47,182,255],[130,211,255],3.0],"arcflash":[[26,95,208],[117,159,226],3.0],"paws":[[227,201,181],[238,222,210],3.0],"matrix":[[182,255,208],[211,255,226],3.0],"dice":[[201,166,255],[222,201,255],3.0],"cards":[[122,62,232],[175,139,241],3.0],"lockon":[[255,122,184],[255,175,212],3.0],"telemetry":[[122,240,255],[175,246,255],3.0],"claw":[[59,38,35],[137,124,123],3.0],"doodlespace":[[122,240,255],[175,246,255],3.0],"corrupt":[[46,242,255],[129,247,255],3.0]},PBG={"ears":[175.0,[[0.0,"#F6A8C8"],[0.5,"#D58AE0"],[1.0,"#A080EE"]],"#F6A8C8"],"orbit":[170.0,[[0.0,"#0D0A2A"],[0.5,"#1A1250"],[1.0,"#0B0A22"]],"#0B0A22"],"pulse":[180.0,[[0.0,"#14060D"],[1.0,"#2A0A18"]],"#2A0A18"],"sparkle":[165.0,[[0.0,"#1C0F3E"],[0.5,"#3A1D6E"],[1.0,"#5B2A86"]],"#5B2A86"],"flame":[180.0,[[0.0,"#140303"],[0.5,"#2A0805"],[1.0,"#5A1405"]],"#5A1405"],"glitch":[170.0,[[0.0,"#08040F"],[0.5,"#150A2A"],[1.0,"#08102A"]],"#08102A"],"crystal":[160.0,[[0.0,"#06172F"],[0.5,"#0B3A66"],[1.0,"#12628F"]],"#12628F"],"comet":[170.0,[[0.0,"#04061A"],[0.5,"#0A1240"],[1.0,"#141A58"]],"#141A58"],"vine":[180.0,[[0.0,"#0B3A22"],[0.5,"#0D5A34"],[1.0,"#127A44"]],"#127A44"],"autumn":[175.0,[[0.0,"#4A1A0A"],[0.5,"#A8480F"],[1.0,"#E08A2A"]],"#A8480F"],"daisy":[180.0,[[0.0,"#8FD4FF"],[0.5,"#B8E8A8"],[1.0,"#7CCF7A"]],"#8FD4FF"],"jelly":[180.0,[[0.0,"#041033"],[0.5,"#0A1F5C"],[1.0,"#1A1A70"]],"#1A1A70"],"runes":[170.0,[[0.0,"#140C04"],[0.5,"#2A1A0A"],[1.0,"#3A240C"]],"#3A240C"],"sigil":[170.0,[[0.0,"#12062A"],[0.5,"#1E0E40"],[1.0,"#180A34"]],"#180A34"],"radar":[180.0,[[0.0,"#02100A"],[1.0,"#031A10"]],"#031A10"],"lights":[180.0,[[0.0,"#07081C"],[1.0,"#0D1030"]],"#0D1030"],"halo":[180.0,[[0.0,"#5A6AA8"],[0.5,"#8E9AD0"],[1.0,"#D6CFE8"]],"#5A6AA8"],"sakura":[175.0,[[0.0,"#3A1A4D"],[0.5,"#A24A7E"],[1.0,"#F0A0B0"]],"#A24A7E"],"stars":[180.0,[[0.0,"#040820"],[0.5,"#0B1650"],[1.0,"#12206A"]],"#12206A"],"fireflies":[180.0,[[0.0,"#040F08"],[0.5,"#0A2412"],[1.0,"#0D3018"]],"#0D3018"],"wave":[180.0,[[0.0,"#0C3470"],[0.5,"#3A9BE0"],[1.0,"#9FE4FF"]],"#3A9BE0"],"bubbles":[170.0,[[0.0,"#3A8EE0"],[0.5,"#52B6E8"],[1.0,"#8AE0EE"]],"#3A8EE0"],"frost":[180.0,[[0.0,"#B9DCF5"],[0.5,"#7FB6E6"],[1.0,"#4A86C8"]],"#B9DCF5"],"antlers":[180.0,[[0.0,"#0A1A3A"],[0.5,"#1A3A66"],[1.0,"#2A5A8C"]],"#2A5A8C"],"hearts":[170.0,[[0.0,"#4A0A34"],[0.5,"#9A1E5E"],[1.0,"#D8468A"]],"#D8468A"],"cloud":[180.0,[[0.0,"#5AA8F0"],[0.5,"#9AD0FA"],[1.0,"#D4ECFF"]],"#5AA8F0"],"bow":[170.0,[[0.0,"#D0509A"],[0.5,"#F080B8"],[1.0,"#FFB8D4"]],"#D0509A"],"eclipse":[180.0,[[0.0,"#02030A"],[1.0,"#080A1C"]],"#080A1C"],"lava":[180.0,[[0.0,"#240404"],[0.5,"#4A0A06"],[1.0,"#7A1408"]],"#7A1408"],"hud":[180.0,[[0.0,"#03140C"],[1.0,"#052416"]],"#052416"],"laurel":[180.0,[[0.0,"#2A1C06"],[0.5,"#4A3410"],[1.0,"#6A4C18"]],"#6A4C18"],"wind":[180.0,[[0.0,"#6AB4E8"],[0.5,"#A6D8F2"],[1.0,"#DFF4FB"]],"#6AB4E8"],"pixring":[170.0,[[0.0,"#0E0A2E"],[1.0,"#1C1250"]],"#1C1250"],"coins":[180.0,[[0.0,"#3A2606"],[0.5,"#7A520C"],[1.0,"#B07A14"]],"#B07A14"],"crown8":[180.0,[[0.0,"#3A1A6A"],[0.5,"#5A2A8A"],[1.0,"#7A3A9A"]],"#7A3A9A"],"hologram":[170.0,[[0.0,"#031A2E"],[1.0,"#082A4A"]],"#082A4A"],"circuit":[180.0,[[0.0,"#021410"],[1.0,"#042A20"]],"#042A20"],"eye3":[170.0,[[0.0,"#14062E"],[1.0,"#2A0E52"]],"#2A0E52"],"phases":[180.0,[[0.0,"#050A24"],[0.5,"#0E1A4A"],[1.0,"#1A2A6A"]],"#1A2A6A"],"fairywing":[170.0,[[0.0,"#6A2AA8"],[0.5,"#B04AD0"],[1.0,"#F080D8"]],"#B04AD0"],"gummy":[170.0,[[0.0,"#7A3AD8"],[0.5,"#D05AB8"],[1.0,"#FF9A8A"]],"#7A3AD8"],"blackhole":[180.0,[[0.0,"#02020A"],[1.0,"#0A0620"]],"#0A0620"],"clockwork":[170.0,[[0.0,"#1A0E04"],[1.0,"#3A2208"]],"#3A2208"],"neonportal":[180.0,[[0.0,"#07031A"],[1.0,"#150838"]],"#150838"],"ribbons":[170.0,[[0.0,"#1A0A3A"],[1.0,"#2C1058"]],"#2C1058"],"waterblade":[170.0,[[0.0,"#06304E"],[0.5,"#0B5A86"],[1.0,"#1088AA"]],"#1088AA"],"arcflash":[180.0,[[0.0,"#05071C"],[1.0,"#0A1038"]],"#0A1038"],"paws":[170.0,[[0.0,"#7A4A2A"],[0.5,"#B87A44"],[1.0,"#E0AA6A"]],"#B87A44"],"matrix":[180.0,[[0.0,"#020A05"],[1.0,"#041A0D"]],"#041A0D"],"dice":[170.0,[[0.0,"#0A4A2A"],[0.5,"#0F6A3A"],[1.0,"#0C5A30"]],"#0C5A30"],"cards":[170.0,[[0.0,"#4A0A1A"],[0.5,"#7A1428"],[1.0,"#5A0E20"]],"#5A0E20"],"lockon":[180.0,[[0.0,"#1A0606"],[1.0,"#2A0A0A"]],"#2A0A0A"],"telemetry":[180.0,[[0.0,"#07101E"],[1.0,"#0A1A30"]],"#0A1A30"],"claw":[180.0,[[0.0,"#1A0606"],[1.0,"#2E0A08"]],"#2E0A08"],"doodlespace":[170.0,[[0.0,"#0A0620"],[1.0,"#160A3A"]],"#160A3A"],"corrupt":[180.0,[[0.0,"#0A0A14"],[1.0,"#12121E"]],"#12121E"]},FRN={"classic":"Стандартная","ears":"Ушки","orbit":"Орбита","pulse":"Пульс","sparkle":"Искры","flame":"Пламя","glitch":"Глитч","crystal":"Кристаллы","comet":"Комета","vine":"Лоза","autumn":"Листопад","daisy":"Ромашки","jelly":"Медуза","runes":"Руны","sigil":"Печать","radar":"Радар","lights":"Гирлянда","halo":"Нимб","sakura":"Сакура","stars":"Созвездие","fireflies":"Светлячки","wave":"Волна","bubbles":"Пузыри","frost":"Мороз","antlers":"Рога","hearts":"Сердца","cloud":"Облачко","bow":"Бант","eclipse":"Затмение","lava":"Лава","hud":"Прицел","laurel":"Лавр","wind":"Ветер","pixring":"Пиксель-кольцо","coins":"Монеты","crown8":"Корона 8-бит","hologram":"Голограмма","circuit":"Схема","eye3":"Третий глаз","phases":"Лунный цикл","fairywing":"Крылья феи","gummy":"Мармелад","blackhole":"Чёрная дыра","clockwork":"Циферблат","neonportal":"Неон-портал","ribbons":"Ленты","waterblade":"Водяные клинки","arcflash":"Разряд","paws":"Лапки","matrix":"Цифровой дождь","dice":"Кости","cards":"Карты","lockon":"Захват цели","telemetry":"Телеметрия","claw":"Когти","doodlespace":"Неон-космос","corrupt":"Битые пиксели"},PBN={"ears":"Ушки","orbit":"Орбита","pulse":"Пульс","sparkle":"Искры","flame":"Пламя","glitch":"Глитч","crystal":"Кристаллы","comet":"Комета","vine":"Лоза","autumn":"Листопад","daisy":"Ромашки","jelly":"Медуза","runes":"Руны","sigil":"Печать","radar":"Радар","lights":"Гирлянда","halo":"Нимб","sakura":"Сакура","stars":"Созвездие","fireflies":"Светлячки","wave":"Волна","bubbles":"Пузыри","frost":"Мороз","antlers":"Рога","hearts":"Сердца","cloud":"Облачко","bow":"Бант","eclipse":"Затмение","lava":"Лава","hud":"Прицел","laurel":"Лавр","wind":"Ветер","pixring":"Пиксель-кольцо","coins":"Монеты","crown8":"Корона 8-бит","hologram":"Голограмма","circuit":"Схема","eye3":"Третий глаз","phases":"Лунный цикл","fairywing":"Крылья феи","gummy":"Мармелад","blackhole":"Чёрная дыра","clockwork":"Циферблат","neonportal":"Неон-портал","ribbons":"Ленты","waterblade":"Водяные клинки","arcflash":"Разряд","paws":"Лапки","matrix":"Цифровой дождь","dice":"Кости","cards":"Карты","lockon":"Захват цели","telemetry":"Телеметрия","claw":"Когти","doodlespace":"Неон-космос","corrupt":"Битые пиксели"},FRL={"aurora":"crystal","gold":"laurel","neon":"pulse","flame":"flame","ocean":"jelly","cyber":"glitch","emerald":"vine","galaxy":"comet","ice":"crystal","storm":"glitch","pixel":"glitch","plasma":"glitch","atom":"orbit","holo":"crystal","moon":"comet","prism":"crystal"},PBO={"obsidian":"blackhole","liquid":"wave","retro":"pixring","kawaii":"hearts","stardust":"stars","rays":"halo","embers":"flame","deco":"crown8","iso":"circuit","rain":"waterblade","dither":"corrupt","type":"telemetry","odo":"clockwork","pxstars":"sparkle","stickers":"gummy","tape":"hud","aurora":"wave","mirage":"wave","silk":"eclipse","lagoon":"waterblade","surf":"wave","pulse":"corrupt","dots":"corrupt","stripe":"crown8","dune":"pixring","sunset":"pixring"};
+/* ---------- рамки и фоны ---------- */
+function frKey(k){k=String(k||"");return FRL[k]||k}
+function frStyle(k){
+  k=frKey(k);if(!k)return null;var st,sp;
+  if(k==="classic"){st=[[0,"#9DB2CE"],[.33,"#E6EDF6"],[.66,"#5D7290"],[1,"#9DB2CE"]];sp=0}
+  else if(FRX[k]){sp=FRX[k][0];st=FRX[k][1]}else return null;
+  var s="--bg:conic-gradient(from var(--a),"+st.map(function(x){return x[1]+" "+Math.round(x[0]*1000)/10+"%"}).join(",")+");--sp:"+(sp||0)+"s;",g=FRG[k];
+  if(g)s+="--g1:rgb("+g[0].join(",")+");--g2:rgb("+g[1].join(",")+");--gp:"+(g[2]/2)+"s;";
+  return s;
+}
+function frWrap(k,inner,cls){
+  var s=frStyle(k);
+  if(s===null){var h=hue(String(k));s="--bg:conic-gradient(hsl("+h+" 85% 62%),hsl("+(h+70)+" 85% 62%),hsl("+h+" 85% 62%));--sp:0s;"}
+  return '<span class="avr'+(cls?" "+cls:"")+'" style="'+s+'">'+inner+"</span>";
+}
+function pbgStyle(k){k=PBO[k]||k;var b=PBG[k];if(!b)return null;return "--pg:linear-gradient("+b[0]+"deg,"+b[1].map(function(x){return x[1]+" "+Math.round(x[0]*100)+"%"}).join(",")+");--pgl:"+b[2]+";"}
+function framePick(cur){
+  cur=frKey(cur);
+  var t=function(k,n,on){return '<button type="button" class="fp" data-f="'+k+'" aria-pressed="'+on+'" title="'+esc(n)+'">'+(k?frWrap(k,'<span class="av fpa"></span>',"fps"):'<span class="av fpa no"></span>')+"<i>"+esc(n)+"</i></button>"};
+  return t("","Без рамки",!cur)+Object.keys(FRN).map(function(k){return t(k,FRN[k],cur===k)}).join("");
+}
+document.addEventListener("click",function(e){
+  var b=e.target.closest(".fp");if(!b)return;var box=b.closest("#fpick");if(!box)return;
+  $$(".fp",box).forEach(function(x){x.setAttribute("aria-pressed",x===b)});$("#efr").value=b.dataset.f;
+});
+
+/* ---------- общие помощники ---------- */
+function gifts(cb){if(GT2)return cb(GT2);api("gift_types").then(function(r){GT2=r.items||[];cb(GT2)})}
+function copyText(t,msg){
+  var done=function(){toast(msg||"Скопировано")};
+  try{navigator.clipboard.writeText(t).then(done,function(){fb()})}catch(e){fb()}
+  function fb(){var a=document.createElement("textarea");a.value=t;a.style.cssText="position:fixed;opacity:0";document.body.appendChild(a);a.select();try{document.execCommand("copy");done()}catch(e){toast("Не получилось скопировать","err")}a.remove()}
+}
+function saveFile(name,text,type){var b=new Blob(["﻿"+text],{type:type||"text/plain;charset=utf-8"}),a=document.createElement("a");a.href=URL.createObjectURL(b);a.download=name;document.body.appendChild(a);a.click();setTimeout(function(){URL.revokeObjectURL(a.href);a.remove()},500)}
+function stepper(box,min,max,onch){
+  var inp=$("input",box);
+  function set(v){v=Math.max(min,Math.min(max,Math.round(+v||min)));inp.value=v;onch&&onch(v)}
+  box.addEventListener("click",function(e){var b=e.target.closest("[data-s]");if(b)set((+inp.value||min)+(+b.dataset.s))});
+  inp.addEventListener("input",function(){onch&&onch(Math.max(min,Math.min(max,+inp.value||min)))});
+  inp.addEventListener("change",function(){set(inp.value)});
+  return {set:set,get:function(){return Math.max(min,Math.min(max,Math.round(+inp.value||min)))}};
+}
+function chipsOf(box,onpick){box.addEventListener("click",function(e){var b=e.target.closest("button[data-v]");if(b)onpick(b.dataset.v)})}
+function plural(n,a,b,c){n=Math.abs(n)%100;var m=n%10;return n>10&&n<20?c:m>1&&m<5?b:m===1?a:c}
+
+/* ---------- визуализатор объявлений и рассылки ---------- */
+var AUD={all:0,pro:0,free:0};
+var AK={notice:["📣","Новости"],gift:["🎁","Подарок"],promo:["✨","Акция"]};
+function buildSplit(secId,formSel,html){
+  var f=$(formSel);if(!f||f.closest(".split"))return null;
+  var sp=document.createElement("div");sp.className="split";f.parentNode.insertBefore(sp,f);sp.appendChild(f);
+  var p=document.createElement("div");p.className="tile pvbox";p.innerHTML=html;sp.appendChild(p);return p;
+}
+var annPrev=buildSplit("an","#t-an > .tile.stack",'<div class="chartT"><h3>Как это увидят</h3><div class="seg" id="pvTab"><button data-t="app" aria-pressed="true">В приложении</button><button data-t="tg" aria-pressed="false">В Telegram</button></div></div><div class="pvstage"><div id="pvApp" class="pvpane"></div><div id="pvTg" class="pvpane" hidden></div></div><p class="hint" id="pvWho" style="margin-top:12px"></p>');
+var bcPrev=buildSplit("bc","#t-bc > .tile.stack",'<div class="chartT"><h3>Как это увидят</h3></div><div class="pvstage"><div id="pvBc" class="pvpane"></div></div><p class="hint" id="pvBw" style="margin-top:12px"></p>');
+function esc2(s){return esc(s).replace(/\n/g,"<br>")}
+function tgBubble(text,btn,dim){
+  return '<div class="tgc"><div class="tgh"><span class="tga">'+mark(26,1)+'</span><div><b>VOOB</b><i>бот</i></div></div><div class="tgm'+(dim?" dim":"")+'"><div class="tgb">'+text+'</div><div class="tgt">'+new Date().toLocaleTimeString("ru-RU",{hour:"2-digit",minute:"2-digit"})+' <span>✓✓</span></div></div>'+(btn?'<div class="tgk">'+btn+"</div>":"")+"</div>";
+}
+function annRender(){
+  if(!annPrev)return;
+  var kind=$("#ak").value,k=AK[kind]||AK.notice,title=$("#at").value.trim(),body=$("#ab").value.trim(),cta=$("#ac").value.trim(),aud=$("#aa").value,gk=$("#agk").value,notify=$("#an").checked;
+  var g=null;if(kind==="gift"&&GT2)g=GT2.filter(function(x){return x.kind===gk})[0]||null;
+  var ctaT=cta==="pro"?"Оформить PRO":cta?"Открыть":"";
+  $("#pvApp").innerHTML='<div class="pvphone"><div class="pvnotch"></div><div class="pvscr"><div class="pvbg"></div><div class="pva kd-'+kind+'"><div class="pvab">'+k[0]+" "+k[1]+"</div>"+
+    (kind==="gift"?'<div class="pvag">'+(g?esc(g.emoji):"🎁")+"</div>":"")+
+    '<div class="pvat">'+(title?esc(title):'<span class="ph">Заголовок</span>')+"</div>"+
+    '<div class="pvaw">'+(body?esc2(body):'<span class="ph">Текст объявления</span>')+"</div>"+
+    (kind==="gift"?'<div class="pvas">'+(g?esc(g.title)+" · уже в коллекции":"Подарок уже в коллекции")+"</div>":"")+
+    (ctaT?'<div class="pvac">'+ctaT+"</div>":"")+'<div class="pvax">Закрыть</div></div></div></div>';
+  var head=kind==="gift"?"🎁 ":kind==="promo"?"✨ ":"📣 ";
+  $("#pvTg").innerHTML=tgBubble(esc2(head+(title||"Заголовок"))+"<br><br>"+esc2(body||"Текст объявления")+"<br><br>— команда VOOB",'<span>Открыть VOOB</span>',!notify)+(notify?"":'<p class="hint" style="text-align:center;margin-top:10px">Галочка «в Telegram» выключена: сообщение не уйдёт.</p>');
+  var who=aud==="me"?"Увидишь только ты (проверка)":aud==="list"?"Получат люди из списка":aud==="all"?"Получат все: "+fmt(AUD.all):aud==="pro"?"Получат PRO: "+fmt(AUD.pro):"Получат без PRO: "+fmt(AUD.free);
+  $("#pvWho").innerHTML=who+(title.length>80||body.length>600?' · <span class="dn">текст длиннее лимита</span>':"");
+}
+function bcRender(){
+  if(!bcPrev)return;var t=$("#btext").value.trim(),a=$("#bt").value;
+  $("#pvBc").innerHTML=tgBubble(t?esc2(t):'<span class="ph">Текст сообщения</span>',"",false);
+  $("#pvBw").textContent=(a==="me"?"Придёт только тебе (проверка)":a==="pro"?"Получат все с PRO: "+fmt(AUD.pro):"Получат все: "+fmt(AUD.all))+" · "+t.length+" / 3500";
+}
+if(annPrev){
+  ["#ak","#aa","#agk","#at","#ab","#ac","#an"].forEach(function(s){var e=$(s);e.addEventListener("input",annRender);e.addEventListener("change",annRender)});
+  $("#pvTab").onclick=function(e){var b=e.target.closest("button");if(!b)return;$$("button",this).forEach(function(x){x.setAttribute("aria-pressed",x===b)});$("#pvApp").hidden=b.dataset.t!=="app";$("#pvTg").hidden=b.dataset.t!=="tg"};
+  $("#ak").addEventListener("change",function(){if(this.value==="gift")gifts(function(){annRender()})});
+  annRender();
+}
+if(bcPrev){["#btext","#bt"].forEach(function(s){$(s).addEventListener("input",bcRender);$(s).addEventListener("change",bcRender)});bcRender()}
+function audRefresh(){api("audience",{},"x").then(function(j){if(j&&j.all!=null){AUD=j;annRender();bcRender()}})}
+
+/* ---------- промокоды: конструктор ---------- */
+(function(){
+  var old=$("#t-pr > .tile.stack");if(!old)return;
+  var tile=document.createElement("div");tile.className="tile promo";
+  var dayChips=[7,14,30,90,180,365].map(function(d){return '<button type="button" data-v="'+d+'">'+d+"</button>"}).join("");
+  tile.innerHTML=
+   '<div class="chartT"><h3>Новые промокоды</h3><div class="seg" id="pKind"><button data-k="pro" aria-pressed="true">PRO</button><button data-k="gift" aria-pressed="false">Подарок</button></div></div>'+
+   '<div class="pgrid"><div class="pform">'+
+    '<div id="pProBox"><div class="plb">Сколько дней PRO</div><div class="pch" id="pDayCh">'+dayChips+'</div><div class="step" id="pDays"><button type="button" data-s="-1">−</button><input type="number" value="30" min="1" max="3650"><button type="button" data-s="1">+</button><span>дней</span></div></div>'+
+    '<div id="pGiftBox" hidden><div class="plb">Какой подарок</div><div class="pgifts" id="pGifts"><p class="hint">Загружаю…</p></div></div>'+
+    '<div class="two"><div><div class="plb">Сколько кодов</div><div class="pch" id="pCntCh"><button type="button" data-v="1">1</button><button type="button" data-v="5">5</button><button type="button" data-v="10">10</button><button type="button" data-v="50">50</button><button type="button" data-v="100">100</button></div><div class="step" id="pCnt"><button type="button" data-s="-1">−</button><input type="number" value="1" min="1" max="5000"><button type="button" data-s="1">+</button></div></div>'+
+    '<div><div class="plb">Использований на код</div><div class="pch" id="pUseCh"><button type="button" data-v="1">1</button><button type="button" data-v="2">2</button><button type="button" data-v="5">5</button><button type="button" data-v="10">10</button><button type="button" data-v="100">100</button></div><div class="step" id="pUse"><button type="button" data-s="-1">−</button><input type="number" value="1" min="1" max="100000"><button type="button" data-s="1">+</button></div></div></div>'+
+    '<div><div class="plb">Срок действия кода</div><div class="pch" id="pExpCh"><button type="button" data-v="0">Без срока</button><button type="button" data-v="7">7 дней</button><button type="button" data-v="30">30 дней</button><button type="button" data-v="90">90 дней</button></div><div class="step" id="pExp"><button type="button" data-s="-1">−</button><input type="number" value="0" min="0" max="3650"><button type="button" data-s="1">+</button><span>дней, 0 = бессрочно</span></div></div>'+
+    '<div id="pCustBox"><div class="plb">Свой код <span class="dm">(только когда код один)</span></div><div class="bar"><input class="field mono" id="pcu" maxlength="24" placeholder="например VOOB-WELCOME" autocomplete="off"><button type="button" class="btn sm" id="pRnd">Случайный</button></div></div>'+
+    '<input class="field" id="pn" maxlength="120" placeholder="Заметка: кому или для чего (не обязательно)">'+
+   '</div><div class="ppv"><div class="plb">Так будет выглядеть</div><div id="pTicket"></div><div class="psum" id="pSum"></div><button class="btn pri wide" id="pgo" type="button">Создать</button><p class="err" id="epr"></p></div></div>'+
+   '<div id="pResult" hidden></div>';
+  old.parentNode.replaceChild(tile,old);
+  var kind="pro",gift="",gname="",sample=null,exp=0;
+  var sd=stepper($("#pDays"),1,3650,function(){upd()}),sc=stepper($("#pCnt"),1,5000,function(){upd()}),su=stepper($("#pUse"),1,100000,function(){upd()}),se=stepper($("#pExp"),0,3650,function(){upd()});
+  function mark2(box,v){$$("button[data-v]",box).forEach(function(b){b.setAttribute("aria-pressed",b.dataset.v==String(v))})}
+  chipsOf($("#pDayCh"),function(v){sd.set(v)});chipsOf($("#pCntCh"),function(v){sc.set(v)});chipsOf($("#pUseCh"),function(v){su.set(v)});chipsOf($("#pExpCh"),function(v){se.set(v)});
+  $("#pKind").onclick=function(e){var b=e.target.closest("button");if(!b)return;kind=b.dataset.k;$$("button",this).forEach(function(x){x.setAttribute("aria-pressed",x===b)});$("#pProBox").hidden=kind!=="pro";$("#pGiftBox").hidden=kind!=="gift";if(kind==="gift")gifts(drawGifts);upd()};
+  function drawGifts(list){
+    var arr=list.filter(function(g){return g.kind!=="pro"});if(!gift&&arr[0]){gift=arr[0].kind;gname=arr[0].emoji+" "+arr[0].title}
+    $("#pGifts").innerHTML=arr.map(function(g){return '<button type="button" class="pg" data-g="'+esc(g.kind)+'" data-n="'+esc(g.emoji+" "+g.title)+'" aria-pressed="'+(g.kind===gift)+'"><b>'+esc(g.emoji)+"</b><i>"+esc(g.title)+"</i></button>"}).join("");upd();
+  }
+  $("#pGifts").onclick=function(e){var b=e.target.closest("[data-g]");if(!b)return;gift=b.dataset.g;gname=b.dataset.n;$$(".pg",this).forEach(function(x){x.setAttribute("aria-pressed",x===b)});upd()};
+  function rnd(){var A="ABCDEFGHJKMNPQRSTUVWXYZ23456789",s="";for(var i=0;i<8;i++)s+=A[Math.floor(Math.random()*A.length)];return "VOOB-"+s.slice(0,4)+"-"+s.slice(4)}
+  $("#pRnd").onclick=function(){$("#pcu").value=rnd();sample=null;upd()};
+  $("#pcu").addEventListener("input",upd);
+  function upd(){
+    var d=sd.get(),c=sc.get(),u=su.get(),x=se.get();
+    mark2($("#pDayCh"),d);mark2($("#pCntCh"),c);mark2($("#pUseCh"),u);mark2($("#pExpCh"),x);
+    $("#pCustBox").style.opacity=c===1?1:.4;$("#pcu").disabled=c!==1;
+    var code=c===1&&$("#pcu").value.trim()?$("#pcu").value.trim().toUpperCase():(sample||(sample=rnd()));
+    var big=kind==="pro"?"+"+d+" "+plural(d,"день","дня","дней"):(gname||"Подарок"),sub=kind==="pro"?"VOOB PRO":"Подарок в коллекцию";
+    var till=x>0?"до "+new Date(Date.now()+x*864e5).toLocaleDateString("ru-RU"):"без срока";
+    $("#pTicket").innerHTML='<div class="tkt"><div class="tkl"><div class="tks">'+sub+'</div><div class="tkb">'+esc(big)+'</div></div><div class="tkr"><div class="tkc mono">'+esc(code)+'</div><div class="tkm">'+u+" "+plural(u,"использование","использования","использований")+" · "+till+"</div></div></div>";
+    $("#pSum").innerHTML="Создам <b>"+fmt(c)+"</b> "+plural(c,"код","кода","кодов")+": "+(kind==="pro"?"PRO на <b>"+d+"</b> дн.":"<b>"+esc(gname||"подарок")+"</b>")+", по <b>"+fmt(u)+"</b> "+plural(u,"использованию","использования","использований")+" на код, "+till+". Всего активаций: <b>"+fmt(c*u)+"</b>.";
+  }
+  $("#pgo").onclick=function(){
+    var c=sc.get(),b={kind:kind,value:kind==="gift"?gift:String(sd.get()),count:c,uses:su.get(),expires_days:se.get(),custom:c===1?$("#pcu").value.trim():"",note:$("#pn").value.trim()};
+    if(kind==="gift"&&!gift){$("#epr").textContent="Выбери подарок";return}
+    $("#epr").textContent="";busy($("#pgo"),1);
+    api("promo_create",b,"x").then(function(j){
+      busy($("#pgo"),0);
+      if(j.error){$("#epr").textContent=j.error;return}
+      sample=null;$("#pcu").value="";upd();showRes(j.codes,b);loadPromo();toast("Создано кодов: "+j.codes.length);
+    });
+  };
+  function showRes(codes,b){
+    var r=$("#pResult"),n=codes.length,head=b.kind==="pro"?"PRO "+b.value+" дн.":"подарок";
+    r.hidden=false;r.className="pres";
+    r.innerHTML='<div class="chartT"><h3>Готово: '+fmt(n)+" "+plural(n,"код","кода","кодов")+' · '+esc(head)+'</h3><div class="row" style="margin:0"><button class="btn sm pri" id="rcAll">Скопировать все</button><button class="btn sm" id="rcTxt">Скачать .txt</button><button class="btn sm" id="rcCsv">Скачать .csv</button></div></div><div class="codes2">'+codes.slice(0,60).map(function(c){return '<button type="button" class="cd2 mono" data-c="'+esc(c)+'">'+esc(c)+"</button>"}).join("")+"</div>"+(n>60?'<p class="hint">Показаны первые 60, остальные в файле и в «Скопировать все».</p>':'<p class="hint">Нажми на код, чтобы скопировать.</p>');
+    $("#rcAll").onclick=function(){copyText(codes.join("\n"),"Скопировано кодов: "+n)};
+    $("#rcTxt").onclick=function(){saveFile("voob-promo-"+Date.now()+".txt",codes.join("\n"))};
+    $("#rcCsv").onclick=function(){saveFile("voob-promo-"+Date.now()+".csv","code;kind;value;uses;expires_days;note\n"+codes.map(function(c){return [c,b.kind,b.value,b.uses,b.expires_days,'"'+String(b.note||"").replace(/"/g,'""')+'"'].join(";")}).join("\n"),"text/csv;charset=utf-8")};
+    r.onclick=function(e){var c=e.target.closest("[data-c]");if(c)copyText(c.dataset.c,"Код скопирован")};
+    r.scrollIntoView({behavior:"smooth",block:"nearest"});
+  }
+  mark2($("#pDayCh"),30);upd();
+})();
+
+/* список кодов: статус, прогресс использования, поиск и фильтр */
+var PL=[],plF="all";
+(function(){
+  var box=$("#plst");if(!box)return;var t=box.parentNode;
+  var bar=document.createElement("div");bar.className="bar";bar.innerHTML='<div class="seg" id="plF"><button data-f="all" aria-pressed="true">Все</button><button data-f="on" aria-pressed="false">Активные</button><button data-f="off" aria-pressed="false">Выключенные</button><button data-f="end" aria-pressed="false">Закончились</button></div><input class="field" id="plQ" placeholder="Поиск по коду или заметке" autocomplete="off">';
+  t.insertBefore(bar,box);
+  $("#plF").onclick=function(e){var b=e.target.closest("button");if(!b)return;plF=b.dataset.f;$$("button",this).forEach(function(x){x.setAttribute("aria-pressed",x===b)});plDraw()};
+  $("#plQ").addEventListener("input",plDraw);
+})();
+function plState(x){
+  if(!x.active)return["off","выключен"];
+  if(x.expires_at&&Date.parse(x.expires_at)<Date.now())return["end","истёк"];
+  if((x.used||0)>=x.max_uses)return["end","исчерпан"];
+  return["on","активен"];
+}
+function plDraw(){
+  var q=($("#plQ").value||"").trim().toLowerCase();
+  var rows=PL.filter(function(x){var s=plState(x)[0];if(plF!=="all"&&s!==plF)return false;return !q||String(x.code).toLowerCase().indexOf(q)>=0||String(x.note||"").toLowerCase().indexOf(q)>=0});
+  $("#plst").innerHTML=rows.length?rows.slice(0,200).map(function(x){
+    var s=plState(x),pc=Math.min(100,Math.round((x.used||0)/Math.max(1,x.max_uses)*100));
+    return '<div class="item pli"><div class="m"><div class="t mono" style="font-weight:500">'+esc(x.code)+' <span class="chip '+(s[0]==="on"?"g":s[0]==="off"?"":"r")+'">'+s[1]+'</span></div><div class="s">'+(x.kind==="pro"?esc(x.value)+" дн. PRO":"подарок "+esc(x.value))+(x.note?" · "+esc(x.note):"")+(x.expires_at?" · до "+dt(x.expires_at):"")+'</div><div class="plb2"><i style="width:'+pc+'%"></i></div><div class="s">использовано '+(x.used||0)+" из "+x.max_uses+'</div></div><div class="row" style="margin:0;gap:6px"><button class="btn sm" data-cp="'+esc(x.code)+'">Копировать</button><button class="btn sm" data-p="'+esc(x.code)+'" data-on="'+(x.active?"0":"1")+'">'+(x.active?"Выключить":"Включить")+"</button></div></div>"}).join("")+(rows.length>200?'<p class="hint">Показаны первые 200 из '+rows.length+"</p>":""):'<p class="hint">Ничего не нашлось</p>';
+}
+$("#plst").addEventListener("click",function(e){var b=e.target.closest("[data-cp]");if(b)copyText(b.dataset.cp,"Код скопирован")});
 
 /* ---------- старт ---------- */
 if(token){
