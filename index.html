@@ -186,10 +186,10 @@ section[id^=p]{animation:rise .42s var(--ease) both}
 #nav button[aria-selected=true] .lb{font-weight:700}
 #nav button.hasb:after{content:"";position:absolute;left:34px;top:7px;width:12px;height:12px;border-radius:50%;background:var(--bad);border:2px solid var(--tile)}
 .sfoot{margin-top:auto;display:grid;gap:4px}
-.who{display:flex;align-items:center;gap:10px;height:44px;padding-left:5px}
-.who i{width:34px;height:34px;border-radius:50%;flex:none;background:var(--tile3);display:grid;place-items:center;font:800 14px var(--disp);font-style:normal;margin-left:2px}
+.who{display:flex;align-items:center;gap:10px;height:44px;padding-left:9px}
+.who i{width:34px;height:34px;border-radius:50%;flex:none;background:var(--tile3);display:grid;place-items:center;font:800 14px var(--disp);font-style:normal;margin-left:0}
 .who b{font-size:13px}.who i{overflow:hidden}.who i img{width:100%;height:100%;object-fit:cover;display:block}
-.conn{display:flex;align-items:center;gap:10px;height:30px;padding-left:19px;font-size:13px;font-weight:600;color:var(--mute)}
+.conn{display:flex;align-items:center;gap:10px;height:30px;padding-left:21.5px;font-size:13px;font-weight:600;color:var(--mute)}
 .cdot{width:9px;height:9px;border-radius:50%;background:var(--green);flex:none;box-shadow:0 0 0 0 rgba(52,211,153,.5);animation:ping 2.4s infinite}
 .cdot.bad{background:var(--bad);animation:none}
 @keyframes ping{70%{box-shadow:0 0 0 7px rgba(52,211,153,0)}100%{box-shadow:0 0 0 0 rgba(52,211,153,0)}}
@@ -206,6 +206,19 @@ section[id^=p]{animation:rise .42s var(--ease) both}
 section.pg{display:grid;gap:14px;align-content:start}
 .enter>*{animation:rise .42s var(--ease) both;animation-delay:calc(var(--i,0)*26ms)}
 @keyframes rise{from{opacity:0;transform:translateY(10px)}}
+#lo{position:fixed;z-index:80;width:236px;padding:16px;border-radius:20px;background:var(--tile2);border:1px solid var(--line2);box-shadow:0 18px 50px rgba(0,0,0,.55);transform-origin:left bottom;animation:lopop .32s var(--ease)}
+#lo[hidden]{display:none}
+#lo.up{transform-origin:center bottom}
+#lo:before{content:"";position:absolute;left:-6px;bottom:19px;width:12px;height:12px;background:var(--tile2);border-left:1px solid var(--line2);border-bottom:1px solid var(--line2);transform:rotate(45deg)}
+#lo.up:before{left:calc(50% - 6px);bottom:-6px;border:0;border-right:1px solid var(--line2);border-bottom:1px solid var(--line2)}
+#lo b{display:block;font-size:14.5px;margin-bottom:4px}
+#lo p{margin:0 0 14px;font-size:12.5px;line-height:1.45;color:var(--mute)}
+#lo .row{display:flex;gap:8px;margin:0}
+#lo .btn{flex:1;justify-content:center;height:38px}
+#lo.out{animation:loout .18s ease-in both}
+@keyframes lopop{from{opacity:0;transform:translateX(-10px) scale(.94);filter:blur(6px)}}
+@keyframes loout{to{opacity:0;transform:scale(.96);filter:blur(4px)}}
+#lockBtn.arm{background:rgba(251,113,133,.12);color:var(--bad)}
 @keyframes pop{from{opacity:0;transform:translateY(18px) scale(.97)}}
 @keyframes fade{from{opacity:0}}
 
@@ -726,6 +739,7 @@ section[id^=p]>*:nth-child(2){--n:1}section[id^=p]>*:nth-child(3){--n:2}section[
 <div id="toast" role="status" aria-live="polite"></div>
 <div id="dlg" hidden><div class="tile" id="dbody"></div></div>
 <!-- подтверждение опасного действия -->
+<div id="lo" hidden role="dialog" aria-label="Подтверждение выхода"><b>Выйти из VOOB CORE?</b><p>Сессия завершится, для входа снова понадобится QR или пароль и код с почты.</p><div class="row"><button class="btn bad" id="loYes" type="button">Выйти</button><button class="btn" id="loNo" type="button">Остаться</button></div></div>
 <div id="modal" hidden>
   <div class="tile">
     <h3>Подтверди действие</h3>
@@ -1371,7 +1385,20 @@ var sideOpen=false;try{sideOpen=localStorage.getItem("voobcore.side")==="1"}catc
 function setSide(v,save){sideOpen=v;$("#side").classList.toggle("open",v);if(save)try{localStorage.setItem("voobcore.side",v?"1":"0")}catch(e){}$("#togBtn").title=v?"Свернуть меню (Ctrl+B)":"Показать названия (Ctrl+B)";if(!v)$$("#nav button").forEach(function(b){b.title=b.querySelector(".lb").textContent});else $$("#nav button").forEach(function(b){b.removeAttribute("title")})}
 setSide(sideOpen,false);
 $("#togBtn").onclick=function(){setSide(!sideOpen,true)};
-$("#lockBtn").onclick=function(){api("logout").then(function(){bye(false)})};
+function loClose(){var o=$("#lo");if(o.hidden)return;$("#lockBtn").classList.remove("arm");o.classList.add("out");setTimeout(function(){o.hidden=true;o.classList.remove("out")},170)}
+function loOpen(){
+  var o=$("#lo"),b=$("#lockBtn"),r=b.getBoundingClientRect(),sd=$("#side").getBoundingClientRect(),bottom=getComputedStyle($("#side")).flexDirection==="row";
+  o.hidden=false;o.classList.remove("out");o.classList.toggle("up",bottom);b.classList.add("arm");
+  var w=o.offsetWidth,h=o.offsetHeight;
+  if(bottom){o.style.left=Math.max(8,Math.min(innerWidth-w-8,r.left+r.width/2-w/2))+"px";o.style.top=(sd.top-h-12)+"px";o.style.bottom="auto"}
+  else{o.style.left=(sd.right+12)+"px";o.style.top=Math.max(8,Math.min(innerHeight-h-8,r.top+r.height/2-h+30))+"px"}
+  setTimeout(function(){$("#loNo").focus()},60);
+}
+$("#lockBtn").onclick=function(e){e.stopPropagation();$("#lo").hidden?loOpen():loClose()};
+$("#loNo").onclick=loClose;
+$("#loYes").onclick=function(){busy($("#loYes"),1);api("logout").then(function(){$("#lo").hidden=true;$("#lockBtn").classList.remove("arm");bye(false)})};
+document.addEventListener("mousedown",function(e){var o=$("#lo");if(!o.hidden&&!o.contains(e.target)&&!$("#lockBtn").contains(e.target))loClose()});
+document.addEventListener("keydown",function(e){if(e.key==="Escape"&&!$("#lo").hidden)loClose()});
 $("#sp").onclick=function(){palette()};
 
 // скользящая пилюля в сегментах
