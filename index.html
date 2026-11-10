@@ -140,7 +140,7 @@ section[id^=p]{animation:rise .42s var(--ease) both}
 .sfoot{margin-top:auto;display:grid;gap:4px}
 .who{display:flex;align-items:center;gap:10px;height:44px;padding-left:5px}
 .who i{width:34px;height:34px;border-radius:50%;flex:none;background:var(--tile3);display:grid;place-items:center;font:800 14px var(--disp);font-style:normal;margin-left:2px}
-.who b{font-size:13px}
+.who b{font-size:13px}.who i{overflow:hidden}.who i img{width:100%;height:100%;object-fit:cover;display:block}
 .conn{display:flex;align-items:center;gap:10px;height:30px;padding-left:19px;font-size:13px;font-weight:600;color:var(--mute)}
 .cdot{width:9px;height:9px;border-radius:50%;background:var(--green);flex:none;box-shadow:0 0 0 0 rgba(52,211,153,.5);animation:ping 2.4s infinite}
 .cdot.bad{background:var(--bad);animation:none}
@@ -720,7 +720,7 @@ $("#mdGo").onclick=function(){
 
 /* ---------- приложение ---------- */
 var ov=null,serSel="new",daysSel=30,SN={new:"Новые пользователи",active:"Активные пользователи",workouts:"Тренировки",stars:"Выручка, Stars"};
-function enter(){show("app");route()}
+function enter(){show("app");route();call("whoami").then(function(j){if(j&&j.tg_id){var e=$(".who i");e.dataset.av=j.tg_id;hydrate($(".who"))}})}
 function route(){var r=pathTab();tab(r.k,true);if(r.uid)openUser(r.uid,true);else $("#dlg").hidden=true}
 window.addEventListener("popstate",function(){if(!$("#app").hidden)route();else{}});
 function fmt(n){return Number(n||0).toLocaleString("ru-RU")}
