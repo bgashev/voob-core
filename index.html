@@ -1105,9 +1105,10 @@ function applyAccent(h,save){
   $$("#accs button").forEach(function(b){b.setAttribute("aria-pressed",b.dataset.c.toLowerCase()===h.toLowerCase())});
 }
 function accHtml(list){return list.map(function(a){return '<button type="button" data-c="'+a[2]+'" title="'+a[1]+'" aria-label="'+a[1]+'" style="--s:'+a[2]+'"></button>'}).join("")}
-$("#accs").innerHTML='<div class="accl" style="margin-top:6px">Пастельные</div><div class="accs">'+accHtml(ACC)+'</div><div class="accl">Яркие</div><div class="accs">'+accHtml(ACV)+"</div>";
+$("#accs").innerHTML='<div class="accl" style="margin-top:6px">Пастельные</div><div class="accs">'+accHtml(ACC)+'</div>";
 $("#accs").onclick=function(e){var b=e.target.closest("button");if(b){applyAccent(b.dataset.c,true);toast("Акцент: "+b.title)}};
 var savedAcc=null;try{savedAcc=localStorage.getItem("voobcore.acc")}catch(e){}
+if(savedAcc&&!ACC.some(function(a){return a[2].toLowerCase()===savedAcc.toLowerCase()}))savedAcc=null;
 applyAccent(savedAcc||"#EDEDF2",false);
 
 // всплывающее сообщение
