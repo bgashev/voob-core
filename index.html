@@ -233,6 +233,7 @@ textarea.field{min-height:110px;resize:vertical}
     <div class="two">
       <div class="tile">
         <h3>Сессия</h3>
+        <div id="sessList" class="list" style="margin-top:14px"></div>
         <dl class="kv"><dt>Действует до</dt><dd id="sExp" class="mono">—</dd><dt>Простой</dt><dd>выход через 30 минут без действий</dd></dl>
         <div class="row"><button class="btn bad" id="logout" type="button">Выйти</button></div>
       </div>
@@ -615,7 +616,15 @@ function loadLog(){
 
 $("#idleOk").onclick=function(){call("whoami").then(function(){idleTick()})};
 /* ---------- настройки ---------- */
-function loadSet(){
+function loadSessions(){
+  api("sess_list").then(function(j){
+    if(j.error||!j.items)return;
+    $("#sessList").innerHTML=j.items.map(function(x){
+      return '<div class="item"><div class="m"><div class="t">'+(x.current?"Это устройство":"Другая сессия")+'</div><div class="s">вход '+dt(x.created_at)+" · активность "+dt(x.last_seen)+"</div></div>"+(x.current?'<span class="chip g">сейчас</span>':'<button class="btn sm bad" data-e="'+esc(x.id)+'">Завершить</button>')+"</div>"}).join("");
+  });
+}
+$("#sessList").onclick=function(e){var b=e.target.closest("[data-e]");if(!b)return;api("sess_end",{id:b.dataset.e}).then(function(j){if(j.error)$("#eset").textContent=j.error;else loadSessions()})};
+function loadSet(){loadSessions();
   call("whoami").then(function(j){
     if(j._http===401){bye(true);return}
     if(j.expires_at)$("#sExp").textContent=new Date(j.expires_at).toLocaleString("ru-RU");
