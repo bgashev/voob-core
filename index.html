@@ -200,6 +200,10 @@ section[id^=p]{animation:rise .42s var(--ease) both}
 .fbtn:hover{background:rgba(255,255,255,.05);color:var(--fg)}
 .fbtn svg{width:20px;height:20px;flex:none;margin:0 16px;transition:transform .3s var(--ease)}
 .fbtn .lb{font-size:13px;font-weight:600}
+#side.open .who,#side.open .conn,#side.open .fbtn{justify-content:center;padding-left:0;padding-right:0}
+#side.open .who{gap:12px}#side.open .conn{gap:9px}
+#side.open .fbtn svg{margin:0 10px 0 0}
+#side.open #togBtn svg{margin:0 10px 0 0}
 #side.open #togBtn svg{transform:rotate(180deg)}
 #main{flex:1;min-width:0;max-width:1240px;margin:0 auto;padding:30px 34px 70px}
 .phead{display:flex;justify-content:space-between;align-items:flex-end;gap:16px;flex-wrap:wrap;margin-bottom:6px}
