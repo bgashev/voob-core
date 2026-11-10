@@ -101,6 +101,10 @@ nav button[aria-selected=true]{background:var(--accent);color:var(--on-accent)}
 .item .m{min-width:0;flex:1}.item .t{font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .item .s{color:var(--mute);font-size:13px;overflow:hidden;text-overflow:ellipsis}
 .item .s.wrap{white-space:normal;overflow:visible}
+.av{width:44px;height:44px;border-radius:50%;flex:none;display:grid;place-items:center;background:var(--tile);color:var(--mute);font-weight:800;overflow:hidden}
+.av img{width:100%;height:100%;object-fit:cover;display:block}
+.avr{flex:none;padding:2px;border-radius:50%;background:conic-gradient(hsl(var(--h) 85% 62%),hsl(calc(var(--h) + 70) 85% 62%),hsl(var(--h) 85% 62%))}
+.avr .av{border:2px solid var(--tile2)}
 .chip{font:500 11px var(--mono);letter-spacing:.06em;border:1px solid var(--line);border-radius:999px;padding:3px 9px;color:var(--mute);white-space:nowrap}
 .chip.g{color:var(--accent);border-color:#c8f25a55}.chip.r{color:var(--bad);border-color:#ff7a6b55}
 textarea.field{min-height:110px;resize:vertical}
@@ -470,9 +474,9 @@ function loadEvents(){
   var since=null;try{since=localStorage.getItem(SK)}catch(e){}
   api("events",since?{since:since}:{}).then(function(j){
     if(j.error)return;
-    var rows=[];(j.new_users||[]).forEach(function(u){rows.push('<div class="item"><div class="m"><div class="t">Новый: '+nm(u)+'</div><div class="s">'+dt(u.created_at)+"</div></div></div>")});
-    (j.pro||[]).forEach(function(p){rows.push('<div class="item"><div class="m"><div class="t">PRO: '+nm(p.user)+" · "+p.stars+' ⭐</div><div class="s">'+dt(p.created_at)+"</div></div></div>")});
-    $("#evbox").hidden=!rows.length;$("#evlist").innerHTML=(j.new_count>8?'<p class="hint" style="margin:0">Всего новых людей: '+j.new_count+"</p>":"")+rows.join("");
+    var rows=[];(j.new_users||[]).forEach(function(u){rows.push('<div class="item">'+av(u)+'<div class="m"><div class="t">Новый: '+nm(u)+'</div><div class="s">'+dt(u.created_at)+"</div></div></div>")});
+    (j.pro||[]).forEach(function(p){rows.push('<div class="item">'+av(p.user)+'<div class="m"><div class="t">PRO: '+nm(p.user)+" · "+p.stars+' ⭐</div><div class="s">'+dt(p.created_at)+"</div></div></div>")});
+    $("#evbox").hidden=!rows.length;$("#evlist").innerHTML=(j.new_count>8?'<p class="hint" style="margin:0">Всего новых людей: '+j.new_count+"</p>":"")+rows.join("");hydrate($("#evlist"));
     try{localStorage.setItem(SK,new Date().toISOString())}catch(e){}
   });
 }
@@ -521,6 +525,33 @@ function nm(u){return u?esc(u.first_name||u.username||u.handle||u.tg_id):"—"}
 function dt(x){return x?new Date(x).toLocaleString("ru-RU",{day:"2-digit",month:"2-digit",year:"2-digit",hour:"2-digit",minute:"2-digit"}):"—"}
 function seg(host,cb){host.onclick=function(e){var b=e.target.closest("button");if(!b)return;$$("button",host).forEach(function(x){x.setAttribute("aria-pressed",x===b)});cb(b)}}
 
+
+/* ---------- аватарки ---------- */
+var PH={},phQ=[],phBusy=0;
+function hue(str){var h=0;for(var i=0;i<str.length;i++)h=(h*31+str.charCodeAt(i))%360;return h}
+function av(u){
+  if(!u)return "";
+  var ini=esc(String(u.first_name||u.username||u.handle||"?").trim().charAt(0).toUpperCase()||"?");
+  var core='<span class="av" data-av="'+u.tg_id+'">'+ini+"</span>";
+  return u.frame?'<span class="avr" style="--h:'+hue(String(u.frame))+'">'+core+"</span>":core;
+}
+function hydrate(root){
+  $$("[data-av]",root||document).forEach(function(el){
+    var id=el.dataset.av,p=PH[id];
+    if(p){if(p!==1&&!el.querySelector("img"))el.innerHTML='<img alt="" src="'+p+'">';return}
+    if(p===undefined){PH[id]=1;phQ.push(id);phPump()}
+  });
+}
+function phPump(){
+  while(phBusy<3&&phQ.length){
+    var id=phQ.shift();phBusy++;
+    (function(id){api("photo",{tg_id:+id}).then(function(j){
+      phBusy--;PH[id]=j&&j.ok?"data:image/jpeg;base64,"+j.b64:0;
+      $$('[data-av="'+id+'"]').forEach(function(el){if(PH[id])el.innerHTML='<img alt="" src="'+PH[id]+'">'});
+      phPump();
+    })})(id);
+  }
+}
 /* ---------- люди ---------- */
 function csv(name,rows){
   var t="\ufeff"+rows.map(function(r){return r.map(function(c){c=String(c==null?"":c);return /[",;\n]/.test(c)?'"'+c.replace(/"/g,'""')+'"':c}).join(";")}).join("\n");
@@ -534,8 +565,8 @@ function loadUsers(){
   api("users",{q:$("#uq").value,filter:uf}).then(function(j){
     if(j.error){$("#eus").textContent=j.error;return}$("#eus").textContent="";
     lastUsers=j.users;$("#ulist").innerHTML=j.users.length?j.users.map(function(u){
-      return '<div class="item click" data-id="'+u.tg_id+'"><div class="m"><div class="t">'+nm(u)+(u.handle?' <span class="mono" style="color:var(--mute);font-weight:400">@'+esc(u.handle)+'</span>':"")+'</div><div class="s">был '+dt(u.last_seen)+" · тренировок "+u.workouts+'</div></div>'+
-        (u.blocked?'<span class="chip r">блок</span>':"")+(u.pro?'<span class="chip g">PRO</span>':"")+(u.creator?'<span class="chip">создатель</span>':"")+"</div>"}).join(""):'<p class="hint">Никого не нашлось</p>';
+      return '<div class="item click" data-id="'+u.tg_id+'">'+av(u)+'<div class="m"><div class="t">'+nm(u)+(u.handle?' <span class="mono" style="color:var(--mute);font-weight:400">@'+esc(u.handle)+'</span>':"")+'</div><div class="s">был '+dt(u.last_seen)+" · тренировок "+u.workouts+'</div></div>'+
+        (u.blocked?'<span class="chip r">блок</span>':"")+(u.pro?'<span class="chip g">PRO</span>':"")+(u.creator?'<span class="chip">создатель</span>':"")+"</div>"}).join(""):'<p class="hint">Никого не нашлось</p>';hydrate($("#ulist"));
   });
 }
 $("#ulist").onclick=function(e){var it=e.target.closest("[data-id]");if(it)openUser(+it.dataset.id)};
@@ -613,8 +644,8 @@ function loadFb(){
   api("feedback",{status:fs}).then(function(j){
     if(j.error){$("#efb").textContent=j.error;return}$("#efb").textContent="";
     $("#flist").innerHTML=j.items.length?j.items.map(function(x){
-      return '<div class="item" style="align-items:flex-start"><div class="m"><div class="t" style="white-space:normal">'+esc(x.text)+'</div><div class="s wrap">'+nm(x.from)+" · "+dt(x.created_at)+(x.target?" · на "+nm(x.target):"")+(x.reply?"<br>Ответ: "+esc(x.reply):"")+'</div>'+
-        '<div class="row"><span class="chip">'+esc(TYPES[x.type]||x.type)+'</span>'+(x.status==="new"?'<button class="btn sm" data-r="'+x.id+'">Ответить</button><button class="btn sm" data-d="'+x.id+'">Закрыть</button>':"")+"</div></div></div>"}).join(""):'<p class="hint">Пусто</p>';
+      return '<div class="item" style="align-items:flex-start">'+av(x.from)+'<div class="m"><div class="t" style="white-space:normal">'+esc(x.text)+'</div><div class="s wrap">'+nm(x.from)+" · "+dt(x.created_at)+(x.target?" · на "+nm(x.target):"")+(x.reply?"<br>Ответ: "+esc(x.reply):"")+'</div>'+
+        '<div class="row"><span class="chip">'+esc(TYPES[x.type]||x.type)+'</span>'+(x.status==="new"?'<button class="btn sm" data-r="'+x.id+'">Ответить</button><button class="btn sm" data-d="'+x.id+'">Закрыть</button>':"")+"</div></div></div>"}).join(""):'<p class="hint">Пусто</p>';hydrate($("#flist"));
   });
 }
 $("#flist").onclick=function(e){
@@ -629,8 +660,8 @@ function loadPay(){
   api("payments").then(function(j){
     if(j.error){$("#epay").textContent=j.error;return}$("#epay").textContent="";
     lastPay=j.items;$("#plist").innerHTML=j.items.length?j.items.map(function(p){
-      return '<div class="item"><div class="m"><div class="t">'+p.stars+" ⭐ · "+esc(p.plan)+" · "+nm(p.user)+'</div><div class="s">'+dt(p.created_at)+(p.payer&&p.payer.tg_id!==p.tg_id?" · оплатил "+nm(p.payer):"")+(p.refunded_at?" · возврат "+dt(p.refunded_at):"")+'</div></div>'+
-        (p.refunded_at?'<span class="chip r">возврат</span>':'<button class="btn sm bad" data-c="'+esc(p.charge_id)+'">Вернуть</button>')+"</div>"}).join(""):'<p class="hint">Платежей нет</p>';
+      return '<div class="item">'+av(p.user)+'<div class="m"><div class="t">'+p.stars+" ⭐ · "+esc(p.plan)+" · "+nm(p.user)+'</div><div class="s">'+dt(p.created_at)+(p.payer&&p.payer.tg_id!==p.tg_id?" · оплатил "+nm(p.payer):"")+(p.refunded_at?" · возврат "+dt(p.refunded_at):"")+'</div></div>'+
+        (p.refunded_at?'<span class="chip r">возврат</span>':'<button class="btn sm bad" data-c="'+esc(p.charge_id)+'">Вернуть</button>')+"</div>"}).join(""):'<p class="hint">Платежей нет</p>';hydrate($("#plist"));
   });
 }
 $("#plist").onclick=function(e){
