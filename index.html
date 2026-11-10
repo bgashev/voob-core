@@ -12,6 +12,7 @@
 <link rel="stylesheet" href="/frames.css">
 <link rel="stylesheet" href="/gifts.css">
 <script src="/gifts.js"></script>
+<script src="/bgs.js" defer></script>
 <link rel="icon" href="/favicon.svg" type="image/svg+xml">
 <link rel="apple-touch-icon" href="/apple-touch-icon.png">
 <link rel="manifest" href="/manifest.webmanifest">
@@ -431,11 +432,13 @@ section[id^=p]>*:nth-child(2){--n:1}section[id^=p]>*:nth-child(3){--n:2}section[
 .fp i{font-style:normal;font-size:10.5px;font-weight:600;color:var(--mute);text-align:center;line-height:1.2;max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .fp .av{width:34px;height:34px}.fpa{background:var(--tile3)}.fpa.no{border:2px dashed var(--line2);background:none}
 .fp .avr{--w:2.5px}
-.uhero.pbg{position:relative;overflow:hidden;overflow:clip;border-color:transparent;background:var(--tile);animation:fade .8s}
-.uhero.pbg:before{content:"";position:absolute;inset:-30%;background:radial-gradient(40% 55% at 20% 25%,color-mix(in srgb,var(--pgl) 60%,transparent),transparent 70%),radial-gradient(35% 50% at 85% 80%,color-mix(in srgb,var(--pgl) 45%,transparent),transparent 70%),var(--pg);filter:blur(34px) saturate(1.25);animation:pbd 16s ease-in-out infinite alternate}
-.uhero.pbg:after{content:"";position:absolute;inset:0;background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 1 0 0 0 0 1 0 0 0 0 1 0 0 0 .7 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E"),linear-gradient(180deg,rgba(11,11,13,.12),rgba(11,11,13,.5));background-blend-mode:soft-light,normal;opacity:1}
-.uhero.pbg>*{position:relative;z-index:1}
+.uhero.pbg{position:relative;overflow:hidden;overflow:clip;border-color:transparent;background:var(--tile)}
+.uhero .hbgfx{position:absolute;inset:-14%;z-index:0;overflow:hidden;pointer-events:none;filter:blur(26px) saturate(1.3);transform:translateZ(0)}
+.uhero .hbgfx i{position:absolute;display:block;pointer-events:none}
+.uhero.pbg:after{content:"";position:absolute;inset:0;z-index:0;pointer-events:none;background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 1 0 0 0 0 1 0 0 0 0 1 0 0 0 .16 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E"),linear-gradient(180deg,rgba(11,11,13,.3),rgba(11,11,13,.62))}
+.uhero.pbg>*:not(.hbgfx){position:relative;z-index:1}
 .uhero.pbg .fct{background:rgba(11,11,13,.45);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px)}
+.uhero.pbg .crumb,.uhero.pbg .lbl,.uhero.pbg .fk{color:rgba(255,255,255,.72)}
 @keyframes pbd{to{transform:translate3d(6%,-5%,0) scale(1.12)}}
 
 /* ---------- визуализатор ---------- */
@@ -450,6 +453,13 @@ section[id^=p]>*:nth-child(2){--n:1}section[id^=p]>*:nth-child(3){--n:2}section[
 .pvscr:after{content:"";position:absolute;inset:0;background:rgba(0,0,0,.55)}
 .pva{position:relative;z-index:2;width:100%;border-radius:22px;background:#171922;border:1px solid #ffffff1c;padding:18px 16px 14px;text-align:center;display:grid;gap:8px;justify-items:center;animation:pop .5s var(--ease)}
 .pvab{font:700 10px var(--sans);letter-spacing:.14em;text-transform:uppercase;color:#a1a1aa;background:#ffffff12;border-radius:999px;padding:4px 11px}
+.ufr{flex:1 0 100%;display:grid;gap:10px;padding-top:6px}
+.ufl{display:flex;flex-wrap:wrap;gap:8px}
+.ufc{display:flex;align-items:center;gap:9px;height:42px;padding:0 14px 0 5px;border-radius:999px;border:1px solid var(--line2);background:rgba(11,11,13,.4);-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px);color:var(--fg);font:600 12.5px var(--sans);cursor:pointer;transition:background .16s,border-color .16s,transform .2s var(--ease)}
+.ufc:hover{background:rgba(255,255,255,.08);border-color:var(--accent);transform:translateY(-2px)}
+.ufc .av{width:32px;height:32px;flex:none;font-size:13px}
+.ufc>span:last-child{max-width:160px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.ufm2{align-self:center;font-size:12px;color:var(--mute);padding:0 6px}
 .ufoot{display:flex;align-items:center;justify-content:space-between;gap:12px}
 textarea.field{resize:none;line-height:1.5;min-height:84px;padding:12px 15px;font-family:inherit}
 .inl{display:flex;gap:8px;align-items:center}.inl .field,.inl .pfx{flex:1;min-width:0}
@@ -1080,7 +1090,7 @@ function showUserPage(sy){
   var b=$("#ubody");if(!sy){b.classList.remove("enter");void b.offsetWidth;b.classList.add("enter");setTimeout(function(){b.classList.remove("enter")},1200)}
   window.scrollTo(0,sy||0);
 }
-document.addEventListener("click",function(e){if(e.target.closest("[data-uback]"))tab("us")});
+document.addEventListener("click",function(e){if(e.target.closest("[data-uback]"))tab("us");var f=e.target.closest("[data-fid]");if(f){window.scrollTo(0,0);openUser(+f.dataset.fid)}});
 var _gz=0;
 function gArt(k,emo){var t=window.GIFT_SVG&&GIFT_SVG[k];if(!t)return '<span class="gart" style="display:grid;place-items:center;font-size:30px">'+(emo||"🎁")+"</span>";
   if(t.indexOf("clipPath")>=0){var u="_"+(++_gz);t=t.replace(/id='(c\d+)'/g,"id='$1"+u+"'").replace(/url\(#(c\d+)\)/g,"url(#$1"+u+")")}
@@ -1094,18 +1104,28 @@ function gpick(host,list,cur){
 }
 function gShelf(items,list){var c={},o=[];items.forEach(function(g){if(!c[g.kind]){c[g.kind]=0;o.push(g.kind)}c[g.kind]++});
   return '<div class="gsh">'+o.map(function(k){return '<span class="g1" title="'+esc(gTitle(k,list))+'">'+gArt(k)+(c[k]>1?"<b>"+c[k]+"</b>":"")+"</span>"}).join("")+"</div>"}
+var uTok=0,UPH={};
+function bgFxHTML(k){k=(window.BG_OLD&&BG_OLD[k])||k;if(!k||!window.BG_CSS||!BG_CSS[k])return "";
+  if(!document.getElementById("bgc-"+k)){var st=document.createElement("style");st.id="bgc-"+k;st.textContent=BG_CSS[k];document.head.appendChild(st)}
+  return '<div class="hbgfx bg-'+k+'" aria-hidden="true"><i class="a"></i><i class="b"></i><i class="c"></i></div>'}
 function openUser(id,np){
   if(!np&&location.pathname!=="/users/"+id)history.pushState(null,"","/users/"+id);
-  Promise.all([api("user",{tg_id:id}),GT?Promise.resolve(GT):api("gift_types")]).then(function(r){
+  var my=++uTok,soft=function(p){return p.catch(function(){return {}})};
+  /* всё, что нужно странице, грузим одним заходом и рисуем один раз: без дорисовок и повторных анимаций */
+  Promise.all([api("user",{tg_id:id}),GT?Promise.resolve(GT):api("gift_types"),soft(api("bgs",{ids:[id]},"x")),soft(api("user_extra",{tg_id:id},"x"))]).then(function(r){
+    if(my!==uTok)return;
     var j=r[0];if(j.error){toast(j.error,"err");return}
     if(!GT)GT=r[1].items||[];
     var u=j.user,pro=j.pro&&j.pro.until&&Date.parse(j.pro.until)>Date.now(),meta=j.meta||{},nameNow=(meta.profile&&meta.profile.name)||"";
     var ini=esc(String(u.first_name||u.username||u.handle||"?").trim().charAt(0).toUpperCase()||"?"),L="",R="";
     var uavH='<div class="uav" id="uph">'+ini+"</div>",uav=j.frame?frWrap(j.frame,uavH,"big"):uavH;
     var chips=(j.frame?'<span class="chip">Рамка: '+esc(FRN[frKey(j.frame)]||j.frame)+"</span>":"")+(pro?'<span class="chip g">PRO</span>':"")+(u.blocked?'<span class="chip r">блок</span>':"")+(u.creator?'<span class="chip">создатель</span>':"")+(u.private?'<span class="chip">закрытый</span>':"");
+    var bk=r[2]&&r[2].bgs&&r[2].bgs[id],bst=bk?bgFxHTML(bk):"";if(bst)chips+='<span class="chip" data-bg="1">Фон: '+esc(PBN[PBO[bk]||bk]||bk)+"</span>";
     var fc=function(k,v,c){return '<div class="fct"><div class="fk">'+k+'</div><div class="fv'+(c?" "+c:"")+'">'+v+"</div></div>"};
-    var h='<div class="tile uhero">'+uav+'<div class="uinfo"><div class="crumb">VOOB CORE / люди / '+u.tg_id+'</div><div class="ptitle" style="font-size:28px">'+nm(u)+'</div><div class="uchips">'+chips+'</div></div><button class="btn sm" type="button" data-uback>← Все пользователи</button>'+
-      '<div class="facts">'+fc("ID",'<span class="mono">'+u.tg_id+"</span>")+fc("Ник",u.handle?"@"+esc(u.handle):"—")+fc("Регистрация",dt(u.created_at))+fc("Был",dt(u.last_seen))+fc("Тренировок",j.workouts_total)+fc("PRO",pro?"до "+dt(j.pro.until):"нет")+(u.blocked?fc("Блок",esc(u.block_reason||"без причины"),"dn"):"")+"</div></div>";
+    var frs=(j.friends||[]).filter(function(f){return f&&f.tg_id}),FRMAX=14;
+    var friendsH=frs.length?'<div class="ufr"><div class="lbl">Друзья · '+frs.length+'</div><div class="ufl">'+frs.slice(0,FRMAX).map(function(f){return '<button type="button" class="ufc" data-fid="'+f.tg_id+'" title="Открыть профиль">'+av(f)+"<span>"+esc(String(f.first_name||f.username||f.handle||f.tg_id))+"</span></button>"}).join("")+(frs.length>FRMAX?'<span class="ufm2">ещё '+(frs.length-FRMAX)+"</span>":"")+"</div></div>":"";
+    var h='<div class="tile uhero'+(bst?" pbg":"")+'">'+bst+uav+'<div class="uinfo"><div class="crumb">VOOB CORE / люди / '+u.tg_id+'</div><div class="ptitle" style="font-size:28px">'+nm(u)+'</div><div class="uchips">'+chips+'</div></div><button class="btn sm" type="button" data-uback>← Все пользователи</button>'+
+      '<div class="facts">'+fc("ID",'<span class="mono">'+u.tg_id+"</span>")+fc("Ник",u.handle?"@"+esc(u.handle):"—")+fc("Регистрация",dt(u.created_at))+fc("Был",dt(u.last_seen))+fc("Тренировок",j.workouts_total)+fc("PRO",pro?"до "+dt(j.pro.until):"нет")+(u.blocked?fc("Блок",esc(u.block_reason||"без причины"),"dn"):"")+"</div>"+friendsH+"</div>";
     L+=tl("Сообщение",'<div class="stack"><textarea class="field" id="umsg" rows="3" maxlength="3500" placeholder="Текст, который придёт человеку в Telegram от имени VOOB"></textarea><div class="ufoot"><span class="hint" id="umc" style="margin:0">0 / 3500 · Ctrl+Enter — отправить</span><button class="btn pri sm" id="usend" type="button">Отправить</button></div></div>');
     var pLeft=pro?Math.max(0,Math.ceil((Date.parse(j.pro.until)-Date.now())/86400000)):0;
     L+=tl("PRO",'<div class="stack"><div class="ustat'+(pro?" on":"")+'"><i></i><span>'+(pro?"Активен до <b>"+dt(j.pro.until)+"</b> · осталось "+pLeft+" "+plural(pLeft,"день","дня","дней"):"Нет подписки")+'</span></div>'+
@@ -1117,7 +1137,7 @@ function openUser(id,np){
       '<div class="swrow"><div><b>Скрыт из ленты</b><small>Его тренировки не попадают в ленту друзей</small></div><button type="button" class="swt'+(u.hide_feed?" on":"")+'" id="efeed" role="switch" aria-checked="'+(!!u.hide_feed)+'" aria-label="Скрыт из ленты"><i></i></button></div>'+
       '<div><button class="btn sm bad" id="esoc" type="button">Сбросить соцсети</button></div></div>');
     L+=tl("Рамка и значок",'<div class="stack"><input type="hidden" id="efr" value="'+esc(j.frame||"")+'"><div class="fpick" id="fpick">'+framePick(j.frame||"")+'</div><div class="bar"><button class="btn sm" id="efr_go">Сохранить рамку</button></div><div class="bar"><input class="field" id="ebd" placeholder="Значок, латиница 3–12, пусто = Печать" value="'+esc((meta.settings&&meta.settings.badge)||"")+'"><button class="btn sm" id="ebd_go">Сохранить значок</button></div></div>');
-    R+=tl("Достижения",'<div class="achg" id="achBox"><span class="hint" style="margin:0">Загружаю…</span></div><p class="hint" style="margin:8px 0 0">Нажми на достижение, чтобы отозвать или вернуть. Выключенные отмечены.</p>');
+    R+=tl("Достижения",'<div class="achg" id="achBox">'+achTiles(["first","ten","hundred","km50","marathon","km500","hours10","kcal10k","goat","long","streak7","norm","norm30","early","weigh10","wgoal","plan","friends3","friends5","str10","reps1k","tonne","pro","friends10"],(r[3]&&r[3].ach_off)||[])+'</div><p class="hint" style="margin:8px 0 0">Нажми на достижение, чтобы отозвать или вернуть. Выключенные отмечены.</p>');
     L+=tl("Подарок",'<div class="stack"><div class="gpk" id="gk"></div><div class="bar"><button class="btn sm" id="ggo">Подарить</button></div></div>'+
       (j.gifts_in.length?'<p class="hint" style="margin-top:14px">Получил: '+j.gifts_in.length+"</p>"+gShelf(j.gifts_in,GT):"")+
       (j.gifts_out.length?'<p class="hint" style="margin-top:14px">Подарил: '+j.gifts_out.length+"</p>"+gShelf(j.gifts_out,GT):""));
@@ -1125,15 +1145,15 @@ function openUser(id,np){
     if(st.length)L+=tl("Состояние",'<p class="hint dn" style="margin:0">'+esc(st.join(" · "))+"</p>");
     R+=tl("Тренировки (последние 15)",j.workouts.length?'<div class="list">'+j.workouts.slice(0,15).map(function(w){return '<div class="item"><div class="m"><div class="t">'+esc(w.date||"без даты")+'</div><div class="s">'+sumW(w)+'</div></div><button class="btn sm bad" data-w="'+esc(w.rid)+'">Удалить</button></div>'}).join("")+"</div>":'<p class="hint">Нет</p>');
     if(j.weights.length)R+=tl("Вес",'<p class="hint" style="margin:0">'+j.weights.slice(0,10).map(function(w){return esc(w.date)+": "+esc(w.kg!=null?w.kg:(w.value!=null?w.value:""))}).join(" · ")+"</p>");
-    if(j.friends.length)R+=tl("Друзья ("+j.friends.length+")",'<p class="hint" style="margin:0">'+j.friends.slice(0,30).map(nm).join(", ")+"</p>");
     if(j.payments.length)R+=tl("Платежи",'<p class="hint" style="margin:0">'+j.payments.map(function(p){return p.stars+"⭐ "+dt(p.created_at)+(p.refunded_at?" (возврат)":"")}).join(" · ")+"</p>");
     if(j.feedback.length)R+=tl("Обращения",'<div class="list">'+j.feedback.slice(0,5).map(function(x){return '<div class="item"><div class="m"><div class="s wrap">'+esc(x.text)+"</div></div></div>"}).join("")+"</div>");
     R+=tl("Сессии",'<p class="hint" style="margin:0 0 8px">'+(j.sessions.length?j.sessions.map(function(x){return esc(x.device||"?")+" · "+dt(x.last_seen)}).join("<br>"):"Нет активных")+"</p>"+(u.creator?"":'<button class="btn sm bad" id="ukick">Завершить все сессии</button>'));
     if(!u.creator)L+=tl("Доступ",u.blocked?'<button class="btn sm" id="ublk">Разблокировать</button>':'<button class="btn sm bad" id="ublk">Заблокировать</button>');
     h+='<div class="upage"><div class="ucol">'+L+'</div><div class="ucol">'+R+'</div></div><p class="err" id="eu"></p>';
     var sy=window.scrollY;$("#ubody").innerHTML=h;showUserPage(sy);gpick($("#gk"),GT);
-    api("bgs",{ids:[id]},"x").then(function(r){var k=r&&r.bgs&&r.bgs[id],st=k&&pbgStyle(k);if(st){var hr=$(".uhero");if(!hr)return;hr.style.cssText+=st;hr.classList.add("pbg");if(!$(".uchips .chip[data-bg]"))$(".uchips").insertAdjacentHTML("beforeend",'<span class="chip" data-bg="1">Фон: '+esc(PBN[PBO[k]||k]||k)+"</span>")}});
-    api("photo",{tg_id:id,big:true}).then(function(p){if(p&&p.ok)$("#uph").innerHTML='<img alt="" style="width:100%;height:100%;object-fit:cover" src="data:image/jpeg;base64,'+p.b64+'">'});
+    hydrate($("#ubody"));
+    if(UPH[id])putImg($("#uph"),UPH[id],1);
+    else api("photo",{tg_id:id,big:true}).then(function(p){if(p&&p.ok){UPH[id]="data:image/jpeg;base64,"+p.b64;if(my===uTok&&$("#uph"))putImg($("#uph"),UPH[id])}});
     var say=function(r,ok){$("#eu").innerHTML=r&&r.error?esc(r.error):'<span class="ok">'+ok+"</span>"},again=function(r,ok){if(r&&r.error)say(r);else{openUser(id);loadUsers()}};
     $("#usend").onclick=function(){var t=$("#umsg").value.trim();if(!t)return;var b=$("#usend");busy(b,1);api("message",{tg_id:id,text:t}).then(function(r){busy(b,0);if(r&&r.status==="ok"){say(r,"Отправлено");$("#umsg").value="";$("#umsg").dispatchEvent(new Event("input"))}else say(r&&r.error?r:{error:"Не доставлено: человек мог не запускать бота"})})};
     $("#pq").onclick=function(e){var b=e.target.closest("[data-d]");if(!b)return;busy(b,1);api("pro",{tg_id:id,days:+b.dataset.d}).then(function(r){busy(b,0);again(r,"Готово")})};
@@ -1142,12 +1162,7 @@ function openUser(id,np){
     $("#pgo").onclick=function(){var d=parseInt($("#pdays").value,10);if(!d)return say({error:"Введи число дней"});api("pro",{tg_id:id,days:d}).then(function(r){again(r,"Готово")})};
     $("#ename_go").onclick=function(){api("edit",{tg_id:id,field:"name",value:$("#ename").value}).then(function(r){say(r,"Имя сохранено")})};
     $("#ehandle_go").onclick=function(){api("edit",{tg_id:id,field:"handle",value:$("#ehandle").value}).then(function(r){say(r,"Ник сохранён");loadUsers()})};
-    var ACH=["first","ten","hundred","km50","marathon","km500","hours10","kcal10k","goat","long","streak7","norm","norm30","early","weigh10","wgoal","plan","friends3","friends5","str10","reps1k","tonne","pro","friends10"];
-    api("user_extra",{tg_id:id},"x").then(function(x){
-      var off=x.ach_off||[];
-      $("#achBox").innerHTML=achTiles(ACH,off);
-      $("#achBox").onclick=function(e){var b=e.target.closest("[data-ach]");if(!b)return;api("ach",{tg_id:id,key:b.dataset.ach,on:b.dataset.on==="1",notify:true},"x").then(function(r){if(r.error)say(r);else openUser(id)})};
-    });
+    $("#achBox").onclick=function(e){var b=e.target.closest("[data-ach]");if(!b)return;api("ach",{tg_id:id,key:b.dataset.ach,on:b.dataset.on==="1",notify:true},"x").then(function(r){if(r.error)say(r);else openUser(id)})};
     $("#efr_go").onclick=function(){api("edit",{tg_id:id,field:"frame",value:$("#efr").value}).then(again)};
     $("#ebd_go").onclick=function(){api("edit",{tg_id:id,field:"badge",value:$("#ebd").value.trim()}).then(function(r){say(r,"Значок сохранён")})};
     $("#epriv").onclick=function(){api("edit",{tg_id:id,field:"private",value:!u.private}).then(again)};
