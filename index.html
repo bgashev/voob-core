@@ -205,7 +205,7 @@ section[id^=p]{animation:rise .42s var(--ease) both}
 @keyframes p{50%{opacity:.25}}
 .codes{display:flex;gap:8px;margin:20px 0 4px}
 #p2{text-align:center}
-#p2 .mrow{flex-direction:column;gap:12px;margin-top:14px;text-align:center}
+#pan-mail .mrow{flex-direction:column;gap:12px;margin-top:14px;text-align:center}
 #p2 .codes{justify-content:center;gap:10px;margin:22px 0 6px}
 #p2 .codes input{flex:1 1 0;max-width:60px}
 #p2 .err{min-height:18px;text-align:center}
@@ -665,6 +665,24 @@ textarea.field{resize:none;line-height:1.5;min-height:84px;padding:12px 15px;fon
 #login .lbrand .lt2{display:none}
 @media(max-width:600px){#login{padding-top:76px;align-content:start}}
 @media(max-width:480px){#login .lcard{padding:26px 22px 22px}#login .qr{width:min(208px,100%);height:auto;aspect-ratio:1}}
+
+/* ---- вход: два способа из трёх ---- */
+.mth{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:18px 0 4px}
+.mth .mt[hidden]{display:none}
+.mth:has(.mt[hidden]){grid-template-columns:repeat(2,1fr)}
+.mt{position:relative;display:grid;justify-items:center;gap:8px;padding:14px 6px 12px;border-radius:14px;border:1px solid var(--line);background:transparent;color:var(--mute);font:600 12px var(--sans);cursor:pointer;transition:border-color .2s,color .2s,background .2s}
+.mt b{font-weight:600;line-height:1.2;text-align:center}
+.mt:hover{color:var(--fg);border-color:var(--dim)}
+.mt.on{color:var(--fg);border-color:var(--accent);background:rgba(255,255,255,.03)}
+.mt.done{color:var(--fg);border-color:transparent;background:rgba(255,255,255,.04);cursor:default}
+.mt u{position:absolute;top:7px;right:7px;width:14px;height:14px;border-radius:50%;background:var(--accent);opacity:0;transform:scale(.4);transition:.25s;text-decoration:none}
+.mt.done u{opacity:1;transform:none}
+.mt.done u:after{content:"";position:absolute;left:4px;top:2px;width:3px;height:6px;border:solid #0c0d0f;border-width:0 2px 2px 0;transform:rotate(45deg)}
+.mpan{margin-top:18px;animation:mpin .25s ease}
+@keyframes mpin{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+#bkSw.on{color:var(--fg)}
+.bkgrid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.bkgrid code{font:600 14px ui-monospace,Menlo,Consolas,monospace;letter-spacing:.08em;padding:10px 12px;border-radius:10px;background:rgba(255,255,255,.05);text-align:center;user-select:all}
 </style>
 </head>
 <body>
@@ -694,39 +712,54 @@ textarea.field{resize:none;line-height:1.5;min-height:84px;padding:12px 15px;fon
     <div class="tile lbrand"><span data-mark="64"></span><div><div class="lt1"><svg viewBox="0 0 44.9 10" role="img" aria-label="VOOB" style="display:inline-block;height:.727em;width:3.264em;fill:currentColor;overflow:visible;vertical-align:baseline;margin-right:.42em"><path d='M0 0H3.7L5.7 3.92L7.7 0H11.4L6.3 10H5.1Z'/><path transform='translate(11.9 0)' fill-rule='evenodd' d='M5.2-.2a5.2 5.2 0 1 0 0 10.4a5.2 5.2 0 1 0 0-10.4ZM5.2 3.2a1.8 1.8 0 1 1 0 3.6a1.8 1.8 0 1 1 0-3.6Z'/><path transform='translate(23.5 0)' fill-rule='evenodd' d='M5.2-.2a5.2 5.2 0 1 0 0 10.4a5.2 5.2 0 1 0 0-10.4ZM5.2 3.2a1.8 1.8 0 1 1 0 3.6a1.8 1.8 0 1 1 0-3.6Z'/><path transform='translate(35.1 0)' fill-rule='evenodd' d='M0 0H5.8C8 0 9.2 1.2 9.2 2.7C9.2 3.8 8.6 4.5 7.8 4.8C9 5.1 9.8 6 9.8 7.3C9.8 9 8.4 10 6.2 10H0ZM3.2 2.5H5.2Q6 2.5 6 3.35Q6 4.2 5.2 4.2H3.2ZM3.2 5.9H5.8Q6.9 5.9 6.9 6.7Q6.9 7.5 5.8 7.5H3.2Z'/></svg>CORE</div><div class="lt2">панель создателя</div></div></div>
   </div>
   <div class="tile lcard">
-    <div class="steps" aria-hidden="true"><i id="s1" class="on"></i><i id="s2"></i><i id="s3"></i></div>
+    <div class="steps" aria-hidden="true"><i id="s1"></i><i id="s2"></i></div>
 
     <section id="p1">
-      <h2>Вход</h2>
-      <p class="hint">Отсканируй код в Telegram</p>
-      <div class="qrrow">
-        <div class="qr" id="qr" aria-label="QR-код входа"></div>
-        <div class="qside">
-          <a class="btn pri" id="tgLink" href="#" target="_blank" rel="noopener">Открыть в Telegram</a>
-          <div class="status"><span class="qd ld" id="qrD"></span><span id="qrSt">Создаю код…</span></div>
-          <button class="btn" id="qrNew" type="button" hidden>Новый код</button>
-        </div>
+      <h2 id="lh">Вход</h2>
+      <p class="hint" id="lhint">Нужны любые два способа из трёх</p>
+      <div class="mth" id="mth">
+        <button class="mt" data-m="tg" type="button"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 4 3 11l6 2.2L11 20l3-4.2L18.5 19z"/><path d="m9 13.2 9-6.7"/></svg><b>Telegram</b><u></u></button>
+        <button class="mt" data-m="pwd" type="button" hidden><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="10.5" width="16" height="10" rx="3"/><path d="M8 10.5V8a4 4 0 0 1 8 0v2.5"/></svg><b>Почта и пароль</b><u></u></button>
+        <button class="mt" data-m="mail" type="button"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="14" rx="3"/><path d="m4 7 8 6 8-6"/></svg><b>Код с почты</b><u></u></button>
       </div>
-      <div id="pwBox" hidden>
-        <div class="stack">
-          <input class="field" id="pwIn" type="password" placeholder="Пароль" autocomplete="current-password">
-          <button class="btn pri" id="pwGo" type="button">Войти</button>
-        </div>
-      </div>
-      <button class="btn lnk" id="pwSw" type="button" hidden>Войти по паролю</button>
-      <p class="err" id="e1"></p>
-    </section>
 
-    <section id="p2" hidden>
-      <h2>Подтверждение</h2>
-      <div class="mrow"><span class="ms ld" id="mailIc"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="14" rx="3"/><path d="m4 7 8 6 8-6"/></svg></span><p class="hint" id="mailHint" style="margin:0">Отправляю код…</p></div>
-      <div class="codes" id="codes"></div>
-      <p class="err" id="e2"></p>
-      <div class="row">
-        <button class="btn pri" id="mailGo" type="button">Войти</button>
-        <button class="btn" id="mailAgain" type="button" disabled>Отправить ещё раз</button>
-        <button class="btn" id="mailOut" type="button">Выйти</button>
+      <div class="mpan" id="pan-tg" hidden>
+        <div class="qrrow">
+          <div class="qr" id="qr" aria-label="QR-код входа"></div>
+          <div class="qside">
+            <a class="btn pri" id="tgLink" href="#" target="_blank" rel="noopener">Открыть в Telegram</a>
+            <div class="status"><span class="qd ld" id="qrD"></span><span id="qrSt">Создаю код…</span></div>
+            <button class="btn" id="qrNew" type="button" hidden>Новый код</button>
+          </div>
+        </div>
       </div>
+
+      <div class="mpan" id="pan-pwd" hidden>
+        <div class="stack">
+          <input class="field" id="aEm" type="email" placeholder="Почта" autocomplete="username" autocapitalize="off" spellcheck="false">
+          <input class="field" id="aPw" type="password" placeholder="Пароль" autocomplete="current-password">
+          <button class="btn pri" id="pwGo" type="button">Подтвердить</button>
+        </div>
+      </div>
+
+      <div class="mpan" id="pan-mail" hidden>
+        <div class="mrow"><span class="ms ld" id="mailIc"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="14" rx="3"/><path d="m4 7 8 6 8-6"/></svg></span><p class="hint" id="mailHint" style="margin:0">Отправляю код…</p></div>
+        <div class="codes" id="codes"></div>
+        <div class="row">
+          <button class="btn pri" id="mailGo" type="button">Подтвердить</button>
+          <button class="btn" id="mailAgain" type="button" disabled>Отправить ещё раз</button>
+        </div>
+      </div>
+
+      <div class="mpan" id="pan-bk" hidden>
+        <div class="stack">
+          <input class="field mono" id="bkIn" type="text" placeholder="XXXXX-XXXXX" autocomplete="off" autocapitalize="characters" spellcheck="false" maxlength="11">
+          <button class="btn pri" id="bkGo" type="button">Подтвердить</button>
+        </div>
+      </div>
+
+      <button class="btn lnk" id="bkSw" type="button" hidden>Резервный код</button>
+      <p class="err" id="e1"></p>
     </section>
 
     <section id="p3" hidden>
@@ -850,7 +883,7 @@ textarea.field{resize:none;line-height:1.5;min-height:84px;padding:12px 15px;fon
       <div class="tile">
         <h3>Пароль для входа</h3>
         <dl class="kv"><dt>Сейчас</dt><dd id="pwNow">—</dd></dl>
-        <p class="hint" style="margin:14px 0 0">Пароль — второй способ входа вместо QR. Код с почты после него всё равно нужен. Добавить, сменить или удалить пароль можно только с PIN, который придёт на почту.</p>
+        <p class="hint" style="margin:14px 0 0">Почта и пароль — один из трёх способов входа. Добавить, сменить или удалить пароль можно только с PIN, который придёт на почту.</p>
         <div id="pwIdle" class="row" style="margin-top:14px"><button class="btn" id="pwAdd" type="button">Добавить пароль</button><button class="btn bad" id="pwDel" type="button" hidden>Удалить пароль</button></div>
         <div id="pwForm" class="stack" style="margin-top:14px" hidden>
           <div id="pwFields" class="stack">
@@ -863,6 +896,18 @@ textarea.field{resize:none;line-height:1.5;min-height:84px;padding:12px 15px;fon
           <div class="row" style="margin:0"><button class="btn pri" id="pwNext" type="button">Отправить PIN на почту</button><button class="btn" id="pwNo" type="button">Отмена</button></div>
         </div>
         <p class="err" id="epw"></p>
+      </div>
+      <div class="tile">
+        <h3>Резервные коды</h3>
+        <dl class="kv"><dt>Сейчас</dt><dd id="bkNow">—</dd></dl>
+        <p class="hint" style="margin:14px 0 0">На случай, если нет Telegram или почты. Каждый код работает один раз и заменяет один способ входа. Новый набор отменяет прежний.</p>
+        <div class="row" style="margin-top:14px"><button class="btn" id="bkMake" type="button">Выпустить новые коды</button></div>
+        <div id="bkShow" hidden>
+          <p class="hint" style="margin:16px 0 10px"><b>Сохрани их сейчас.</b> Второй раз они не покажутся.</p>
+          <div class="bkgrid" id="bkList"></div>
+          <div class="row" style="margin-top:12px"><button class="btn" id="bkCopy" type="button">Скопировать</button><button class="btn pri" id="bkDone" type="button">Я сохранил</button></div>
+        </div>
+        <p class="err" id="ebk"></p>
       </div>
     </div>
   </section>
@@ -888,7 +933,7 @@ textarea.field{resize:none;line-height:1.5;min-height:84px;padding:12px 15px;fon
 <script>
 (function(){
 "use strict";
-var API="https://nszndchtspjtlravojda.supabase.co/functions/v1/voob-core",API_X="https://nszndchtspjtlravojda.supabase.co/functions/v1/voob-extra",API_P="https://nszndchtspjtlravojda.supabase.co/functions/v1/voob-core-pwd";
+var API="https://nszndchtspjtlravojda.supabase.co/functions/v1/voob-core",API_X="https://nszndchtspjtlravojda.supabase.co/functions/v1/voob-extra",API_P="https://nszndchtspjtlravojda.supabase.co/functions/v1/voob-core-pwd",API_A="https://nszndchtspjtlravojda.supabase.co/functions/v1/voob-core-auth";
 var $=function(s,r){return (r||document).querySelector(s)};
 var $$=function(s,r){return Array.prototype.slice.call((r||document).querySelectorAll(s))};
 var TK="voobcore.t";
@@ -919,7 +964,7 @@ setInterval(idleTick,1000);
 function setToken(t){token=t;try{t?sessionStorage.setItem(TK,t):sessionStorage.removeItem(TK)}catch(e){}}
 function call(action,extra,fn){
   var b=Object.assign({action:action},extra||{});if(token)b.token=token;
-  return fetch(fn==="x"?API_X:fn==="p"?API_P:API,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(b)})
+  return fetch(fn==="x"?API_X:fn==="p"?API_P:fn==="a"?API_A:API,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(b)})
     .then(function(r){setConn(true);if(r.status!==401)lastAct=Date.now();return r.json().catch(function(){return {error:"Сервер ответил не так, как ждали"}}).then(function(j){j._http=r.status;return j})})
     .catch(function(){setConn(false);return {error:"Нет связи с сервером",_http:0}});
 }
@@ -927,13 +972,13 @@ function call(action,extra,fn){
 function api(action,extra,fn){
   return call(action,extra,fn).then(function(j){
     if(j.expired||(j._http===401&&!j.need_otp&&!j.need_step)){bye(true);return j}
-    if(j.need_otp){showMail();return j}
+    if(j.need_otp){bye(false);return j}
     if(j.need_step)return askStep().then(function(ok){return ok?call(action,extra,fn):j});
     return j;
   });
 }
 function show(id){["login","app"].forEach(function(x){$("#"+x).hidden=x!==id});$("#login").classList.remove("lout");bootOff()}
-function bye(expired){setToken(null);stopPoll();show("login");stage(1);startQr();if(expired)$("#e1").textContent="Сессия закончилась. Войди заново."}
+function bye(expired){setToken(null);stopPoll();show("login");stage(1);beginAuth(expired?"Сессия закончилась. Войди заново.":"")}
 
 /* ---------- поля для шестизначного кода ---------- */
 function mkCodes(host,onFull){
@@ -957,13 +1002,7 @@ var mailMsg={wrong:function(j){return "Неверный код. Осталось
 
 /* ---------- шаг 1: QR ---------- */
 var qrCode=null,pollT=null,qrTimer=null;
-function stage(n){
-  ["s1","s2","s3"].forEach(function(x,i){$("#"+x).classList.toggle("on",i<n)});
-  var ps=["p1","p2","p3"].map(function(x){return $("#"+x)}),prev=ps.filter(function(p){return !p.hidden&&!p.classList.contains("out")})[0];
-  function apply(){ps.forEach(function(p,i){p.classList.remove("out");p.hidden=i!==n-1})}
-  if(prev&&prev!==ps[n-1]&&!$("#login").hidden){prev.classList.add("out");setTimeout(apply,200)}else apply();
-}
-function qs(t,k){var d=$("#qrD"),e=$("#qrSt");d.className="qd "+k;e.textContent=t;e.classList.remove("sw");void e.offsetWidth;e.classList.add("sw")}
+function stage(n){$("#p1").hidden=n===3;$("#p3").hidden=n!==3}
 function qrOk(){var q=$("#qr");if(q.querySelector(".qok"))return;var o=document.createElement("div");o.className="qok chk";o.innerHTML='<svg viewBox="0 0 52 52"><circle cx="26" cy="26" r="24"/><path d="M15 27l8 8 14-16"/></svg>';q.appendChild(o)}
 function busy(b,on){b.classList.toggle("ld",!!on)}
 function mailIc(k){var e=$("#mailIc");e.className="ms "+k}
@@ -974,42 +1013,73 @@ function drawQr(text){
   for(var y=0;y<n;y++)for(var x=0;x<n;x++)if(q.isDark(y,x))d+="M"+x+" "+y+"h1v1h-1z";
   $("#qr").innerHTML='<svg viewBox="0 0 '+n+' '+n+'" shape-rendering="crispEdges"><path d="'+d+'" fill="#0c0d0f"/></svg>';
 }
-var pwOn=false;
-function pwView(on){
-  pwOn=on;$(".qrrow").style.display=on?"none":"";$("#pwBox").hidden=!on;$("#pwSw").textContent=on?"Войти через QR":"Войти по паролю";$("#e1").textContent="";
-  var h=$("#p1 h2"),t=$("#p1 .hint");if(h)h.textContent=on?"Войди по паролю":"Войди через Telegram";if(t)t.textContent=on?"После пароля нужен код с почты.":"Наведи камеру телефона на код или открой бота с телефона, на котором он установлен.";
-  if(on){stopPoll();setTimeout(function(){$("#pwIn").focus()},50)}else startQr();
+/* ---------- вход: любые два способа из трёх ---------- */
+var AF=null,done=[],AM=null,mc=null,cool=null,fin=false;
+var HINT0="Нужны любые два способа из трёх",HINT1="Выбери ещё один способ";
+function paint(){
+  $("#s1").classList.toggle("on",done.length>0);$("#s2").classList.toggle("on",done.length>1);
+  document.querySelectorAll("#mth .mt").forEach(function(b){var m=b.dataset.m,d=done.indexOf(m)>=0;b.classList.toggle("done",d);b.classList.toggle("on",AM===m&&!d);b.disabled=d})
+  $("#bkSw").classList.toggle("on",AM==="bk");
+  $("#lh").textContent=done.length?"Ещё один шаг":"Вход";$("#lhint").textContent=done.length?HINT1:HINT0;
 }
-function pwProbe(){call("pwd_public",null,"p").then(function(j){$("#pwSw").hidden=!j.has_pwd;if(!j.has_pwd&&pwOn)pwView(false)})}
-$("#pwSw").onclick=function(){pwView(!pwOn)};
-function pwLogin(){
-  var v=$("#pwIn").value;if(!v){$("#e1").textContent="Введи пароль";return}
-  busy($("#pwGo"),1);$("#e1").textContent="";
-  call("pwd_login",{password:v},"p").then(function(j){
-    busy($("#pwGo"),0);
-    if(j.status==="ok"&&j.token){$("#pwIn").value="";setToken(j.token);showMail();return}
-    $("#pwIn").value="";
-    $("#e1").textContent=j.status==="locked"?mailMsg.locked():j.status==="wrong"||j.status==="nopwd"?"Неверный пароль":(j.error||"Не получилось");
+function openM(m){
+  if(fin||done.indexOf(m)>=0&&m!=="bk")return;
+  var prev=AM;AM=m;$("#e1").textContent="";
+  ["tg","pwd","mail","bk"].forEach(function(x){$("#pan-"+x).hidden=x!==m});
+  if(prev==="tg"&&m!=="tg")stopPoll();
+  paint();
+  if(m==="tg"&&prev!=="tg")startQr();
+  if(m==="pwd")setTimeout(function(){$("#aEm").focus()},60);
+  if(m==="mail"&&prev!=="mail")beginMail();
+  if(m==="bk")setTimeout(function(){$("#bkIn").focus()},60);
+}
+document.querySelectorAll("#mth .mt").forEach(function(b){b.onclick=function(){openM(b.dataset.m)}});
+$("#bkSw").onclick=function(){openM(AM==="bk"?"tg":"bk")};
+function beginAuth(msg){
+  stopPoll();clearInterval(cool);fin=false;AF=null;done=[];AM=null;
+  ["tg","pwd","mail","bk"].forEach(function(x){$("#pan-"+x).hidden=true});
+  $("#aEm").value="";$("#aPw").value="";$("#bkIn").value="";paint();$("#e1").textContent=msg||"";
+  call("auth_begin",null,"a").then(function(j){
+    if(j.error||!j.flow){$("#e1").textContent=j.error||"Не удалось начать вход";return}
+    AF=j.flow;$("#mth .mt[data-m=pwd]").hidden=!j.has_pwd;$("#bkSw").hidden=!j.has_backup;
+    openM("tg");
   });
 }
-$("#pwGo").onclick=pwLogin;
-$("#pwIn").addEventListener("keydown",function(e){if(e.key==="Enter")pwLogin()});
+// ответ любого способа: либо «нужен ещё один», либо готовая сессия
+function fres(r,m){
+  if(r.status==="flow_expired"){beginAuth("Попытка устарела. Начни заново");return true}
+  if(r.status==="ok"&&r.token){
+    fin=true;stopPoll();setToken(r.token);done=r.factors||done;paint();
+    setTimeout(function(){stage(3)},500);
+    setTimeout(function(){$("#login").classList.add("lout");setTimeout(enter,430)},1500);
+    return true;
+  }
+  if(r.status==="need_more"||r.status==="have"){
+    done=r.factors||done;AM=null;
+    ["tg","pwd","mail","bk"].forEach(function(x){$("#pan-"+x).hidden=true});stopPoll();paint();return true;
+  }
+  return false;
+}
+function qs(t,k){var d=$("#qrD"),e=$("#qrSt");d.className="qd "+k;e.textContent=t;e.classList.remove("sw");void e.offsetWidth;e.classList.add("sw")}
 function startQr(){
-  if(pwOn){pwView(false);return}
-  pwProbe();
   stopPoll();$("#e1").textContent="";$("#qrNew").hidden=true;qs("Создаю код…","ld");$("#qr").className="qr ld";$("#qr").innerHTML="";
-  call("core_login_start").then(function(j){
+  call("auth_tg_start",{flow:AF},"a").then(function(j){
+    if(fres(j))return;
     if(j.error||!j.code){$("#e1").textContent=j.error||"Не удалось создать код";qs("Ошибка","bad");$("#qr").className="qr dead";$("#qrNew").hidden=false;return}
-    qrCode=j.code;$("#tgLink").href=j.link;$("#qr").className="qr";drawQr(j.link);
+    $("#tgLink").href=j.link;$("#qr").className="qr";drawQr(j.link);
     var until=Date.now()+(j.expires_in||600)*1000;
     qs("Ожидаю подтверждение","wt");
     (function tick(){
+      if(AM!=="tg")return;
       if(Date.now()>until){expireQr();return}
-      call("core_login_poll",{code:qrCode}).then(function(r){
-        if(r.status==="ok"&&r.token){stopPoll();setToken(r.token);qs("Подтверждено","ok");qrOk();setTimeout(function(){stage(2);beginMail()},900);return}
+      call("auth_tg_poll",{flow:AF},"a").then(function(r){
+        if(AM!=="tg")return;
+        if(r.status==="pending"){pollT=setTimeout(tick,2000);return}
         if(r.status==="forbidden"){stopPoll();qs("Отказано","bad");$("#qr").classList.add("dead");$("#e1").textContent="У этого аккаунта нет доступа";$("#qrNew").hidden=false;return}
         if(r.status==="expired"){expireQr();return}
-        if(r.error&&!r.status){$("#e1").textContent=r.error}
+        if(r.status==="ok"||r.status==="need_more"){qs("Подтверждено","ok");qrOk();setTimeout(function(){fres(r,"tg")},700);return}
+        if(fres(r))return;
+        if(r.error)$("#e1").textContent=r.error;
         pollT=setTimeout(tick,2000);
       });
     })();
@@ -1018,36 +1088,64 @@ function startQr(){
 function expireQr(){stopPoll();qs("Код устарел","bad");$("#qr").classList.add("dead");$("#qrNew").hidden=false}
 $("#qrNew").onclick=startQr;
 
-/* ---------- шаг 2: почта ---------- */
-var mc=null,cool=null;
-function showMail(){stopPoll();show("login");stage(2);beginMail()}
+/* почта и пароль */
+function pwLogin(){
+  var em=$("#aEm").value.trim(),v=$("#aPw").value;if(!em||!v){$("#e1").textContent="Введи почту и пароль";return}
+  busy($("#pwGo"),1);$("#e1").textContent="";
+  call("auth_pwd",{flow:AF,email:em,password:v},"a").then(function(j){
+    busy($("#pwGo"),0);$("#aPw").value="";
+    if(fres(j,"pwd"))return;
+    $("#e1").textContent=j.status==="locked"?mailMsg.locked():j.status==="wrong"||j.status==="nopwd"?"Неверная почта или пароль":(j.error||"Не получилось");
+  });
+}
+$("#pwGo").onclick=pwLogin;
+$("#aPw").addEventListener("keydown",function(e){if(e.key==="Enter")pwLogin()});
+$("#aEm").addEventListener("keydown",function(e){if(e.key==="Enter")$("#aPw").focus()});
+
+/* резервный код */
+function bkLogin(){
+  var v=$("#bkIn").value.trim();if(v.replace(/[^A-Za-z0-9]/g,"").length<10){$("#e1").textContent="Введи код целиком";return}
+  busy($("#bkGo"),1);$("#e1").textContent="";
+  call("auth_backup",{flow:AF,code:v},"a").then(function(j){
+    busy($("#bkGo"),0);$("#bkIn").value="";
+    if(fres(j,"bk"))return;
+    $("#e1").textContent=j.status==="locked"?mailMsg.locked():j.status==="wrong"?"Неверный код":(j.error||"Не получилось");
+  });
+}
+$("#bkGo").onclick=bkLogin;
+$("#bkIn").addEventListener("keydown",function(e){if(e.key==="Enter")bkLogin()});
+$("#bkIn").addEventListener("input",function(){var t=$("#bkIn").value.toUpperCase().replace(/[^A-Z0-9]/g,"").slice(0,10);$("#bkIn").value=t.length>5?t.slice(0,5)+"-"+t.slice(5):t});
+
+/* код с почты */
 function beginMail(){
-  show("login");stage(2);$("#e2").textContent="";
+  $("#e1").textContent="";
   if(!mc)mc=mkCodes($("#codes"),function(){$("#mailGo").click()});
   mc.clear();sendMail();
 }
 function sendMail(){
   $("#mailHint").textContent="Отправляю код…";mailIc("ld");$("#mailAgain").disabled=true;
-  call("mail_start",{purpose:"login"}).then(function(j){
-    if(j._http===401){bye(true);return}
+  call("auth_mail_start",{flow:AF},"a").then(function(j){
+    if(fres(j))return;
     if(j.status==="sent")$("#mailHint").textContent="Код отправлен на "+j.to;
     else if(j.status==="soon")$("#mailHint").textContent="Код уже отправлен на почту";
-    else if(j.status==="locked")$("#e2").textContent=mailMsg.locked();
-    else if(j.status==="undelivered"){$("#mailHint").textContent="Не удалось отправить код";$("#e2").textContent="Попробуй ещё раз чуть позже"}
-    else $("#e2").textContent=j.error||"Не удалось отправить код";
-    mailIc(j.status==="sent"||j.status==="soon"?"ok":"bad");var t=30,mb=$("#mailAgain");mb.classList.add("cd");mb.style.setProperty("--p",0);clearInterval(cool);cool=setInterval(function(){t--;mb.style.setProperty("--p",(30-t)/30);mb.textContent=t>0?"Ещё раз через "+t+" с":"Отправить ещё раз";if(t<=0){clearInterval(cool);mb.disabled=false;mb.classList.remove("cd")}},1000);$("#mailAgain").textContent="Ещё раз через 30 с";
+    else if(j.status==="locked")$("#e1").textContent=mailMsg.locked();
+    else if(j.status==="undelivered"){$("#mailHint").textContent="Не удалось отправить код";$("#e1").textContent="Попробуй ещё раз чуть позже"}
+    else $("#e1").textContent=j.error||"Не удалось отправить код";
+    mailIc(j.status==="sent"||j.status==="soon"?"ok":"bad");
+    var t=30,mb=$("#mailAgain");mb.classList.add("cd");mb.style.setProperty("--p",0);clearInterval(cool);
+    cool=setInterval(function(){t--;mb.style.setProperty("--p",(30-t)/30);mb.textContent=t>0?"Ещё раз через "+t+" с":"Отправить ещё раз";if(t<=0){clearInterval(cool);mb.disabled=false;mb.classList.remove("cd")}},1000);
+    mb.textContent="Ещё раз через 30 с";
   });
 }
-$("#mailAgain").onclick=function(){$("#e2").textContent="";mc.clear();sendMail()};
-$("#mailOut").onclick=function(){call("logout").then(function(){bye(false)})};
+$("#mailAgain").onclick=function(){$("#e1").textContent="";mc.clear();sendMail()};
 $("#mailGo").onclick=function(){
-  var v=mc.val();if(v.length<6){$("#e2").textContent="Введи все шесть цифр";return}
-  busy($("#mailGo"),1);mc.state("vf");
-  call("mail_verify",{purpose:"login",code:v}).then(function(j){
+  var v=mc.val();if(v.length<6){$("#e1").textContent="Введи все шесть цифр";return}
+  busy($("#mailGo"),1);mc.state("vf");$("#e1").textContent="";
+  call("auth_mail_verify",{flow:AF,code:v},"a").then(function(j){
     busy($("#mailGo"),0);
-    if(j.status==="ok"){mc.state("okc");setTimeout(function(){stage(3)},700);setTimeout(function(){$("#login").classList.add("lout");setTimeout(enter,430)},1800);return}
-    if(j._http===401){bye(true);return}
-    $("#e2").textContent=(mailMsg[j.status]?mailMsg[j.status](j):(j.error||"Не получилось"));mc.state("bad");setTimeout(function(){mc.clear()},500);
+    if(j.status==="ok"||j.status==="need_more"){mc.state("okc");clearInterval(cool);setTimeout(function(){fres(j,"mail")},600);return}
+    if(fres(j))return;
+    $("#e1").textContent=(mailMsg[j.status]?mailMsg[j.status](j):(j.error||"Не получилось"));mc.state("bad");setTimeout(function(){mc.clear()},500);
   });
 };
 
@@ -1397,7 +1495,7 @@ function loadSessions(){
   });
 }
 $("#sessList").onclick=function(e){var b=e.target.closest("[data-e]");if(!b)return;api("sess_end",{id:b.dataset.e}).then(function(j){if(j.error)$("#eset").textContent=j.error;else loadSessions()})};
-function loadSet(){loadSessions();loadPwd();
+function loadSet(){loadSessions();loadPwd();loadBk();
   call("whoami").then(function(j){
     if(j._http===401){bye(true);return}
     if(j.expires_at)$("#sExp").textContent=new Date(j.expires_at).toLocaleString("ru-RU");
@@ -1407,6 +1505,24 @@ function loadSet(){loadSessions();loadPwd();
     $("#chgCancelBox").hidden=!p;$("#chgIdle").hidden=!!p;
   });
 }
+/* ---------- резервные коды ---------- */
+function loadBk(){call("bk_status",null,"a").then(function(j){
+  if(j.status!=="ok"){$("#bkNow").textContent="—";return}
+  $("#bkNow").textContent=j.total?"Осталось "+j.left+" из "+j.total:"Не выпущены";
+  $("#bkMake").textContent=j.total?"Выпустить новые коды":"Выпустить коды";
+})}
+$("#bkMake").onclick=function(){
+  $("#ebk").textContent="";busy($("#bkMake"),1);
+  api("bk_make",null,"a").then(function(j){
+    busy($("#bkMake"),0);
+    if(j.status==="ok"&&j.codes){
+      $("#bkList").innerHTML=j.codes.map(function(c){return "<code>"+c+"</code>"}).join("");
+      $("#bkShow").hidden=false;$("#bkMake").hidden=true;$("#bkNow").textContent="Осталось "+j.codes.length+" из "+j.codes.length;
+    }else if(j.error)$("#ebk").textContent=j.error;
+  });
+};
+$("#bkCopy").onclick=function(){var t=[].map.call($("#bkList").children,function(x){return x.textContent}).join("\n");try{navigator.clipboard.writeText(t);$("#bkCopy").textContent="Скопировано"}catch(e){}};
+$("#bkDone").onclick=function(){$("#bkList").innerHTML="";$("#bkShow").hidden=true;$("#bkMake").hidden=false;$("#bkCopy").textContent="Скопировать";loadBk()};
 /* ---------- пароль ---------- */
 var pwMode="set",pwSent=false,hasPwd=false;
 function pwMsg(j){return mailMsg[j.status]?mailMsg[j.status](j):(j.error||"Не получилось")}
@@ -2013,10 +2129,9 @@ if(token){
   bootSay("Проверяю доступ…");
   call("whoami").then(function(j){
     if(j.status==="ok"&&j.verified)enter();
-    else if(j.status==="ok")showMail();
-    else{setToken(null);show("login");stage(1);startQr()}
+    else{setToken(null);show("login");stage(1);beginAuth()}
   });
-}else{show("login");stage(1);startQr()}
+}else{show("login");stage(1);beginAuth()}
 })();
 </script>
 </body>

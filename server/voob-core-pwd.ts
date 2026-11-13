@@ -28,6 +28,7 @@ const DAY = 86400000;
 const CORE_IDLE = 30 * 60000, CORE_MAX = 8 * 3600000;
 const MAIL_TTL = 10 * 60000, MAIL_TRIES = 3, MAIL_COOLDOWN = 30000;
 const LOCK_FAILS = 6, LOCK_WINDOW = 15 * 60000;
+const ALLOW_OLD_PWD_LOGIN = false;
 const PBKDF_ITER = 210000, PWD_MIN = 10, PWD_MAX = 128;
 
 function safeEqual(a: string, b: string) {
@@ -70,6 +71,8 @@ async function derive(pwd: string, saltHex: string) {
 
 // ---- вход по паролю: создаёт ту же WEB-сессию, что и QR; дальше нужен код с почты
 async function pwdLogin(body: any) {
+  // v2: старый вход «только пароль + почта» отключён — пароль теперь работает вместе с адресом почты в voob-core-auth
+  if (!ALLOW_OLD_PWD_LOGIN) return { status: "moved", error: "Обнови страницу: вход изменился" };
   if (await locked()) return { status: "locked" };
   const pwd = String(body?.password ?? "");
   const c = await cfg();
