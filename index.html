@@ -224,31 +224,31 @@ section[id^=p]{animation:rise .42s var(--ease) both}
 #side.open .lb{opacity:1;transform:none;transition-delay:.07s}
 .sbrand{display:flex;align-items:center;gap:10px;height:44px;padding-left:4px;margin-bottom:12px}
 .sbrand b{font:800 15px var(--disp);letter-spacing:.04em}
-#sp{display:flex;align-items:center;gap:10px;height:52px;width:52px;padding:0;border:1px solid transparent;background:none;border-radius:16px;color:var(--mute);cursor:pointer;position:relative;flex:none;transition:background .16s,width .3s var(--ease),border-color .16s,color .16s;overflow:hidden}
+#sp{display:flex;align-items:center;gap:10px;height:40px;width:52px;padding:0;border:1px solid transparent;background:none;border-radius:12px;color:var(--mute);cursor:pointer;position:relative;flex:none;transition:background .16s,width .3s var(--ease),border-color .16s,color .16s;overflow:hidden}
 #sp svg{width:22px;height:22px;flex:none;margin-left:15px}
-#side.open #sp{width:100%;height:42px;background:var(--tile);border-color:var(--line);border-radius:12px;margin-bottom:4px}
+#side.open #sp{width:100%;height:38px;background:var(--tile);border-color:var(--line);border-radius:12px;margin-bottom:4px}
 #side.open #sp svg{margin-left:12px;width:16px;height:16px}
 #sp:hover{background:var(--tile2);color:var(--fg)}
 #sp span{font-size:12.5px;font-weight:500;flex:1;text-align:left}
 #sp kbd{font:700 10.5px var(--sans);color:var(--dim);border:1px solid var(--line2);background:var(--bg);border-radius:6px;padding:2px 6px;margin-right:8px}
-#nav{position:relative;display:grid;grid-template-columns:minmax(0,1fr);gap:6px;margin-top:4px;overflow:clip}
-#navsel{position:absolute;left:0;top:0;width:100%;height:52px;border-radius:16px;background:var(--accent);transition:transform .38s var(--ease),background .3s;pointer-events:none}
-#nav button{position:relative;z-index:1;overflow:clip;display:flex;align-items:center;gap:0;height:52px;width:100%;border:0;background:none;border-radius:16px;color:var(--mute);cursor:pointer;padding:0;text-align:left;transition:color .22s,background .16s}
+#nav{position:relative;display:grid;grid-template-columns:minmax(0,1fr);gap:4px;margin-top:4px;overflow:clip}
+#navsel{position:absolute;left:0;top:0;width:100%;height:40px;border-radius:12px;background:var(--accent);transition:transform .38s var(--ease),background .3s;pointer-events:none}
+#nav button{position:relative;z-index:1;overflow:clip;display:flex;align-items:center;gap:0;height:40px;width:100%;border:0;background:none;border-radius:12px;color:var(--mute);cursor:pointer;padding:0;text-align:left;transition:color .22s,background .16s}
 #nav button:hover{color:var(--fg);background:rgba(255,255,255,.035)}
-#nav button svg{width:22px;height:22px;flex:none;margin:0 15px}
+#nav button svg{width:20px;height:20px;flex:none;margin:0 16px}
 #nav button .lb{font-size:13.5px;font-weight:600}
 #nav button[aria-selected=true]{color:var(--on-accent);background:none}
 #nav button[aria-selected=true] .lb{font-weight:700}
-#nav button.hasb:after{content:"";position:absolute;left:34px;top:7px;width:12px;height:12px;border-radius:50%;background:var(--bad);border:2px solid var(--tile)}
+#nav button.hasb:after{content:"";position:absolute;left:34px;top:3px;width:12px;height:12px;border-radius:50%;background:var(--bad);border:2px solid var(--tile)}
 .sfoot{margin-top:auto;display:grid;gap:4px}
-.who{display:flex;align-items:center;gap:10px;height:44px;padding-left:9px}
-.who i{width:34px;height:34px;border-radius:50%;flex:none;background:var(--tile3);display:grid;place-items:center;font:800 14px var(--disp);font-style:normal;margin-left:0}
+.who{display:flex;align-items:center;gap:10px;height:38px;padding-left:9px}
+.who i{width:30px;height:30px;border-radius:50%;flex:none;background:var(--tile3);display:grid;place-items:center;font:800 14px var(--disp);font-style:normal;margin-left:0}
 .who b{font-size:13px}.who i{overflow:hidden}.who i img{width:100%;height:100%;object-fit:cover;display:block}
-.conn{display:flex;align-items:center;gap:10px;height:30px;padding-left:21.5px;font-size:13px;font-weight:600;color:var(--mute)}
+.conn{display:flex;align-items:center;gap:10px;height:26px;padding-left:21.5px;font-size:13px;font-weight:600;color:var(--mute)}
 .cdot{width:9px;height:9px;border-radius:50%;background:var(--green);flex:none;box-shadow:0 0 0 0 rgba(52,211,153,.5);animation:ping 2.4s infinite}
 .cdot.bad{background:var(--bad);animation:none}
 @keyframes ping{70%{box-shadow:0 0 0 7px rgba(52,211,153,0)}100%{box-shadow:0 0 0 0 rgba(52,211,153,0)}}
-.fbtn{display:flex;align-items:center;height:44px;width:100%;border:0;background:none;border-radius:14px;color:var(--mute);cursor:pointer;padding:0;transition:background .16s,color .16s}
+.fbtn{display:flex;align-items:center;height:36px;width:100%;border:0;background:none;border-radius:12px;color:var(--mute);cursor:pointer;padding:0;transition:background .16s,color .16s}
 .fbtn:hover{background:rgba(255,255,255,.05);color:var(--fg)}
 .fbtn svg{width:20px;height:20px;flex:none;margin:0 16px;transition:transform .3s var(--ease)}
 .fbtn .lb{font-size:13px;font-weight:600}
@@ -1278,7 +1278,7 @@ function tl(t,body){return '<div class="tile"><h3>'+t+'</h3><div style="margin-t
 function showUserPage(sy){
   TABS.forEach(function(t){$("#t-"+t).hidden=true});var p=$("#t-user");p.hidden=false;CUR="us";
   $$("#nav button").forEach(function(x){x.setAttribute("aria-selected",x.dataset.tab==="us")});
-  $("#navsel").style.transform="translateY("+(TABS.indexOf("us")*58)+"px)";document.title="Пользователь · VOOB CORE";
+  $("#navsel").style.transform="translateY("+(TABS.indexOf("us")*44)+"px)";document.title="Пользователь · VOOB CORE";
   var kids=$("#ubody").children;for(var j=0;j<kids.length;j++)kids[j].style.setProperty("--i",Math.min(j,22));
   var b=$("#ubody");if(!sy){b.classList.remove("enter");void b.offsetWidth;b.classList.add("enter");setTimeout(function(){b.classList.remove("enter")},1200)}
   window.scrollTo(0,sy||0);
@@ -1726,7 +1726,7 @@ pheads();
 document.addEventListener("click",function(e){var b=e.target.closest("[data-refresh]");if(b)tab(b.dataset.refresh,true)});
 function uiTab(k){
   CUR=k;
-  var i=TABS.indexOf(k);$("#navsel").style.transform="translateY("+(i*58)+"px)";
+  var i=TABS.indexOf(k);$("#navsel").style.transform="translateY("+(i*44)+"px)";
   document.title=(k==="ov"?"":TITLES[k][1]+" · ")+"VOOB CORE";
   var s=$("#t-"+k);
   if(s){
