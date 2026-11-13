@@ -2158,20 +2158,17 @@ var VM=(function(){
     if(e.button||e.metaKey||e.ctrlKey||e.shiftKey||e.altKey)return;e.preventDefault();if(busy)return;busy=true;
     var url=a.href+(a.href.indexOf("?")<0?"?f=c":"&f=c");
     if(matchMedia("(prefers-reduced-motion:reduce)").matches||!document.body.animate){location.href=url;return}
-    var lg=$("#login"),b=$("#boot"),bx=$(".bbox",b);
-    $("#bst").textContent="Возвращаюсь на voob.kz…";
-    b.hidden=false;b.classList.remove("off");b.style.cssText="animation:none;opacity:0;visibility:visible;pointer-events:all";
-    bx.style.animation="none";[].forEach.call(bx.children,function(c){c.style.animation="none"});
-    lg.animate([{opacity:1,transform:"none",filter:"blur(0)"},{opacity:0,transform:"scale(.96)",filter:"blur(12px)"}],{duration:600,easing:"cubic-bezier(.7,0,.2,1)",fill:"forwards"});
-    b.animate([{opacity:0},{opacity:1}],{duration:500,delay:300,easing:"ease-in-out",fill:"forwards"});
-    setTimeout(function(){
-      var slot=$("[data-mark]",b),sr=slot.getBoundingClientRect(),sx=sr.left+sr.width/2,sy=sr.top+sr.height/2,dy0=innerHeight/2-sy;
-      var S=Math.round(76*2.2),k0=76/S,w=document.createElement("div");w.style.cssText="position:fixed;z-index:200;left:"+(sx-S/2)+"px;top:"+(sy-S/2)+"px;width:"+S+"px;height:"+S+"px;transform:scale("+k0+")";
-      var sv=VM.make(S);VM.set(sv,1);w.appendChild(sv);document.body.appendChild(w);slot.style.visibility="hidden";
-      bx.animate([{opacity:1},{opacity:0}],{duration:650,easing:"ease-in",fill:"forwards"});
-      VM.tw(1000,function(e){VM.set(sv,1-e);w.style.transform="translateY("+dy0*e+"px) scale("+(k0+(1-k0)*e)+")"});
-    },900);
-    setTimeout(function(){location.href=url},2100);
+    try{fetch(a.href,{mode:"no-cors",credentials:"omit"})}catch(x){}   /* греем кэш voob.kz, пока играет анимация */
+    var lg=$("#login"),S=167,ov=document.createElement("div"),w=document.createElement("div"),sv=VM.make(S);
+    ov.style.cssText="position:fixed;inset:0;z-index:300;background:#0B0B0D;opacity:0;pointer-events:all";
+    w.style.cssText="position:absolute;left:50%;top:50%;width:"+S+"px;height:"+S+"px;margin:"+(-S/2)+"px 0 0 "+(-S/2)+"px;opacity:0;will-change:transform,opacity";
+    VM.set(sv,1);w.appendChild(sv);ov.appendChild(w);document.body.appendChild(ov);
+    var EO="cubic-bezier(.22,1,.36,1)";
+    lg.animate([{opacity:1,transform:"none"},{opacity:0,transform:"scale(.97)"}],{duration:450,easing:"ease-in",fill:"forwards"});
+    ov.animate([{opacity:0},{opacity:1}],{duration:450,easing:"ease-out",fill:"forwards"});
+    w.animate([{opacity:0,transform:"scale(.72)"},{opacity:1,transform:"scale(1)"}],{duration:550,delay:250,easing:EO,fill:"forwards"});
+    /* кольца-знак CORE → кольца VOOB, финальный кадр = первый кадр заставки на voob.kz (центр, 167px, #0B0B0D) */
+    setTimeout(function(){VM.tw(850,function(e){VM.set(sv,1-e)},function(){VM.set(sv,0);requestAnimationFrame(function(){requestAnimationFrame(function(){location.href=url})})})},350);
   });
 })();
 
