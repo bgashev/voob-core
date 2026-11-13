@@ -683,6 +683,22 @@ textarea.field{resize:none;line-height:1.5;min-height:84px;padding:12px 15px;fon
 #bkSw.on{color:var(--fg)}
 .bkgrid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
 .bkgrid code{font:600 14px ui-monospace,Menlo,Consolas,monospace;letter-spacing:.08em;padding:10px 12px;border-radius:10px;background:rgba(255,255,255,.05);text-align:center;user-select:all}
+
+/* ---- настройки: сводка и две колонки без пустот ---- */
+.sstat{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px}
+.sst{position:relative;display:grid;gap:3px;padding:14px 16px 14px 34px;border-radius:18px;background:var(--tile);border:1px solid var(--line);min-width:0}
+.sst small{font-size:11.5px;color:var(--mute);letter-spacing:.02em}
+.sst b{font-size:14px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.sst .sd{position:absolute;left:16px;top:20px;width:8px;height:8px;border-radius:50%;background:var(--green,#2ecf8f)}
+.sst .sd.off{background:var(--dim)}.sst .sd.warn{background:var(--warn,#e8b04a)}
+.sgrid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px;align-items:start}
+.scol{display:grid;gap:14px;min-width:0}
+#t-set .tile{padding:18px 20px;border-radius:20px}
+#t-set .tile>h3{font-size:15px}
+#t-set .kv{margin-top:10px;gap:8px 18px}
+#t-set .err:empty{display:none}
+#t-set .tile>.row:last-child,#t-set .tile>.hint:last-child{margin-bottom:0}
+@media(max-width:900px){.sgrid{grid-template-columns:1fr}.sstat{grid-template-columns:repeat(2,minmax(0,1fr))}}
 </style>
 </head>
 <body>
@@ -856,34 +872,18 @@ textarea.field{resize:none;line-height:1.5;min-height:84px;padding:12px 15px;fon
 
   <section id="t-user" class="pg" hidden><div id="ubody"></div></section>
   <section id="t-set" class="stack" hidden>
-    <div class="tile"><h3>Акцентный цвет</h3><p class="hint" style="margin:6px 0 0">Красит кнопки, выделение и графики. Запоминается в этом браузере.</p><div id="accs"></div></div>
-    <div class="two">
-      <div class="tile">
-        <h3>Сессия</h3>
-        <div id="sessList" class="list" style="margin-top:14px"></div>
-        <dl class="kv"><dt>Действует до</dt><dd id="sExp" class="mono">—</dd><dt>Простой</dt><dd>выход через 30 минут без действий</dd></dl>
-        <div class="row"><button class="btn bad" id="logout" type="button">Выйти</button></div>
-      </div>
-      <div class="tile">
-        <h3>Почта для кодов</h3>
-        <dl class="kv"><dt>Сейчас</dt><dd id="mNow" class="mono">—</dd><dt>Смена</dt><dd id="mPend">не запланирована</dd></dl>
-        <div id="chgIdle" class="stack" style="margin-top:14px">
-          <input class="field" id="newMail" type="email" placeholder="новый адрес" autocomplete="off">
-          <p class="hint" style="margin:0">Нужен код со старой почты, код на новую и код из бота в Telegram. После этого смена вступит в силу через 24 часа, её можно отменить.</p>
-          <button class="btn" id="chgGo" type="button">Сменить почту</button>
-        </div>
-        <div id="chgCodes" class="stack" style="margin-top:14px" hidden>
-          <input class="field mono" id="cNew" inputmode="numeric" maxlength="6" placeholder="код с новой почты">
-          <input class="field mono" id="cTg" inputmode="numeric" maxlength="6" placeholder="код из бота Telegram">
-          <div class="row" style="margin:0"><button class="btn pri" id="chgOk" type="button">Подтвердить</button><button class="btn" id="chgNo" type="button">Отмена</button></div>
-        </div>
-        <div id="chgCancelBox" class="row" hidden><button class="btn bad" id="chgCancel" type="button">Отменить смену</button></div>
-        <p class="err" id="eset"></p>
-      </div>
-      <div class="tile">
+    <div class="sstat" id="sstat">
+      <div class="sst"><span class="sd"></span><small>Сессия до</small><b id="ssSess">—</b></div>
+      <div class="sst"><span class="sd"></span><small>Почта для кодов</small><b id="ssMail">—</b></div>
+      <div class="sst"><span class="sd" id="ssPwdD"></span><small>Пароль</small><b id="ssPwd">—</b></div>
+      <div class="sst"><span class="sd" id="ssBkD"></span><small>Резервные коды</small><b id="ssBk">—</b></div>
+    </div>
+    <div class="sgrid">
+      <div class="scol">
+<div class="tile">
         <h3>Пароль для входа</h3>
         <dl class="kv"><dt>Сейчас</dt><dd id="pwNow">—</dd></dl>
-        <p class="hint" style="margin:14px 0 0">Почта и пароль — один из трёх способов входа. Добавить, сменить или удалить пароль можно только с PIN, который придёт на почту.</p>
+        <p class="hint" style="margin:14px 0 0">Один из трёх способов входа вместе с адресом почты. Менять можно только с PIN из письма.</p>
         <div id="pwIdle" class="row" style="margin-top:14px"><button class="btn" id="pwAdd" type="button">Добавить пароль</button><button class="btn bad" id="pwDel" type="button" hidden>Удалить пароль</button></div>
         <div id="pwForm" class="stack" style="margin-top:14px" hidden>
           <div id="pwFields" class="stack">
@@ -897,10 +897,10 @@ textarea.field{resize:none;line-height:1.5;min-height:84px;padding:12px 15px;fon
         </div>
         <p class="err" id="epw"></p>
       </div>
-      <div class="tile">
+<div class="tile">
         <h3>Резервные коды</h3>
         <dl class="kv"><dt>Сейчас</dt><dd id="bkNow">—</dd></dl>
-        <p class="hint" style="margin:14px 0 0">На случай, если нет Telegram или почты. Каждый код работает один раз и заменяет один способ входа. Новый набор отменяет прежний.</p>
+        <p class="hint" style="margin:14px 0 0">Заменяют один способ входа, каждый работает один раз. Новый набор отменяет прежний.</p>
         <div class="row" style="margin-top:14px"><button class="btn" id="bkMake" type="button">Выпустить новые коды</button></div>
         <div id="bkShow" hidden>
           <p class="hint" style="margin:16px 0 10px"><b>Сохрани их сейчас.</b> Второй раз они не покажутся.</p>
@@ -908,6 +908,32 @@ textarea.field{resize:none;line-height:1.5;min-height:84px;padding:12px 15px;fon
           <div class="row" style="margin-top:12px"><button class="btn" id="bkCopy" type="button">Скопировать</button><button class="btn pri" id="bkDone" type="button">Я сохранил</button></div>
         </div>
         <p class="err" id="ebk"></p>
+      </div>
+<div class="tile">
+        <h3>Сессия</h3>
+        <div id="sessList" class="list" style="margin-top:14px"></div>
+        <dl class="kv"><dt>Действует до</dt><dd id="sExp" class="mono">—</dd><dt>Простой</dt><dd>выход через 30 минут</dd></dl>
+        <div class="row"><button class="btn bad" id="logout" type="button">Выйти</button></div>
+      </div>
+      </div>
+      <div class="scol">
+<div class="tile">
+        <h3>Почта для кодов</h3>
+        <dl class="kv"><dt>Сейчас</dt><dd id="mNow" class="mono">—</dd><dt>Смена</dt><dd id="mPend">не запланирована</dd></dl>
+        <div id="chgIdle" class="stack" style="margin-top:14px">
+          <input class="field" id="newMail" type="email" placeholder="новый адрес" autocomplete="off">
+          <p class="hint" style="margin:0">Нужны код со старой почты, код на новую и код из бота. Смена вступит в силу через 24 часа, её можно отменить.</p>
+          <button class="btn" id="chgGo" type="button">Сменить почту</button>
+        </div>
+        <div id="chgCodes" class="stack" style="margin-top:14px" hidden>
+          <input class="field mono" id="cNew" inputmode="numeric" maxlength="6" placeholder="код с новой почты">
+          <input class="field mono" id="cTg" inputmode="numeric" maxlength="6" placeholder="код из бота Telegram">
+          <div class="row" style="margin:0"><button class="btn pri" id="chgOk" type="button">Подтвердить</button><button class="btn" id="chgNo" type="button">Отмена</button></div>
+        </div>
+        <div id="chgCancelBox" class="row" hidden><button class="btn bad" id="chgCancel" type="button">Отменить смену</button></div>
+        <p class="err" id="eset"></p>
+      </div>
+      <div class="tile"><h3>Акцентный цвет</h3><p class="hint" style="margin:6px 0 0">Красит кнопки, выделение и графики. Запоминается в этом браузере.</p><div id="accs"></div></div>
       </div>
     </div>
   </section>
@@ -1505,6 +1531,15 @@ function loadSet(){loadSessions();loadPwd();loadBk();
     $("#chgCancelBox").hidden=!p;$("#chgIdle").hidden=!!p;
   });
 }
+/* ---------- сводка в настройках ---------- */
+function sumSet(){
+  var g=function(i){var e=$(i);return e?e.textContent.trim():""};
+  var ex=g("#sExp");$("#ssSess").textContent=ex&&ex!=="—"?ex:"—";
+  $("#ssMail").textContent=g("#mNow")||"—";
+  var pw=g("#pwNow"),has=/^Задан/.test(pw);$("#ssPwd").textContent=has?"задан":pw==="—"?"—":"не задан";$("#ssPwdD").className="sd"+(has?"":" off");
+  var bk=g("#bkNow"),m=bk.match(/(\d+)\s+из/);$("#ssBk").textContent=m?"осталось "+m[1]:bk==="—"?"—":"не выпущены";$("#ssBkD").className="sd"+(m?(+m[1]<3?" warn":""):" off");
+}
+(function(){var mo=new MutationObserver(sumSet);["#sExp","#mNow","#pwNow","#bkNow"].forEach(function(i){var e=$(i);if(e)mo.observe(e,{childList:true,characterData:true,subtree:true})});sumSet()})();
 /* ---------- резервные коды ---------- */
 function loadBk(){call("bk_status",null,"a").then(function(j){
   if(j.status!=="ok"){$("#bkNow").textContent="—";return}
