@@ -699,6 +699,17 @@ textarea.field{resize:none;line-height:1.5;min-height:84px;padding:12px 15px;fon
 #t-set .err:empty{display:none}
 #t-set .tile>.row:last-child,#t-set .tile>.hint:last-child{margin-bottom:0}
 @media(max-width:900px){.sgrid{grid-template-columns:1fr}.sstat{grid-template-columns:repeat(2,minmax(0,1fr))}}
+
+/* ---- обзор и промокоды: без пустот ---- */
+.ovrow{display:grid;grid-template-columns:minmax(0,2fr) minmax(260px,1fr);gap:14px;align-items:stretch}
+.ovrow:has(#evbox[hidden]){grid-template-columns:minmax(0,1fr)}
+#evbox{display:flex;flex-direction:column;min-width:0}
+#evbox>h3{margin:0 0 12px}
+#evbox .list{flex:1;align-content:start;overflow:auto;max-height:330px}
+.prgrid{display:grid;grid-template-columns:minmax(300px,380px) minmax(0,1fr);gap:14px;align-items:start}
+.prform{position:sticky;top:14px}
+.prform .two{gap:10px}
+@media(max-width:1100px){.ovrow{grid-template-columns:minmax(0,1fr)}.prgrid{grid-template-columns:minmax(0,1fr)}.prform{position:static}}
 </style>
 </head>
 <body>
@@ -804,10 +815,12 @@ textarea.field{resize:none;line-height:1.5;min-height:84px;padding:12px 15px;fon
 
   <section id="t-ov" class="stack">
     <div class="tile tool"><div class="seg" id="perSeg"><button data-d="7" aria-pressed="false">7 дней</button><button data-d="30" aria-pressed="true">30 дней</button><button data-d="90" aria-pressed="false">90 дней</button><button data-d="180" aria-pressed="false">6 месяцев</button><button data-d="365" aria-pressed="false">Год</button><button data-d="c" aria-pressed="false">Свой</button></div><span class="mt" id="perCust"></span><span class="sp1"></span><span class="dm" id="perCmp"></span></div>
-    <div class="tile" id="evbox" hidden><h3>Нового с прошлого визита</h3><div class="list" id="evlist" style="margin-top:12px"></div></div>
     <div class="bento" id="stats"></div>
     <div class="tile" id="plat" hidden><h3>Платформы за 7 дней</h3><div class="grid" id="platG" style="margin-top:12px"></div></div>
-    <div class="tile"><div class="chartT"><h3>Активность и новые люди<span class="sub" id="gran"></span></h3><div class="legend" id="lg1"></div></div><div id="ch1"></div></div>
+    <div class="ovrow">
+      <div class="tile"><div class="chartT"><h3>Активность и новые люди<span class="sub" id="gran"></span></h3><div class="legend" id="lg1"></div></div><div id="ch1"></div></div>
+      <div class="tile" id="evbox" hidden><h3>Нового с прошлого визита</h3><div class="list" id="evlist"></div></div>
+    </div>
     <div class="two"><div class="tile"><div class="chartT"><h3>Тренировки</h3></div><div id="ch2"></div></div><div class="tile"><div class="chartT"><h3>Выручка</h3></div><div id="ch3"></div></div></div>
     <p class="err" id="eov"></p>
   </section>
@@ -853,18 +866,20 @@ textarea.field{resize:none;line-height:1.5;min-height:84px;padding:12px 15px;fon
     </div>
   </section>
   <section id="t-pr" class="stack" hidden>
-    <div class="tile stack">
+   <div class="prgrid">
+    <div class="tile stack prform">
       <h3>Новые промокоды</h3>
       <div class="two"><select class="field" id="pk"><option value="pro">PRO, дней</option><option value="gift">Подарок</option></select>
       <input class="field" id="pv" type="number" min="1" max="3650" placeholder="Дней PRO" value="30"><div class="gpk" id="pgk" hidden></div></div>
-      <div class="two"><input class="field" id="pc" type="number" min="1" max="5000" placeholder="Сколько кодов" value="1"><input class="field" id="pu" type="number" min="1" placeholder="Использований на код" value="1"></div>
-      <div class="two"><input class="field" id="pe" type="number" min="0" placeholder="Срок, дней (0 без срока)" value="0"><input class="field" id="pcu" placeholder="Свой код, если один (не обязательно)"></div>
+      <div class="two"><input class="field" id="pc" type="number" min="1" max="5000" placeholder="Сколько кодов" value="1"><input class="field" id="pu" type="number" min="1" placeholder="Использований" value="1"></div>
+      <div class="two"><input class="field" id="pe" type="number" min="0" placeholder="Срок, дней (0 — без)" value="0"><input class="field" id="pcu" placeholder="Свой код (если один)"></div>
       <input class="field" id="pn" maxlength="120" placeholder="Заметка (не обязательно)">
       <div class="row" style="margin:0"><button class="btn pri" id="pgo" type="button">Создать</button></div>
       <p class="err" id="epr"></p>
       <textarea class="field mono" id="pout" readonly hidden style="min-height:120px"></textarea>
     </div>
     <div class="tile stack"><h3>Все коды</h3><div class="list" id="plst"></div></div>
+   </div>
   </section>
   <section id="t-lg" class="stack" hidden>
     <div class="list" id="glist"></div><p class="err" id="elg"></p>
@@ -1885,6 +1900,7 @@ function chart(id,rows,ser,kind,H,na){
 }
 var rzT=0;
 window.addEventListener("resize",function(){clearTimeout(rzT);rzT=setTimeout(function(){if(CUR!=="ov")return;for(var id in CHS){var c=CHS[id];chart(id,c[0],c[1],c[2],c[3],true)}},180)});
+if(window.ResizeObserver){var rw=0,ro=new ResizeObserver(function(es){var w=es[0].contentRect.width;if(Math.abs(w-rw)<4)return;rw=w;clearTimeout(rzT);rzT=setTimeout(function(){if(CUR!=="ov")return;for(var id in CHS){var c=CHS[id];chart(id,c[0],c[1],c[2],c[3],true)}},120)});var c1=$("#ch1");if(c1)ro.observe(c1)}
 
 function loadOv(){
   loadEvents();loadPlat();perSync();
