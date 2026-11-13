@@ -706,7 +706,8 @@ textarea.field{resize:none;line-height:1.5;min-height:84px;padding:12px 15px;fon
 #evbox{display:flex;flex-direction:column;min-width:0}
 #evbox>h3{margin:0 0 12px}
 #evbox .list{flex:1;align-content:start;overflow:auto;max-height:330px}
-.prgrid{display:grid;grid-template-columns:minmax(300px,380px) minmax(0,1fr);gap:14px;align-items:start}
+.prgrid{display:grid;grid-template-columns:minmax(0,1fr);gap:14px;align-items:start}
+.prgrid>.tile.promo{min-width:0}
 .prform{position:sticky;top:14px}
 .prform .two{gap:10px}
 @media(max-width:1100px){.ovrow{grid-template-columns:minmax(0,1fr)}.prgrid{grid-template-columns:minmax(0,1fr)}.prform{position:static}}
@@ -2054,7 +2055,7 @@ function audRefresh(){api("audience",{},"x").then(function(j){if(j&&j.all!=null)
 
 /* ---------- промокоды: конструктор ---------- */
 (function(){
-  var old=$("#t-pr > .tile.stack");if(!old)return;
+  var old=$("#t-pr .tile.prform");if(!old)return;
   var tile=document.createElement("div");tile.className="tile promo";
   var dayChips=[7,14,30,90,180,365].map(function(d){return '<button type="button" data-v="'+d+'">'+d+"</button>"}).join("");
   tile.innerHTML=
