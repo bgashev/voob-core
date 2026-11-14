@@ -658,8 +658,16 @@ async function refundReject(body: any) {
 }
 
 async function broadcast(body: any) {
-  const text = String(body?.text ?? "").trim().slice(0, 3500);
-  if (text.length < 2) return { error: "Пустое сообщение" };
+  const img = typeof body?.image === "string" && body.image.length ? body.image : "";
+  const text = String(body?.text ?? "").trim().slice(0, img ? 1000 : 3500);
+  if (text.length < 2 && !img) return { error: "Пустое сообщение" };
+  let bytes: Uint8Array | null = null;
+  if (img) {
+    const m = img.match(/^data:image\/(jpeg|png|webp);base64,([A-Za-z0-9+/=]+)$/);
+    if (!m || img.length > 7_000_000) return { error: "Картинка не подошла: нужен JPEG, PNG или WebP до 5 МБ" };
+    try { bytes = Uint8Array.from(atob(m[2]), (c) => c.charCodeAt(0)); } catch { return { error: "Картинка повреждена" }; }
+    if (bytes.length > 5_000_000) return { error: "Картинка больше 5 МБ" };
+  }
   const target = String(body?.target ?? "all");
   let ids: number[] = [];
   if (target === "me") ids = [ADMIN];
@@ -670,13 +678,26 @@ async function broadcast(body: any) {
     const { data } = await r.limit(5000);
     ids = (data ?? []).map((x: any) => x.tg_id);
   }
+  let fileId = "";
+  const sendImg = async (to: number): Promise<boolean> => {
+    if (fileId) { const r = await tg("sendPhoto", { chat_id: to, photo: fileId, caption: text || undefined, reply_markup: openBtn }); return !!r?.ok; }
+    const fd = new FormData();
+    fd.append("chat_id", String(to)); if (text) fd.append("caption", text);
+    fd.append("reply_markup", JSON.stringify(openBtn));
+    fd.append("photo", new Blob([bytes!], { type: "image/jpeg" }), "voob.jpg");
+    try {
+      const r = await (await fetch(`https://api.telegram.org/bot${BOT}/sendPhoto`, { method: "POST", body: fd })).json();
+      if (r?.ok) { const ph = r.result?.photo ?? []; fileId = ph[ph.length - 1]?.file_id ?? ""; return true; }
+    } catch { /* ниже посчитаем как неудачу */ }
+    return false;
+  };
   let sent = 0, failed = 0;
   for (const id of ids) {
-    const r = await say(id, text);
-    if (r?.ok) sent++; else failed++;
+    const ok = bytes ? await sendImg(id) : !!(await say(id, text))?.ok;
+    if (ok) sent++; else failed++;
     await new Promise((res) => setTimeout(res, 40));
   }
-  await log("broadcast", null, { target, sent, failed, text: text.slice(0, 200) });
+  await log("broadcast", null, { target, sent, failed, text: text.slice(0, 200), image: !!bytes });
   return { status: "ok", sent, failed, total: ids.length };
 }
 

@@ -240,6 +240,11 @@ section[id^=p]{animation:rise .42s var(--ease) both}
 #nav button[aria-selected=true]{color:var(--on-accent);background:none}
 #nav button[aria-selected=true] .lb{font-weight:700}
 #nav button.hasb:after{content:"";position:absolute;left:34px;top:3px;width:12px;height:12px;border-radius:50%;background:var(--bad);border:2px solid var(--tile)}
+.bimg{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+.bthumb{display:flex;gap:12px;align-items:center;background:var(--tile2);border:1px solid var(--line);border-radius:14px;padding:6px 8px 6px 6px;min-width:0}
+.bthumb img{width:48px;height:48px;border-radius:10px;object-fit:cover;flex:none}
+.bthumb div{display:grid;min-width:0}.bthumb b{font-size:13px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:200px}.bthumb small{color:var(--mute);font-size:11.5px}
+.tgp{display:block;width:100%;border-radius:10px 10px 4px 4px;margin-bottom:6px;max-height:220px;object-fit:cover}
 .sfoot{margin-top:auto;display:grid;gap:4px}
 .wver{text-align:center;font-size:8px;letter-spacing:.08em;font-weight:400;opacity:.2;user-select:none;color:var(--mute);transition:opacity .35s ease;padding:4px 0 2px;cursor:pointer;white-space:nowrap}
 .wver:hover{opacity:.85}
@@ -1038,6 +1043,9 @@ textarea.field{resize:none;line-height:1.5;min-height:84px;padding:12px 15px;fon
       <h3>Сообщение в Telegram всем</h3>
       <select class="field" id="bt"><option value="me">Только мне (проверка)</option><option value="pro">Всем с PRO</option><option value="all">Всем пользователям</option></select>
       <textarea class="field" id="btext" maxlength="3500" placeholder="Текст сообщения"></textarea>
+      <div class="bimg" id="bimg"><input type="file" id="bfile" accept="image/jpeg,image/png,image/webp" hidden>
+        <button class="btn sm" id="bpick" type="button"><i data-ic="image"></i>Прикрепить картинку</button>
+        <div class="bthumb" id="bthumb" hidden><img id="bthumbi" alt=""><div><b id="bthumbn"></b><small id="bthumbs"></small></div><button class="btn sm" id="brm" type="button" title="Убрать картинку">Убрать</button></div></div>
       <div class="row" style="margin:0"><button class="btn pri" id="bgo" type="button">Отправить</button></div>
       <p class="err" id="ebc"></p>
     </div>
@@ -2203,9 +2211,9 @@ var pRz=0;window.addEventListener("resize",function(){clearTimeout(pRz);pRz=setT
 /* ---------- рассылка ---------- */
 $("#bgo").onclick=function(){
   var t=$("#btext").value.trim(),tg=$("#bt").value;$("#ebc").textContent="";
-  if(t.length<2){$("#ebc").textContent="Напиши текст";return}
-  var go=function(){$("#bgo").disabled=true;api("broadcast",{text:t,target:tg}).then(function(j){$("#bgo").disabled=false;
-    $("#ebc").innerHTML=j.error?esc(j.error):'<span class="ok">Доставлено '+j.sent+" из "+j.total+(j.failed?", не дошло "+j.failed:"")+"</span>";if(!j.error&&tg!=="me")$("#btext").value=""})};
+  if(t.length<2&&!bcImg){$("#ebc").textContent="Напиши текст или прикрепи картинку";return}
+  var go=function(){$("#bgo").disabled=true;api("broadcast",{text:t,target:tg,image:bcImg||undefined}).then(function(j){$("#bgo").disabled=false;
+    $("#ebc").innerHTML=j.error?esc(j.error):'<span class="ok">Доставлено '+j.sent+" из "+j.total+(j.failed?", не дошло "+j.failed:"")+"</span>";if(!j.error&&tg!=="me"){$("#btext").value="";bcSetImg(null)}})};
   if(tg==="me")return go();
   dlg('<h3>Отправить рассылку?</h3><p class="hint">'+(tg==="pro"?"Всем с PRO":"Всем пользователям")+'. Остановить после старта нельзя.</p><div class="row"><button class="btn pri sm" id="bcy">Отправить</button><button class="btn sm" data-close>Отмена</button></div>');
   $("#bcy").onclick=function(){closeDlg();go()};
@@ -2387,6 +2395,7 @@ $("#chgCancel").onclick=function(){api("chg_cancel").then(function(j){$("#eset")
 
 /* ---------- оформление как в программе VOOB CORE ---------- */
 var IC={
+ image:'<rect x="3" y="4" width="18" height="16" rx="3"/><circle cx="9" cy="10" r="1.8"/><path d="M21 16l-5-5-9 9"/>',
  ov:'<rect x="3" y="3" width="7" height="9" rx="2"/><rect x="14" y="3" width="7" height="5" rx="2"/><rect x="14" y="12" width="7" height="9" rx="2"/><rect x="3" y="16" width="7" height="5" rx="2"/>',
  us:'<circle cx="9" cy="8" r="3.5"/><path d="M2.5 20c.6-3.6 3.4-5.5 6.5-5.5s5.9 1.9 6.5 5.5"/><circle cx="17.5" cy="9" r="2.5"/><path d="M18 14.5c2 .3 3.2 1.8 3.5 4.5"/>',
  user:'<circle cx="12" cy="8" r="4"/><path d="M4 21c.7-4 4-6 8-6s7.3 2 8 6"/>',
@@ -2764,8 +2773,8 @@ function buildSplit(secId,formSel,html){
 var annPrev=buildSplit("an","#t-an > .tile.stack",'<div class="chartT"><h3>Как это увидят</h3><div class="seg" id="pvTab"><button data-t="app" aria-pressed="true">В приложении</button><button data-t="tg" aria-pressed="false">В Telegram</button></div></div><div class="pvstage"><div id="pvApp" class="pvpane"></div><div id="pvTg" class="pvpane" hidden></div></div><p class="hint" id="pvWho" style="margin-top:12px"></p>');
 var bcPrev=buildSplit("bc","#t-bc > .tile.stack",'<div class="chartT"><h3>Как это увидят</h3></div><div class="pvstage"><div id="pvBc" class="pvpane"></div></div><p class="hint" id="pvBw" style="margin-top:12px"></p>');
 function esc2(s){return esc(s).replace(/\n/g,"<br>")}
-function tgBubble(text,btn,dim){
-  return '<div class="tgc"><div class="tgh"><span class="tga">'+mark(26,1)+'</span><div><b>VOOB</b><i>бот</i></div></div><div class="tgm'+(dim?" dim":"")+'"><div class="tgb">'+text+'</div><div class="tgt">'+new Date().toLocaleTimeString("ru-RU",{hour:"2-digit",minute:"2-digit"})+' <span>✓✓</span></div></div>'+(btn?'<div class="tgk">'+btn+"</div>":"")+"</div>";
+function tgBubble(text,btn,dim,img){
+  return '<div class="tgc"><div class="tgh"><span class="tga">'+mark(26,1)+'</span><div><b>VOOB</b><i>бот</i></div></div><div class="tgm'+(dim?" dim":"")+'">'+(img?'<img class="tgp" src="'+img+'" alt="">':"")+'<div class="tgb">'+text+'</div><div class="tgt">'+new Date().toLocaleTimeString("ru-RU",{hour:"2-digit",minute:"2-digit"})+' <span>✓✓</span></div></div>'+(btn?'<div class="tgk">'+btn+"</div>":"")+"</div>";
 }
 function annRender(){
   if(!annPrev)return;
@@ -2783,11 +2792,26 @@ function annRender(){
   var who=aud==="me"?"Увидишь только ты (проверка)":aud==="list"?"Получат люди из списка":aud==="all"?"Получат все: "+fmt(AUD.all):aud==="pro"?"Получат PRO: "+fmt(AUD.pro):"Получат без PRO: "+fmt(AUD.free);
   $("#pvWho").innerHTML=who+(title.length>80||body.length>600?' · <span class="dn">текст длиннее лимита</span>':"");
 }
+var bcImg="";
 function bcRender(){
-  if(!bcPrev)return;var t=$("#btext").value.trim(),a=$("#bt").value;
-  $("#pvBc").innerHTML=tgBubble(t?esc2(t):'<span class="ph">Текст сообщения</span>',"",false);
-  $("#pvBw").textContent=(a==="me"?"Придёт только тебе (проверка)":a==="pro"?"Получат все с PRO: "+fmt(AUD.pro):"Получат все: "+fmt(AUD.all))+" · "+t.length+" / 3500";
+  if(!bcPrev)return;var t=$("#btext").value.trim(),a=$("#bt").value,lim=bcImg?1000:3500;
+  $("#pvBc").innerHTML=tgBubble(t?esc2(t):'<span class="ph">'+(bcImg?"Подпись (необязательно)":"Текст сообщения")+"</span>","",false,bcImg);
+  $("#pvBw").innerHTML=(a==="me"?"Придёт только тебе (проверка)":a==="pro"?"Получат все с PRO: "+fmt(AUD.pro):"Получат все: "+fmt(AUD.all))+" · "+(t.length>lim?'<span class="dn">'+t.length+" / "+lim+" — лишнее обрежется</span>":t.length+" / "+lim)+(bcImg?" · у картинки подпись до 1000 знаков":"");
 }
+function bcSetImg(file){
+  if(!file){bcImg="";$("#bthumb").hidden=true;$("#bfile").value="";bcRender();return}
+  if(!/^image\/(jpeg|png|webp)$/.test(file.type)){toast("Нужен JPEG, PNG или WebP","err");return}
+  var fr=new FileReader();fr.onload=function(){var im=new Image();im.onload=function(){
+    var m=Math.min(1,1600/Math.max(im.width,im.height)),c=document.createElement("canvas");c.width=Math.round(im.width*m);c.height=Math.round(im.height*m);
+    var x=c.getContext("2d");x.fillStyle="#fff";x.fillRect(0,0,c.width,c.height);x.drawImage(im,0,0,c.width,c.height);
+    bcImg=c.toDataURL("image/jpeg",.86);
+    $("#bthumbi").src=bcImg;$("#bthumbn").textContent=file.name;$("#bthumbs").textContent=im.width+"×"+im.height+" · "+Math.round(bcImg.length*.75/1024)+" КБ";$("#bthumb").hidden=false;bcRender()};
+    im.onerror=function(){toast("Не получилось открыть картинку","err")};im.src=fr.result};fr.readAsDataURL(file);
+}
+$("#bpick").onclick=function(){$("#bfile").click()};
+$("#bfile").onchange=function(){bcSetImg(this.files[0])};
+$("#brm").onclick=function(){bcSetImg(null)};
+$("#btext").addEventListener("paste",function(e){var it=[].filter.call((e.clipboardData&&e.clipboardData.items)||[],function(i){return i.kind==="file"&&/^image\//.test(i.type)})[0];if(it){e.preventDefault();bcSetImg(it.getAsFile())}});
 if(annPrev){
   ["#ak","#aa","#agk","#at","#ab","#ac","#an"].forEach(function(s){var e=$(s);e.addEventListener("input",annRender);e.addEventListener("change",annRender)});
   $("#pvTab").onclick=function(e){var b=e.target.closest("button");if(!b)return;$$("button",this).forEach(function(x){x.setAttribute("aria-pressed",x===b)});$("#pvApp").hidden=b.dataset.t!=="app";$("#pvTg").hidden=b.dataset.t!=="tg"};
