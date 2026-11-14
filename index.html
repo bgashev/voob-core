@@ -287,6 +287,9 @@ textarea.pvaw.ax-in{font-size:13px;color:#c4c4cc;line-height:1.5;max-height:none
 .ax-url input::placeholder{color:#6b6b76}
 .ax-chip,.ax-x{border:0;border-radius:8px;background:rgba(255,255,255,.08);color:#c4c4cc;font:700 10.5px var(--sans);height:24px;padding:0 8px;cursor:pointer}
 .ax-chip:hover,.ax-x:hover{background:rgba(255,255,255,.18);color:#fff}
+#axk button{display:inline-flex;align-items:center;gap:7px}#axk button svg{width:15px;height:15px;flex:none}
+.pvab{display:inline-flex;align-items:center;gap:6px}.pvab svg{width:12px;height:12px;flex:none}
+.ax-gi svg{width:64px;height:64px;color:#c4b5fd}
 .ax-cnt{font-size:11.5px;color:var(--dim);text-align:center}.ax-cnt .dn{color:var(--bad)}
 .ax-side{display:grid;gap:14px;align-content:start}
 .ax-tgbox{background:var(--tile);border:1px solid var(--line);border-radius:22px;padding:16px;display:grid;gap:12px;justify-items:center}
@@ -1210,7 +1213,7 @@ textarea.field{resize:none;line-height:1.5;min-height:84px;padding:12px 15px;fon
   </section>
   <section id="t-an" class="stack" hidden>
     <div class="bx-head"><div><h3>Объявление в приложении</h3><p class="hint">Появится окном при следующем входе в VOOB. Правь прямо в окне: заголовок, текст, картинка и кнопка. Подарок сразу попадёт в коллекцию.</p></div>
-      <div class="bx-seg" id="axk"><i class="bx-th"></i><button class="bx-on" data-k="notice" type="button">📣 Уведомление</button><button data-k="gift" type="button">🎁 Подарок</button><button data-k="promo" type="button">✨ Акция</button></div></div>
+      <div class="bx-seg" id="axk"><i class="bx-th"></i><button class="bx-on" data-k="notice" type="button">Уведомление</button><button data-k="gift" type="button">Подарок</button><button data-k="promo" type="button">Акция</button></div></div>
     <select id="ak" data-dd="1" hidden><option value="notice">Уведомление</option><option value="gift">Подарок</option><option value="promo">Акция</option></select>
     <select id="aa" data-dd="1" hidden><option value="me">Только мне (проверка)</option><option value="all">Всем</option><option value="pro">Только PRO</option><option value="free">Только без PRO</option><option value="list">Списком</option></select>
     <div hidden><input type="file" id="afile" accept="image/jpeg,image/png,image/webp"><button id="apick" type="button"></button><span id="ahint"></span><div id="athumb" hidden><img id="athumbi" alt=""><b id="athumbn"></b><small id="athumbs"></small></div><button id="arm" type="button"></button></div>
@@ -1263,7 +1266,7 @@ textarea.field{resize:none;line-height:1.5;min-height:84px;padding:12px 15px;fon
   </div>
 
   <div class="bx-device">
-    <div class="bx-phone"><div class="bx-ph-top" id="bxphtop"></div><div class="bx-ph-body" id="bxphbody"></div><div class="bx-ph-bot"><div>▤ Открыть VOOB</div><small>меню бота: одно и то же для всех сообщений</small></div></div>
+    <div class="bx-phone"><div class="bx-ph-top" id="bxphtop"></div><div class="bx-ph-body" id="bxphbody"></div><div class="bx-ph-bot"><div><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="9" rx="2"/><rect x="14" y="3" width="7" height="5" rx="2"/><rect x="14" y="12" width="7" height="9" rx="2"/><rect x="3" y="16" width="7" height="5" rx="2"/></svg> Открыть VOOB</div><small>меню бота: одно и то же для всех сообщений</small></div></div>
     <div class="bx-chat" id="bxchat">
       <div class="bx-who" id="bxwho"><span class="bx-av"><svg width="22" height="14" viewBox="0 0 100 60"><circle cx="37" cy="30" r="20" fill="none" stroke="#a78bfa" stroke-width="9"/><circle cx="63" cy="30" r="20" fill="none" stroke="#fff" stroke-width="9"/></svg></span><div><b>VOOB</b><i>бот</i></div></div>
       <div class="bx-msg" id="bxmsg">
@@ -2627,6 +2630,9 @@ $("#chgCancel").onclick=function(){api("chg_cancel").then(function(j){$("#eset")
 
 /* ---------- оформление как в программе VOOB CORE ---------- */
 var IC={
+ notice:'<path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.9 1.9 0 0 0 3.4 0"/>',
+ gift:'<rect x="3" y="8" width="18" height="4" rx="1"/><path d="M12 8v13"/><path d="M19 12v7a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2v-7"/><path d="M7.5 8a2.5 2.5 0 0 1 0-5C11 3 12 8 12 8s1-5 4.5-5a2.5 2.5 0 0 1 0 5"/>',
+ promo:'<path d="M12 3l1.9 5.1L19 10l-5.1 1.9L12 17l-1.9-5.1L5 10l5.1-1.9z"/><path d="M19 15l.8 2.2L22 18l-2.2.8L19 21l-.8-2.2L16 18l2.2-.8z"/>',
  clip:'<path d="M20 11.5l-7.6 7.6a5 5 0 0 1-7.1-7.1l8-8a3.4 3.4 0 0 1 4.8 4.8l-8 8a1.8 1.8 0 0 1-2.5-2.5l7.3-7.3"/>',
  image:'<rect x="3" y="4" width="18" height="16" rx="3"/><circle cx="9" cy="10" r="1.8"/><path d="M21 16l-5-5-9 9"/>',
  ov:'<rect x="3" y="3" width="7" height="9" rx="2"/><rect x="14" y="3" width="7" height="5" rx="2"/><rect x="14" y="12" width="7" height="9" rx="2"/><rect x="3" y="16" width="7" height="5" rx="2"/>',
@@ -2998,7 +3004,7 @@ function plural(n,a,b,c){n=Math.abs(n)%100;var m=n%10;return n>10&&n<20?c:m>1&&m
 
 /* ---------- визуализатор объявлений и рассылки ---------- */
 var AUD={all:0,pro:0,free:0};
-var AK={notice:["📣","Новости"],gift:["🎁","Подарок"],promo:["✨","Акция"]};
+var AK={notice:["notice","Новости"],gift:["gift","Подарок"],promo:["promo","Акция"]};
 function buildSplit(secId,formSel,html){
   var f=$(formSel);if(!f||f.closest(".split"))return null;
   var sp=document.createElement("div");sp.className="split";f.parentNode.insertBefore(sp,f);sp.appendChild(f);
@@ -3023,12 +3029,12 @@ function annRender(){
   $$("#axk button").forEach(function(b){b.classList.toggle("bx-on",b.dataset.k===kind)});axPos();
   $$("#axaud button").forEach(function(b){b.classList.toggle("on",b.dataset.a===aud)});
   $("#axn-pro").textContent=fmt(AUD.pro);$("#axn-free").textContent=fmt(AUD.free);$("#axn-all").textContent=fmt(AUD.all);
-  $("#axbadge").textContent=k[0]+" "+k[1];
+  $("#axbadge").innerHTML=ic(k[0],2.2)+"<span>"+k[1]+"</span>";
   var g=null;if(kind==="gift"&&GT2)g=GT2.filter(function(x){return x.kind===$("#agk").value})[0]||null;
   var sig=kind+"|"+(anImg?anImg.length:0)+"|"+(g?g.kind:"");
   if(sig!==axSig){axSig=sig;
     $("#axmedia").innerHTML=anImg?'<img class="pvai" src="'+anImg+'" alt=""><button class="ax-rm" id="axrm" type="button" title="Убрать картинку">✕</button>'
-      :kind==="gift"?'<div class="pvag">'+(g?gArt(g.kind,g.emoji):"🎁")+'</div><button class="ax-own" id="axown" type="button">+ своя картинка</button>'
+      :kind==="gift"?'<div class="pvag">'+(g?gArt(g.kind,g.emoji):'<span class="ax-gi">'+ic("gift",1.6)+"</span>")+'</div><button class="ax-own" id="axown" type="button">+ своя картинка</button>'
       :'<button class="ax-slot" id="axslot" type="button">'+AX_CLIP+'<b>Добавить картинку</b><small>перетащи, вставь Ctrl+V или нажми · лучше 1200×675</small></button>';
     var rm=$("#axrm");if(rm)rm.onclick=function(){anSetImg(null)};
     var ow=$("#axown");if(ow)ow.onclick=function(){$("#afile").click()};
@@ -3079,6 +3085,7 @@ window.addEventListener("dragover",function(e){e.preventDefault()});window.addEv
 (function(){
   ["#ak","#aa","#agk","#at","#ab","#ac","#an"].forEach(function(s){var e=$(s);e.addEventListener("input",annRender);e.addEventListener("change",annRender)});
   $("#ak").addEventListener("change",function(){if(this.value==="gift")gifts(function(){annRender()})});
+  $$("#axk button").forEach(function(b){b.innerHTML=ic(b.dataset.k,2)+"<span>"+b.textContent+"</span>"});
   $$("#axk button").forEach(function(b){b.onclick=function(){$("#ak").value=b.dataset.k;$("#ak").dispatchEvent(new Event("change",{bubbles:true}))}});
   $$("#axaud button").forEach(function(b){b.onclick=function(){$("#aa").value=b.dataset.a;$("#aa").dispatchEvent(new Event("change",{bubbles:true}))}});
   $("#axadd").onclick=function(){axBtn=true;annRender();$("#ac").focus()};
@@ -3132,7 +3139,7 @@ var msg=$("#bxmsg");["dragenter","dragover"].forEach(function(n){msg.addEventLis
 function norm(s){s=(s||"").trim();if(!s)return s;if(/^@\w{4,}$/.test(s))return"https://t.me/"+s.slice(1);if(!/^[a-z][a-z0-9+.-]*:\/\//i.test(s))s="https://"+s.replace(/^\/+/,"");return s}
 function renderKb(){var k=$("#bxkb"),res=$("#bxres");
   if(!S.btn){k.innerHTML='<button class="bx-kdef" id="bxkdef"><span>Открыть VOOB</span><small>по умолчанию · нажми, чтобы заменить</small></button>';
-    $("#bxkdef").onclick=function(){S.btn=true;S.label=S.label||"⚡ Забустить VOOB";S.url=S.url||"t.me/boost/voobkz";renderKb();render();$("#bxklab").focus();$("#bxklab").select()};res.className="bx-res";res.textContent="";return}
+    $("#bxkdef").onclick=function(){S.btn=true;S.label=S.label||"Забустить VOOB";S.url=S.url||"t.me/boost/voobkz";renderKb();render();$("#bxklab").focus();$("#bxklab").select()};res.className="bx-res";res.textContent="";return}
   k.innerHTML='<div class="bx-kcus">'+LINK+'<input id="bxklab" maxlength="40" placeholder="Название кнопки" value="'+S.label.replace(/"/g,"&quot;")+'"><button class="bx-x" id="bxkx" title="Вернуть «Открыть VOOB»">✕</button></div><div class="bx-urlrow">'+LINK+'<input id="bxkurl" placeholder="Ссылка: t.me/boost/voobkz" value="'+S.url.replace(/"/g,"&quot;")+'"></div>';
   $("#bxklab").oninput=function(){S.label=this.value;render()};
   $("#bxkurl").oninput=function(){S.url=this.value;render()};
