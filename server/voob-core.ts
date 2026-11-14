@@ -117,8 +117,16 @@ async function botName() {
   botNameCache = me?.result?.username ?? "voobkz_bot";
   return botNameCache;
 }
+// истёкшие сессии Core сами не удалялись (удалялась только та, что пришла с запросом): чистим при входе и при открытии списка
+async function pruneCore() {
+  const now = Date.now(), idle = new Date(now - CORE_IDLE).toISOString(), old = new Date(now - CORE_MAX).toISOString();
+  await db.from("sessions").delete().eq("device", "core").lt("last_seen", idle);
+  await db.from("sessions").delete().eq("device", "core").is("last_seen", null).lt("created_at", idle);
+  await db.from("sessions").delete().eq("device", "core").lt("created_at", old);
+}
 async function coreLoginStart() {
   const now = Date.now();
+  await pruneCore();
   await db.from("login_codes").delete().lt("created_at", new Date(now - 3600000).toISOString());
   await db.from("core_otp").delete().lt("created_at", new Date(now - DAY).toISOString());
   await db.from("core_attempts").delete().lt("at", new Date(now - 7 * DAY).toISOString());
@@ -783,6 +791,7 @@ Deno.serve(async (req) => {
         else return json({ error: "Подтверди действие кодом с почты", need_step: true }, 401);
       }
       if (a === "sess_list") {
+        await pruneCore();
         const { data } = await db.from("sessions").select("token_hash, created_at, last_seen").eq("tg_id", ADMIN).eq("device", "core").order("last_seen", { ascending: false }).limit(20);
         return json({ status: "ok", items: (data ?? []).map((x: any) => ({ id: String(x.token_hash).slice(0, 12), created_at: x.created_at, last_seen: x.last_seen, current: x.token_hash === th })) });
       }
