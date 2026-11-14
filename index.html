@@ -640,7 +640,7 @@ textarea.field{resize:none;line-height:1.5;min-height:84px;padding:12px 15px;fon
 .uvw{display:inline-flex;align-items:center;height:28px;border-radius:999px;background:var(--tile3);font-size:12.5px;font-weight:650;overflow:hidden}
 .uvw button{all:unset;cursor:pointer;padding:0 10px;height:100%;display:inline-flex;align-items:center}.uvw button:hover{background:var(--line2)}.uvw button+button{color:var(--mute);padding:0 9px 0 7px}
 .utable{display:grid;gap:8px}
-.uhead,.urow{display:grid;grid-template-columns:34px minmax(0,2.4fr) minmax(0,1.1fr) minmax(0,1.1fr) 78px minmax(0,1.1fr) 34px;gap:12px;align-items:center}
+.uhead,.urow{display:grid;grid-template-columns:34px minmax(0,2.4fr) minmax(0,1fr) minmax(0,1fr) 62px 62px 82px minmax(0,1fr) 34px;gap:12px;align-items:center}
 .uhead{padding:0 16px;font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--mute)}
 .uhead [data-s]{cursor:pointer;user-select:none;display:inline-flex;gap:5px;align-items:center;transition:color .16s}.uhead [data-s]:hover{color:var(--fg)}
 .uhead [data-s].on{color:var(--fg)}.uhead [data-s] em{font-style:normal;opacity:0;font-size:12px}.uhead [data-s].on em{opacity:1}
@@ -651,7 +651,7 @@ textarea.field{resize:none;line-height:1.5;min-height:84px;padding:12px 15px;fon
 .urow .uu .s{color:var(--mute);font-size:12.5px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .urow .c{font-size:13px;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.urow .c small{display:block;color:var(--mute);font-size:11.5px}
 .urow .c.n{font-variant-numeric:tabular-nums;font-weight:650}
-.dot{display:inline-block;width:7px;height:7px;border-radius:50%;background:var(--dim);margin-right:7px;vertical-align:1px}.dot.on{background:#4ade80;box-shadow:0 0 0 3px rgba(74,222,128,.16)}.dot.d1{background:var(--accent)}.dot.d7{background:var(--mute)}
+.utg{color:var(--accent)!important;opacity:.75}.dot{display:inline-block;width:7px;height:7px;border-radius:50%;background:var(--dim);margin-right:7px;vertical-align:1px}.dot.on{background:#4ade80;box-shadow:0 0 0 3px rgba(74,222,128,.16)}.dot.d1{background:var(--accent)}.dot.d7{background:var(--mute)}
 .ucb{position:relative;width:22px;height:22px;display:grid;place-items:center;cursor:pointer}
 .ucb input{position:absolute;inset:0;opacity:0;margin:0;cursor:pointer}
 .ucb i{width:18px;height:18px;border-radius:6px;border:1.5px solid var(--line2);background:var(--tile2);transition:background .14s,border-color .14s;display:grid;place-items:center}
@@ -667,7 +667,7 @@ textarea.field{resize:none;line-height:1.5;min-height:84px;padding:12px 15px;fon
 .ubp{height:6px;border-radius:6px;background:var(--tile3);overflow:hidden;margin:16px 0 8px}.ubp i{display:block;height:100%;width:0;background:var(--accent);transition:width .25s var(--ease)}
 .dchips{display:flex;gap:6px;flex-wrap:wrap}.dchips button{all:unset;cursor:pointer;height:30px;padding:0 14px;border-radius:999px;background:var(--tile3);font-size:12.5px;font-weight:650;display:inline-flex;align-items:center}.dchips button:hover{background:var(--line2)}.dchips button.on{background:var(--accent);color:var(--on-accent)}
 .dnote{font-size:12.5px;color:var(--mute);display:flex;gap:8px;align-items:center;cursor:pointer}
-@media(max-width:900px){.uhead{display:none}.urow{grid-template-columns:30px minmax(0,1fr) auto;gap:10px}.urow .c.reg,.urow .c.w,.urow .qa{display:none}.urow .c.seen{grid-column:2}.urow .c.pro{grid-column:3;grid-row:1;text-align:right}.urow .c.seen{grid-row:2}}
+@media(max-width:900px){.uhead{display:none}.urow{grid-template-columns:30px minmax(0,1fr) auto;gap:10px}.urow .c.reg,.urow .c.w,.urow .c.fr,.urow .c.st,.urow .qa{display:none}.urow .c.seen{grid-column:2}.urow .c.pro{grid-column:3;grid-row:1;text-align:right}.urow .c.seen{grid-row:2}}
 @media(max-width:600px){.ubulk{bottom:12px;border-radius:24px;padding:10px 12px}}
 @media(max-width:1100px){#main{padding:26px 22px 60px}}
 @media(max-width:860px){
@@ -878,7 +878,7 @@ textarea.field{resize:none;line-height:1.5;min-height:84px;padding:12px 15px;fon
     <div class="tile utool">
       <div class="bar">
         <input class="field" id="uq" placeholder="Имя, @ник или ID  ·  «/» — поиск" autocomplete="off">
-        <select class="field usel" id="usort" aria-label="Сортировка"><option value="seen">Последняя активность</option><option value="reg">Дата регистрации</option><option value="w">Тренировки</option><option value="pro">Окончание PRO</option><option value="name">Имя А–Я</option><option value="id">Telegram ID</option></select>
+        <select class="field usel" id="usort" aria-label="Сортировка"><option value="seen">Последняя активность</option><option value="reg">Дата регистрации</option><option value="w">Тренировки</option><option value="pro">Окончание PRO</option><option value="stars">Потрачено ⭐</option><option value="friends">Друзья</option><option value="gifts">Подарки получено</option><option value="lw">Последняя тренировка</option><option value="name">Имя А–Я</option><option value="id">Telegram ID</option></select>
         <button class="btn sm" id="udir" type="button" title="Направление сортировки"></button>
       </div>
       <div class="bar" style="margin-top:10px">
@@ -1363,19 +1363,21 @@ var lastUsers=[],lastPay=[];
 var DAY=86400000,UKEY="voobcore.us",UVKEY="voobcore.usv";
 function lsGet(k,d){try{var v=localStorage.getItem(k);return v?JSON.parse(v):d}catch(e){return d}}
 function lsSet(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}}
-var UDEF={sort:"seen",dir:-1,reg:"",seen:"",pro:"",fl:{}};
+var UDEF={sort:"seen",dir:-1,reg:"",seen:"",pro:"",plat:"",tag:"",fl:{}};var PLAT={miniapp:"Mini App",web:"WEB",desktop:"Windows"};
 var US=Object.assign({},UDEF,lsGet(UKEY,{})),uq="",ulim=50,usel={},uall=[],uT=null,uanim=true,ulastSel=null;
 US.fl=(US.fl&&typeof US.fl==="object")?Object.assign({},US.fl):{};
 var UFL_PRO=[["pro","PRO"],["free","Без PRO"],["soon","PRO кончается ≤ 7 дн."],["expired","PRO истёк"]];
-var UFL_FLAG=[["blocked","Заблокированные"],["private","Приватные"],["w0","Без тренировок"],["w1","С тренировками"],["nick","Свой ник"],["soc","С соцсетями"],["frame","С рамкой"]];
-var USORT_DIR={seen:-1,reg:-1,w:-1,pro:-1,name:1,id:1};
+var UFL_FLAG=[["blocked","Заблокированные"],["private","Приватные"],["w0","Без тренировок"],["w1","С тренировками"],["nick","Свой ник"],["soc","С соцсетями"],["frame","С рамкой"],["paid","Платили"],["fr0","Без друзей"],["del","Удаляются"],["note","С заметкой"]];
+var USORT_DIR={seen:-1,reg:-1,w:-1,pro:-1,stars:-1,friends:-1,gifts:-1,lw:-1,name:1,id:1};
 function proSt(u,now){if(!u.pro_until)return "none";var t=Date.parse(u.pro_until);if(t>now)return t-now<=7*DAY?"soon":"on";return "expired"}
 function uFlag(u,k){
   if(k==="blocked")return !!u.blocked;if(k==="private")return !!u.private;
   if(k==="w0")return !u.workouts;if(k==="w1")return u.workouts>0;
   if(k==="nick")return !!u.handle&&!/^voob_[0-9a-z]{8}$/i.test(u.handle);
   if(k==="soc")return !!u.socials&&Object.keys(u.socials).length>0;
-  if(k==="frame")return !!u.frame&&u.frame!=="classic";return false;
+  if(k==="frame")return !!u.frame&&u.frame!=="classic";
+  if(k==="paid")return u.paid>0;if(k==="fr0")return !u.friends;if(k==="del")return !!u.delete_at;
+  if(k==="note")return !!(u.note||(u.tags&&u.tags.length));return false;
 }
 var SEEN_IN={on:15*60000,d1:DAY,d7:7*DAY,d30:30*DAY},SEEN_OUT={s14:14*DAY,s30:30*DAY,s90:90*DAY};
 function uMatch(u,now){
@@ -1389,6 +1391,8 @@ function uMatch(u,now){
     if(US.pro==="free"&&p!=="none"&&p!=="expired")return false;
     if(US.pro==="soon"&&p!=="soon")return false;
     if(US.pro==="expired"&&p!=="expired")return false}
+  if(US.plat&&(u.platforms||[]).indexOf(US.plat)<0)return false;
+  if(US.tag&&(u.tags||[]).indexOf(US.tag)<0)return false;
   for(var k in US.fl)if(US.fl[k]&&!uFlag(u,k))return false;
   return true;
 }
@@ -1396,6 +1400,8 @@ function uVal(u,k){
   if(k==="seen")return Date.parse(u.last_seen)||0;if(k==="reg")return Date.parse(u.created_at)||0;
   if(k==="w")return u.workouts||0;if(k==="id")return u.tg_id;
   if(k==="pro")return u.pro_until?Date.parse(u.pro_until):null;
+  if(k==="stars")return u.stars||0;if(k==="friends")return u.friends||0;if(k==="gifts")return u.gifts_in||0;
+  if(k==="lw")return u.last_workout?Date.parse(u.last_workout):null;
   return String(u.first_name||u.handle||u.username||u.tg_id).toLowerCase();
 }
 function uSorted(list){
@@ -1419,12 +1425,12 @@ function uSave(){lsSet(UKEY,US)}
 function uReset(extra){US=Object.assign({},UDEF,{sort:US.sort,dir:US.dir},extra||{});US.fl=Object.assign({},US.fl||{});uq="";$("#uq").value="";ulim=50;uanim=true;uSave();uRender()}
 
 function uStats(){
-  var now=Date.now(),c={all:uall.length,pro:0,d1:0,d7:0,n7:0,s14:0,bl:0};
+  var now=Date.now(),c={all:uall.length,pro:0,d1:0,d7:0,n7:0,s14:0,bl:0,paid:0,stars:0};
   uall.forEach(function(u){var p=proSt(u,now),ls=Date.parse(u.last_seen)||0;
     if(p==="on"||p==="soon")c.pro++;if(ls>=now-DAY)c.d1++;if(ls>=now-7*DAY)c.d7++;
-    if(Date.parse(u.created_at)>=now-7*DAY)c.n7++;if(ls<now-14*DAY)c.s14++;if(u.blocked)c.bl++});
+    if(Date.parse(u.created_at)>=now-7*DAY)c.n7++;if(ls<now-14*DAY)c.s14++;if(u.blocked)c.bl++;if(u.paid>0){c.paid++;c.stars+=u.stars||0}});
   var pc=function(n){return c.all?Math.round(n/c.all*100)+"% от всех":""};
-  var T=[["Всего",c.all,"",null],["С PRO",c.pro,pc(c.pro),{pro:"pro"}],["Заходили за сутки",c.d1,pc(c.d1),{seen:"d1"}],["Активны за 7 дн.",c.d7,pc(c.d7),{seen:"d7"}],["Новые за 7 дн.",c.n7,"",{reg:"7"}],["Спят 14+ дн.",c.s14,pc(c.s14),{seen:"s14"}],["Заблокированы",c.bl,"",{fl:{blocked:1}}]];
+  var T=[["Всего",c.all,"",null],["С PRO",c.pro,pc(c.pro),{pro:"pro"}],["Заходили за сутки",c.d1,pc(c.d1),{seen:"d1"}],["Активны за 7 дн.",c.d7,pc(c.d7),{seen:"d7"}],["Новые за 7 дн.",c.n7,"",{reg:"7"}],["Спят 14+ дн.",c.s14,pc(c.s14),{seen:"s14"}],["Заблокированы",c.bl,"",{fl:{blocked:1}}],["Платили ⭐",c.paid,c.stars?fmt(c.stars)+" ⭐ всего":"",{fl:{paid:1}}]];
   $("#ust").innerHTML=T.map(function(t,i){return '<button type="button" data-p="'+i+'" style="--i:'+i+'"><b>'+fmt(t[1])+"</b><span>"+t[0]+"</span><small>"+(t[2]||"&nbsp;")+"</small></button>"}).join("");
   $("#ust").onclick=function(e){var b=e.target.closest("[data-p]");if(b)uReset(T[+b.dataset.p][3])};
 }
@@ -1432,10 +1438,14 @@ function uChips(){
   var now=Date.now(),cnt=function(fn){var n=0;uall.forEach(function(u){if(fn(u))n++});return n};
   var h=UFL_PRO.map(function(f){return '<button class="ufc" type="button" data-pf="'+f[0]+'" aria-pressed="'+(US.pro===f[0])+'">'+f[1]+" <i>"+cnt(function(u){var p=proSt(u,now);return f[0]==="pro"?p==="on"||p==="soon":f[0]==="free"?p==="none"||p==="expired":p===f[0]})+"</i></button>"}).join("");
   h+='<span class="sp"></span>'+UFL_FLAG.map(function(f){return '<button class="ufc" type="button" data-ff="'+f[0]+'" aria-pressed="'+!!US.fl[f[0]]+'">'+f[1]+" <i>"+cnt(function(u){return uFlag(u,f[0])})+"</i></button>"}).join("");
+  var pl={},tg={};uall.forEach(function(u){(u.platforms||[]).forEach(function(x){pl[x]=(pl[x]||0)+1});(u.tags||[]).forEach(function(x){tg[x]=(tg[x]||0)+1})});
+  var pk=Object.keys(pl).sort(),tk=Object.keys(tg).sort();
+  if(pk.length)h+='<span class="sp"></span>'+pk.map(function(k){return '<button class="ufc" type="button" data-plf="'+esc(k)+'" aria-pressed="'+(US.plat===k)+'">'+esc(PLAT[k]||k)+" <i>"+pl[k]+"</i></button>"}).join("");
+  if(tk.length)h+='<span class="sp"></span>'+tk.map(function(k){return '<button class="ufc" type="button" data-tgf="'+esc(k)+'" aria-pressed="'+(US.tag===k)+'">#'+esc(k)+" <i>"+tg[k]+"</i></button>"}).join("");
   $("#ufl").innerHTML=h;
 }
 function uHead(){
-  var C=[["Пользователь","name"],["Регистрация","reg"],["Был онлайн","seen"],["Тренир.","w"],["PRO до","pro"]];
+  var C=[["Пользователь","name"],["Регистрация","reg"],["Был онлайн","seen"],["Тренир.","w"],["Друзья","friends"],["Потрачено","stars"],["PRO до","pro"]];
   $("#uhead").innerHTML='<label class="ucb" title="Выбрать всех по фильтру"><input type="checkbox" id="uall"><i></i></label>'+C.map(function(c){return '<span data-s="'+c[1]+'" class="'+(US.sort===c[1]?"on":"")+'">'+c[0]+" <em>"+(US.dir>0?"↑":"↓")+"</em></span>"}).join("")+"<span></span>";
 }
 function uViews(){
@@ -1448,7 +1458,7 @@ function uRender(){
   $("#usort").value=US.sort;$("#ureg").value=US.reg;$("#useen").value=US.seen;
   $("#udir").textContent=US.dir>0?"↑":"↓";$("#udir").title=US.dir>0?"По возрастанию":"По убыванию";
   uStats();uChips();uHead();uViews();
-  var act=!!(uq||US.reg||US.seen||US.pro||Object.keys(US.fl).some(function(k){return US.fl[k]}));
+  var act=!!(uq||US.reg||US.seen||US.pro||US.plat||US.tag||Object.keys(US.fl).some(function(k){return US.fl[k]}));
   $("#ureset").hidden=!act;
   $("#ucnt").textContent=uall.length?("Показано "+fmt(srt.length)+" из "+fmt(uall.length)+(uall.length>=500?" · лимит выдачи 500":"")):"";
   var page=srt.slice(0,ulim);
@@ -1456,10 +1466,10 @@ function uRender(){
     var p=proSt(u,now),pro=p==="on"||p==="soon"?'<span class="chip g">до '+dshort(u.pro_until)+"</span>"+(p==="soon"?'<small style="color:var(--bad)">скоро конец</small>':""):p==="expired"?'<span class="chip">истёк '+dshort(u.pro_until)+"</span>":'<span style="color:var(--dim)">—</span>';
     return '<div class="urow'+(usel[u.tg_id]?" sel":"")+'" data-id="'+u.tg_id+'" style="--i:'+(uanim?Math.min(i,14):0)+(uanim?"":";animation:none")+'">'+
       '<label class="ucb"><input type="checkbox" data-sel="'+u.tg_id+'"'+(usel[u.tg_id]?" checked":"")+"><i></i></label>"+
-      '<div class="uu">'+av(u)+'<div class="m"><div class="t">'+nm(u)+(u.creator?'<span class="chip">создатель</span>':"")+(u.blocked?'<span class="chip r">блок</span>':"")+(u.private?'<span class="chip">приват</span>':"")+'</div><div class="s">'+(u.handle?"@"+esc(u.handle)+" · ":"")+u.tg_id+"</div></div></div>"+
+      '<div class="uu">'+av(u)+'<div class="m"><div class="t">'+nm(u)+(u.creator?'<span class="chip">создатель</span>':"")+(u.blocked?'<span class="chip r">блок</span>':"")+(u.private?'<span class="chip">приват</span>':"")+(u.delete_at?'<span class="chip r" title="Удаление аккаунта">удалится '+dshort(u.delete_at)+"</span>":"")+'</div><div class="s">'+(u.handle?"@"+esc(u.handle)+" · ":"")+u.tg_id+((u.platforms||[]).length?" · "+u.platforms.map(function(x){return PLAT[x]||x}).join(", "):"")+'</div>'+((u.tags&&u.tags.length)||u.note?'<div class="s utg" title="'+esc(u.note||"")+'">'+(u.tags||[]).map(function(t){return "#"+esc(t)}).join(" ")+(u.note?(u.tags&&u.tags.length?" · ":"")+esc(u.note):"")+"</div>":"")+"</div></div>"+
       '<div class="c reg" title="'+dt(u.created_at)+'">'+dshort(u.created_at)+"<small>"+ago(u.created_at)+"</small></div>"+
       '<div class="c seen" title="'+dt(u.last_seen)+'"><span class="dot '+seenCls(u.last_seen)+'"></span>'+ago(u.last_seen)+"</div>"+
-      '<div class="c n w">'+fmt(u.workouts)+'</div><div class="c pro">'+pro+"</div>"+
+      '<div class="c n w" title="'+(u.last_workout?"Последняя: "+dt(u.last_workout):"Тренировок не было")+'">'+fmt(u.workouts)+'</div><div class="c n fr" title="Подарков: получено '+(u.gifts_in||0)+", отправлено "+(u.gifts_out||0)+'">'+fmt(u.friends||0)+'</div><div class="c n st">'+(u.stars?fmt(u.stars)+" ⭐":'<span style="color:var(--dim);font-weight:400">—</span>')+'</div><div class="c pro">'+pro+"</div>"+
       (u.handle?'<button class="qa" type="button" data-cp="'+esc(u.handle)+'" title="Скопировать ссылку на профиль"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="12" height="12" rx="3"/><path d="M5 15V6a3 3 0 0 1 3-3h9"/></svg></button>':"<span></span>")+"</div>"}).join(""):'<p class="hint" style="padding:18px 4px">'+(uall.length?"Под такие условия никто не подходит":"Пока никого нет")+"</p>";
   uanim=false;hydrate($("#ulist"));
   $("#umore").hidden=srt.length<=ulim;$("#umore").textContent="Показать ещё "+Math.min(50,srt.length-ulim)+" из "+(srt.length-ulim);
@@ -1483,8 +1493,10 @@ $("#udir").onclick=function(){US.dir=-US.dir;uPatch()};
 $("#ureg").onchange=function(){US.reg=this.value;uPatch()};
 $("#useen").onchange=function(){US.seen=this.value;uPatch()};
 $("#ufl").onclick=function(e){
-  var p=e.target.closest("[data-pf]"),f=e.target.closest("[data-ff]");
-  if(p)US.pro=US.pro===p.dataset.pf?"":p.dataset.pf;
+  var p=e.target.closest("[data-pf]"),f=e.target.closest("[data-ff]"),pl=e.target.closest("[data-plf]"),tgb=e.target.closest("[data-tgf]");
+  if(pl)US.plat=US.plat===pl.dataset.plf?"":pl.dataset.plf;
+  else if(tgb)US.tag=US.tag===tgb.dataset.tgf?"":tgb.dataset.tgf;
+  else if(p)US.pro=US.pro===p.dataset.pf?"":p.dataset.pf;
   else if(f){var k=f.dataset.ff;US.fl[k]=US.fl[k]?0:1;if(US.fl[k]){if(k==="w0")US.fl.w1=0;if(k==="w1")US.fl.w0=0}}
   else return;uPatch();
 };
@@ -1536,7 +1548,7 @@ function uBulk(srt){
   if(!ids.length){b.hidden=true;b.innerHTML="";return}
   b.hidden=false;
   b.innerHTML='<b>Выбрано '+ids.length+"</b>"+(srt&&srt.length>ids.length?'<button class="btn sm" data-b="all">Все '+srt.length+" по фильтру</button>":"")+
-    '<button class="btn sm" data-b="gift">Подарок</button><button class="btn sm" data-b="pro">PRO</button><button class="btn sm" data-b="msg">Сообщение</button><button class="btn sm" data-b="blk">Блок</button><button class="btn sm" data-b="unb" title="Разблокировать">Разблок.</button><button class="btn sm" data-b="ids" title="Скопировать ID выбранных">ID</button><button class="btn sm" data-b="csv">CSV</button><button class="btn sm" data-b="x" title="Снять выбор (Esc)">✕</button>';
+    '<button class="btn sm" data-b="gift">Подарок</button><button class="btn sm" data-b="pro">PRO</button><button class="btn sm" data-b="msg">Сообщение</button><button class="btn sm" data-b="tag">Теги и заметка</button><button class="btn sm" data-b="blk">Блок</button><button class="btn sm" data-b="unb" title="Разблокировать">Разблок.</button><button class="btn sm" data-b="ids" title="Скопировать ID выбранных">ID</button><button class="btn sm" data-b="csv">CSV</button><button class="btn sm" data-b="x" title="Снять выбор (Esc)">✕</button>';
 }
 $("#ubulk").onclick=function(e){
   var k=(e.target.closest("[data-b]")||{dataset:{}}).dataset.b;if(!k)return;var ids=uSelIds();
@@ -1547,6 +1559,7 @@ $("#ubulk").onclick=function(e){
   else if(k==="pro")uBulkPro(ids);
   else if(k==="gift")uBulkGift(ids);
   else if(k==="msg")uBulkMsg(ids);
+  else if(k==="tag")uBulkTags(ids);
   else if(k==="blk")uBulkBlock(ids,true);
   else if(k==="unb")uBulkBlock(ids,false);
 };
@@ -1588,6 +1601,23 @@ function uBulkMsg(ids){
   dlg("<h3>Сообщение · "+ids.length+" "+plural(ids.length,"человек","человека","человек")+'</h3><p class="hint">'+esc(uNames(ids))+'. Придёт от бота; кто не запускал бота, не получит.</p><div class="stack" style="margin-top:12px"><textarea class="field" id="bmt" maxlength="3500" placeholder="Текст"></textarea><div class="row" style="margin:0"><button class="btn pri sm" id="ubgo">Отправить</button><button class="btn sm" data-close>Отмена</button></div><p class="err" id="ueb"></p></div>');
   $("#ubgo").onclick=function(){var t=$("#bmt").value.trim();if(t.length<2)return $("#ueb").textContent="Пустое сообщение";uRun("Отправляю",ids,function(id){return api("message",{tg_id:id,text:t})})};
 }
+function uBulkTags(ids){
+  var m={},ex={};uall.forEach(function(u){m[u.tg_id]=u});
+  ids.forEach(function(i){((m[i]&&m[i].tags)||[]).forEach(function(t){ex[t]=(ex[t]||0)+1})});
+  var one=ids.length===1?m[ids[0]]:null,del={};
+  dlg("<h3>Теги и заметка · "+ids.length+'</h3><p class="hint">'+esc(uNames(ids))+'. Теги видны только тебе. До 8 на человека.</p><div class="stack" style="margin-top:12px">'+
+    (Object.keys(ex).length?'<div class="dchips" id="utx">'+Object.keys(ex).map(function(t){return '<button type="button" data-t="'+esc(t)+'">#'+esc(t)+" ×"+(ids.length>1?" ("+ex[t]+")":"")+"</button>"}).join("")+'</div><p class="hint" style="margin:-4px 0 0">Нажми на тег, чтобы убрать у выбранных</p>':"")+
+    '<input class="field" id="utn" maxlength="80" placeholder="Новые теги через пробел: vip блогер тест">'+
+    (one?'<textarea class="field" id="utt" maxlength="600" placeholder="Заметка о человеке" style="min-height:90px">'+esc(one.note||"")+"</textarea>":"")+
+    '<div class="row" style="margin:0"><button class="btn pri sm" id="utgo">Сохранить</button><button class="btn sm" data-close>Отмена</button></div></div>');
+  if($("#utx"))$("#utx").onclick=function(e){var b=e.target.closest("[data-t]");if(!b)return;var t=b.dataset.t;if(del[t]){delete del[t]}else del[t]=1;b.style.opacity=del[t]?.4:1;b.style.textDecoration=del[t]?"line-through":""};
+  $("#utgo").onclick=function(){
+    var add=$("#utn").value.trim().split(/[\s,#]+/).filter(Boolean),dl=Object.keys(del);
+    var note=one?$("#utt").value:undefined;
+    if(!add.length&&!dl.length&&(note===undefined||note===(one.note||"")))return closeDlg();
+    uRun("Сохраняю",ids,function(id){var b={tg_id:id,add_tags:add,del_tags:dl};if(note!==undefined)b.note=note;return api("note_set",b)});
+  };
+}
 function uBulkBlock(ids,on){
   var m={};uall.forEach(function(u){m[u.tg_id]=u});
   var todo=ids.filter(function(i){return m[i]&&!m[i].creator&&!!m[i].blocked!==on});
@@ -1597,7 +1627,7 @@ function uBulkBlock(ids,on){
 }
 function uCsv(onlySel){
   var src=onlySel?uall.filter(function(u){return usel[u.tg_id]}):(window._usrt||uall),now=Date.now();
-  csv("voob-users"+(onlySel?"-selected":"")+".csv",[["id","имя","ник","регистрация","был онлайн","тренировок","PRO до","PRO активен","блок","приватный"]].concat(src.map(function(u){var p=proSt(u,now);return [u.tg_id,u.first_name,u.handle,u.created_at,u.last_seen,u.workouts,u.pro_until,p==="on"||p==="soon"?"да":"",u.blocked?"да":"",u.private?"да":""]})));
+  csv("voob-users"+(onlySel?"-selected":"")+".csv",[["id","имя","ник","регистрация","был онлайн","тренировок","последняя тренировка","друзей","подарков получено","подарков отправлено","потрачено ⭐","платформы","PRO до","PRO активен","блок","приватный","теги","заметка"]].concat(src.map(function(u){var p=proSt(u,now);return [u.tg_id,u.first_name,u.handle,u.created_at,u.last_seen,u.workouts,u.last_workout,u.friends,u.gifts_in,u.gifts_out,u.stars,(u.platforms||[]).join("/"),u.pro_until,p==="on"||p==="soon"?"да":"",u.blocked?"да":"",u.private?"да":"",(u.tags||[]).join(" "),u.note||""]})));
 }
 $("#uexp").onclick=function(){uCsv(false)};
 function dlg(html){$("#dbody").innerHTML=html;$("#dlg").hidden=false}
