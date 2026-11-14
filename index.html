@@ -254,25 +254,30 @@ section[id^=p]{animation:rise .42s var(--ease) both}
 .bthumb img{width:48px;height:48px;border-radius:10px;object-fit:cover;flex:none}
 .bthumb div{display:grid;min-width:0}.bthumb b{font-size:13px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:200px}.bthumb small{color:var(--mute);font-size:11.5px}
 .tgp{display:block;width:100%;border-radius:10px 10px 4px 4px;margin-bottom:6px;max-height:220px;object-fit:cover}
-.sfoot{margin-top:auto;display:grid;gap:4px}
-.wver{text-align:center;font-size:8px;letter-spacing:.08em;font-weight:400;opacity:.2;user-select:none;color:var(--mute);transition:opacity .35s ease;padding:4px 0 2px;cursor:pointer;white-space:nowrap}
+.sfoot{margin-top:auto;display:grid;grid-template-columns:minmax(0,1fr);gap:8px}
+.wver{text-align:center;font-size:9px;letter-spacing:.08em;font-weight:500;opacity:.35;user-select:none;color:var(--mute);transition:opacity .35s ease;padding:4px 0 2px;cursor:pointer;white-space:nowrap}
 .wver:hover{opacity:.85}
-.who{display:flex;align-items:center;gap:10px;height:38px;padding-left:9px}
-.who i{width:30px;height:30px;border-radius:50%;flex:none;background:var(--tile3);display:grid;place-items:center;font:800 14px var(--disp);font-style:normal;margin-left:0}
-.who b{font-size:13px}.who i{overflow:hidden}.who i img{width:100%;height:100%;object-fit:cover;display:block}
-.conn{display:flex;align-items:center;gap:10px;height:26px;padding-left:21.5px;font-size:13px;font-weight:600;color:var(--mute)}
+.who{display:flex;align-items:center;gap:11px;height:44px;padding-left:11px;overflow:hidden;transition:padding .3s var(--ease)}
+#side.open .who{padding-left:6px}
+.wav{position:relative;width:30px;height:30px;flex:none}
+.wav i{width:30px;height:30px;border-radius:50%;background:var(--tile3);display:grid;place-items:center;font:800 14px var(--disp);font-style:normal;overflow:hidden}
+.wav i img{width:100%;height:100%;object-fit:cover;display:block}
+.wav .ab{position:absolute;right:-3px;bottom:-3px;box-sizing:content-box;border:2px solid var(--tile);transition:opacity .2s}
+#side.open .wav .ab{opacity:0}
+.wm{display:grid;gap:1px;min-width:0;line-height:1.25}
+.wm b{font-size:13px}
+.conn{display:flex;align-items:center;gap:7px;font-size:11.5px;font-weight:500;color:var(--mute)}
 .cdot{width:9px;height:9px;border-radius:50%;background:var(--green);flex:none;box-shadow:0 0 0 0 rgba(52,211,153,.5);animation:ping 2.4s infinite}
 .cdot.bad{background:var(--bad);animation:none}
 @keyframes ping{70%{box-shadow:0 0 0 7px rgba(52,211,153,0)}100%{box-shadow:0 0 0 0 rgba(52,211,153,0)}}
-.fbtn{display:flex;align-items:center;height:36px;width:100%;border:0;background:none;border-radius:12px;color:var(--mute);cursor:pointer;padding:0;transition:background .16s,color .16s}
-.fbtn:hover{background:rgba(255,255,255,.05);color:var(--fg)}
-.fbtn svg{width:20px;height:20px;flex:none;margin:0 16px;transition:transform .3s var(--ease)}
-.fbtn .lb{font-size:13px;font-weight:600}
-#side.open .who,#side.open .conn,#side.open .fbtn{justify-content:center;padding-left:0;padding-right:0}
-#side.open .who{gap:12px}#side.open .conn{gap:9px}
-#side.open .fbtn svg{margin:0 10px 0 0}
-#side.open #togBtn svg{margin:0 10px 0 0}
+.fgrid{display:grid;grid-template-columns:minmax(0,1fr);gap:6px}
+#side.open .fgrid{grid-template-columns:repeat(2,minmax(0,1fr))}
+.fbtn{display:flex;align-items:center;justify-content:center;height:38px;width:100%;border:0;background:rgba(255,255,255,.04);border-radius:12px;color:var(--mute);cursor:pointer;padding:0;transition:background .16s,color .16s,transform .16s}
+.fbtn:hover{background:rgba(255,255,255,.09);color:var(--fg)}
+.fbtn:active{transform:scale(.96)}
+.fbtn svg{width:19px;height:19px;flex:none;margin:0;transition:transform .3s var(--ease)}
 #side.open #togBtn svg{transform:rotate(180deg)}
+.wver{margin-top:2px}
 #main{flex:1;min-width:0;max-width:1240px;margin:0 auto;padding:30px 34px 70px}
 .phead{display:flex;justify-content:space-between;align-items:flex-end;gap:16px;flex-wrap:wrap;margin-bottom:6px}
 .crumb{font:700 10.5px var(--sans);letter-spacing:.16em;text-transform:uppercase;color:var(--dim)}
@@ -957,10 +962,11 @@ textarea.field{resize:none;line-height:1.5;min-height:84px;padding:12px 15px;fon
   <button id="sp" type="button" title="Найти человека (Ctrl K)"><i data-ic="search"></i><span class="lb">Найти человека</span><kbd class="lb">Ctrl K</kbd></button>
   <nav id="nav" role="tablist"><i id="navsel"></i><button data-tab="ov" aria-selected="true" title="Обзор"><i data-ic="ov"></i><span class="lb">Обзор</span></button><button data-tab="us" aria-selected="false" title="Пользователи"><i data-ic="us"></i><span class="lb">Пользователи</span></button><button data-tab="fb" aria-selected="false" title="Жалобы и идеи"><i data-ic="fb"></i><span class="lb">Жалобы и идеи</span></button><button data-tab="pay" aria-selected="false" title="Платежи"><i data-ic="pay"></i><span class="lb">Платежи</span></button><button data-tab="bc" aria-selected="false" title="Рассылка"><i data-ic="bc"></i><span class="lb">Рассылка</span></button><button data-tab="an" aria-selected="false" title="Объявления"><i data-ic="an"></i><span class="lb">Объявления</span></button><button data-tab="pr" aria-selected="false" title="Промокоды"><i data-ic="pr"></i><span class="lb">Промокоды</span></button><button data-tab="lg" aria-selected="false" title="Журнал"><i data-ic="lg"></i><span class="lb">Журнал</span></button><button data-tab="set" aria-selected="false" title="Настройки"><i data-ic="set"></i><span class="lb">Настройки</span></button></nav>
   <div class="sfoot">
-    <div class="who"><i>В</i><b class="lb">Влад</b></div>
-    <div class="conn"><span class="cdot" id="cdot"></span><span class="lb">сервер на связи</span></div>
-    <button class="fbtn" id="lockBtn" type="button" title="Выйти"><i data-ic="lock"></i><span class="lb">Выйти</span></button>
-    <button class="fbtn" id="togBtn" type="button" title="Показать названия (Ctrl+B)"><i data-ic="chev"></i><span class="lb">Свернуть меню</span></button>
+    <div class="who"><span class="wav"><i>В</i><span class="cdot ab"></span></span><div class="wm lb"><b>Влад</b><div class="conn"><span class="cdot"></span><span id="cst">сервер на связи</span></div></div></div>
+    <div class="fgrid">
+      <button class="fbtn" id="lockBtn" type="button" title="Выйти"><i data-ic="lock"></i></button>
+      <button class="fbtn" id="togBtn" type="button" title="Показать названия (Ctrl+B)"><i data-ic="chev"></i></button>
+    </div>
     <span class="wver" id="wver" title="Версия WEB приложения · нажми, чтобы скопировать" hidden></span>
   </div>
 </aside>
@@ -2480,7 +2486,7 @@ var toastT=0;
 function toast(t,kind){var e=$("#toast");e.className=kind==="err"?"err":"";e.innerHTML="<i>"+ic(kind==="err"?"alert":"check",2.4)+"</i><span></span>";e.lastChild.textContent=t;void e.offsetWidth;e.classList.add("on");clearTimeout(toastT);toastT=setTimeout(function(){e.classList.remove("on")},2800)}
 
 // связь с сервером
-function setConn(ok){var d=$("#cdot");if(!d)return;d.classList.toggle("bad",!ok);d.nextElementSibling.textContent=ok?"сервер на связи":"нет связи"}
+function setConn(ok){$$(".cdot").forEach(function(d){d.classList.toggle("bad",!ok)});var t=$("#cst");if(t)t.textContent=ok?"сервер на связи":"нет связи"}
 
 // боковая панель
 var sideOpen=false;try{sideOpen=localStorage.getItem("voobcore.side")==="1"}catch(e){}
