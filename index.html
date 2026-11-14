@@ -1178,7 +1178,7 @@ textarea.field{resize:none;line-height:1.5;min-height:84px;padding:12px 15px;fon
     <div class="tile stack"><h3>Прошлые объявления</h3><div class="list" id="alog"></div></div>
   </section>
   <section id="t-bc" class="stack" hidden>
-  <div class="bx-head"><div><h3>Сообщение в Telegram</h3><p class="hint">Пиши прямо в пузыре: текст, картинка и кнопка правятся там, где их увидит получатель.</p></div><div class="bx-seg" id="bxlay"><i class="bx-th"></i><button class="bx-on" data-l="b" type="button">Телефон</button><button data-l="a" type="button">Сцена</button></div></div>
+  <div class="bx-head"><div><h3>Сообщение в Telegram</h3><p class="hint">Пиши прямо в пузыре: текст, картинка и кнопка правятся там, где их увидит получатель.</p></div><div class="bx-seg" id="bxlay"><i class="bx-th"></i><button data-l="b" type="button">Телефон</button><button class="bx-on" data-l="a" type="button">Сцена</button></div></div>
   <div class="bx-root" id="bxroot">
   <div class="bx-seg bx-aud" id="bxaud"><i class="bx-th"></i>
     <button data-a="me" class="bx-on">Только мне<small>проверка</small></button>
@@ -3071,7 +3071,7 @@ function bcRender(){render()}
 dropZone($("#bxroot"),setImg);
 new ResizeObserver(function(){$("#bxlay")._pos();$("#bxaud")._pos()}).observe($("#bxroot"));
 $(".bx-av").innerHTML=mark(24,1);
-renderKb();var _l="b";try{_l=localStorage.getItem("bxl")||"b"}catch(e){}setLay(_l==="a"?"a":"b");
+renderKb();setLay("a");
 
 window.bcRender=bcRender;window.bcSetImg=setImg;
 })();
