@@ -272,11 +272,11 @@ async function chgCancel() {
   return { status: "ok" };
 }
 
-async function photoB64(userId: number, big: boolean) {
+async function photoB64(userId: number, big: boolean, max = false) {
   const ph = await tg("getUserProfilePhotos", { user_id: userId, limit: 1 });
   const sizes: any[] = ph?.result?.photos?.[0] ?? [];
   if (!ph?.ok || !sizes.length) return { ok: false, reason: "no_photo" };
-  const best = big ? sizes.reduce((a, b) => (Math.abs(b.width - 320) < Math.abs(a.width - 320) ? b : a))
+  const best = max ? sizes.reduce((a, b) => (b.width > a.width ? b : a)) : big ? sizes.reduce((a, b) => (Math.abs(b.width - 320) < Math.abs(a.width - 320) ? b : a))
     : (sizes.find((s) => s.width >= 150) ?? sizes[sizes.length - 1]);
   const f = await tg("getFile", { file_id: best.file_id });
   if (!f?.ok || !f.result?.file_path) return { ok: false, reason: "no_file" };
@@ -676,7 +676,7 @@ Deno.serve(async (req) => {
       if (!(await verified(th))) return json({ error: "Подтверди вход кодом из Telegram", need_otp: true }, 401);
     }
     switch (a) {
-      case "photo": return json(await photoB64(id, !!body?.big));
+      case "photo": return json(await photoB64(id, !!body?.big, !!body?.max));
       case "overview": return json(await overview(body));
       case "events": return json(await events(body));
       case "kick": return json(await kick(id));
