@@ -714,6 +714,7 @@ textarea.field{resize:none;line-height:1.5;min-height:84px;padding:12px 15px;fon
 @media(max-width:480px){#login .lcard{padding:26px 22px 22px}#login .qr{width:min(208px,100%);height:auto;aspect-ratio:1}}
 
 /* ---- вход: два способа из трёх ---- */
+#mth{transition:opacity .35s var(--ease),transform .35s var(--ease)}#mth.lw{opacity:0;transform:translateY(6px);pointer-events:none}
 .mth{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:18px 0 4px}
 .mth .mt[hidden]{display:none}
 .mth:has(.mt[hidden]){grid-template-columns:repeat(2,1fr)}
@@ -792,7 +793,7 @@ textarea.field{resize:none;line-height:1.5;min-height:84px;padding:12px 15px;fon
     <section id="p1">
       <h2 id="lh">Вход</h2>
       <p class="hint" id="lhint">Нужны любые два способа из трёх</p>
-      <div class="mth" id="mth">
+      <div class="mth lw" id="mth">
         <button class="mt" data-m="tg" type="button"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 4 3 11l6 2.2L11 20l3-4.2L18.5 19z"/><path d="m9 13.2 9-6.7"/></svg><b>Telegram</b><u></u></button>
         <button class="mt" data-m="pwd" type="button" hidden><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="10.5" width="16" height="10" rx="3"/><path d="M8 10.5V8a4 4 0 0 1 8 0v2.5"/></svg><b>Почта и пароль</b><u></u></button>
         <button class="mt" data-m="mail" type="button"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="14" rx="3"/><path d="m4 7 8 6 8-6"/></svg><b>Код с почты</b><u></u></button>
@@ -1127,7 +1128,7 @@ function paint(){
   $("#lh").textContent=done.length?"Ещё один шаг":"Вход";$("#lhint").textContent=done.length?HINT1:HINT0;
 }
 function openM(m){
-  if(fin||done.indexOf(m)>=0&&m!=="bk")return;
+  if(!AF||fin||done.indexOf(m)>=0&&m!=="bk")return;
   var prev=AM;AM=m;$("#e1").textContent="";
   ["tg","pwd","mail","bk"].forEach(function(x){$("#pan-"+x).hidden=x!==m});
   if(prev==="tg"&&m!=="tg")stopPoll();
@@ -1139,13 +1140,22 @@ function openM(m){
 }
 document.querySelectorAll("#mth .mt").forEach(function(b){b.onclick=function(){openM(b.dataset.m)}});
 $("#bkSw").onclick=function(){openM(AM==="bk"?"tg":"bk")};
+var bSeq=0,qSeq=0,mSeq=0,bRetry=null;
 function beginAuth(msg){
-  stopPoll();clearInterval(cool);fin=false;AF=null;done=[];AM=null;
+  var my=++bSeq;clearTimeout(bRetry);
+  stopPoll();clearInterval(cool);fin=false;AF=null;done=[];AM=null;qSeq++;mSeq++;
   ["tg","pwd","mail","bk"].forEach(function(x){$("#pan-"+x).hidden=true});
   $("#aEm").value="";$("#aPw").value="";$("#bkIn").value="";paint();$("#e1").textContent=msg||"";
+  // пока сервер не выдал попытку входа, способы недоступны (иначе клик уходит без неё и даёт ошибку)
+  $("#mth").classList.add("lw");$("#lhint").textContent="Подключаюсь…";
   call("auth_begin",null,"a").then(function(j){
-    if(j.error||!j.flow){$("#e1").textContent=j.error||"Не удалось начать вход";return}
+    if(my!==bSeq)return;
+    if(j.error||!j.flow){
+      $("#e1").textContent=(j.error||"Не удалось начать вход")+". Пробую ещё раз…";
+      bRetry=setTimeout(function(){if(my===bSeq)beginAuth($("#e1").textContent)},3000);return;
+    }
     AF=j.flow;$("#mth .mt[data-m=pwd]").hidden=!j.has_pwd;$("#bkSw").hidden=!j.has_backup;
+    $("#mth").classList.remove("lw");paint();
     openM("tg");
   });
 }
@@ -1166,18 +1176,20 @@ function fres(r,m){
 }
 function qs(t,k){var d=$("#qrD"),e=$("#qrSt");d.className="qd "+k;e.textContent=t;e.classList.remove("sw");void e.offsetWidth;e.classList.add("sw")}
 function startQr(){
+  var my=++qSeq;
   stopPoll();$("#e1").textContent="";$("#qrNew").hidden=true;qs("Создаю код…","ld");$("#qr").className="qr ld";$("#qr").innerHTML="";
   call("auth_tg_start",{flow:AF},"a").then(function(j){
+    if(my!==qSeq)return;
     if(fres(j))return;
     if(j.error||!j.code){$("#e1").textContent=j.error||"Не удалось создать код";qs("Ошибка","bad");$("#qr").className="qr dead";$("#qrNew").hidden=false;return}
     $("#tgLink").href=j.link;$("#qr").className="qr";drawQr(j.link);
     var until=Date.now()+(j.expires_in||600)*1000;
     qs("Ожидаю подтверждение","wt");
     (function tick(){
-      if(AM!=="tg")return;
+      if(AM!=="tg"||my!==qSeq)return;
       if(Date.now()>until){expireQr();return}
       call("auth_tg_poll",{flow:AF},"a").then(function(r){
-        if(AM!=="tg")return;
+        if(AM!=="tg"||my!==qSeq)return;
         if(r.status==="pending"){pollT=setTimeout(tick,2000);return}
         if(r.status==="forbidden"){stopPoll();qs("Отказано","bad");$("#qr").classList.add("dead");$("#e1").textContent="У этого аккаунта нет доступа";$("#qrNew").hidden=false;return}
         if(r.status==="expired"){expireQr();return}
@@ -1227,8 +1239,10 @@ function beginMail(){
   mc.clear();sendMail();
 }
 function sendMail(){
+  var my=++mSeq;
   $("#mailHint").textContent="Отправляю код…";mailIc("ld");$("#mailAgain").disabled=true;
   call("auth_mail_start",{flow:AF},"a").then(function(j){
+    if(my!==mSeq)return;
     if(fres(j))return;
     if(j.status==="sent")$("#mailHint").textContent="Код отправлен на "+j.to;
     else if(j.status==="soon")$("#mailHint").textContent="Код уже отправлен на почту";
