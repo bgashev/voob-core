@@ -719,14 +719,14 @@ textarea.field{resize:none;line-height:1.5;min-height:84px;padding:12px 15px;fon
 .mth{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:18px 0 4px}
 .mth .mt[hidden]{display:none}
 .mth:has(.mt[hidden]){grid-template-columns:repeat(2,1fr)}
-.mt{position:relative;display:grid;justify-items:center;gap:8px;padding:14px 6px 12px;border-radius:14px;border:1px solid var(--line);background:transparent;color:var(--mute);font:600 12px var(--sans);cursor:pointer;transition:border-color .2s,color .2s,background .2s}
-.mt b{font-weight:600;line-height:1.2;text-align:center}
-.mt:hover{color:var(--fg);border-color:var(--dim)}
-.mt.on{color:var(--fg);border-color:var(--accent);background:rgba(255,255,255,.03)}
-.mt.done{color:var(--fg);border-color:transparent;background:rgba(255,255,255,.04);cursor:default}
-.mt u{position:absolute;top:7px;right:7px;width:14px;height:14px;border-radius:50%;background:var(--accent);opacity:0;transform:scale(.4);transition:.25s;text-decoration:none}
-.mt.done u{opacity:1;transform:none}
-.mt.done u:after{content:"";position:absolute;left:4px;top:2px;width:3px;height:6px;border:solid #0c0d0f;border-width:0 2px 2px 0;transform:rotate(45deg)}
+.mth .mt{position:relative;display:grid;justify-items:center;gap:8px;padding:14px 6px 12px;border-radius:14px;border:1px solid var(--line);background:transparent;color:var(--mute);font:600 12px var(--sans);cursor:pointer;transition:border-color .2s,color .2s,background .2s}
+.mth .mt b{font-weight:600;line-height:1.2;text-align:center}
+.mth .mt:hover{color:var(--fg);border-color:var(--dim)}
+.mth .mt.on{color:var(--fg);border-color:var(--accent);background:rgba(255,255,255,.03)}
+.mth .mt.done{color:var(--fg);border-color:transparent;background:rgba(255,255,255,.04);cursor:default}
+.mth .mt u{position:absolute;top:7px;right:7px;width:14px;height:14px;border-radius:50%;background:var(--accent);opacity:0;transform:scale(.4);transition:.25s;text-decoration:none}
+.mth .mt.done u{opacity:1;transform:none}
+.mth .mt.done u:after{content:"";position:absolute;left:4px;top:2px;width:3px;height:6px;border:solid #0c0d0f;border-width:0 2px 2px 0;transform:rotate(45deg)}
 .mpan{margin-top:18px;animation:mpin .25s ease}
 @keyframes mpin{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
 #bkSw.on{color:var(--fg)}
