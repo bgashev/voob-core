@@ -829,6 +829,21 @@ textarea.field{resize:none;line-height:1.5;min-height:84px;padding:12px 15px;fon
 .pcd .pcs{grid-column:1;color:var(--mute);font-size:12.5px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.pcd .pcs b{color:var(--fg);font-weight:650}
 .pcd .pca{grid-column:2;grid-row:1/3;display:flex;gap:6px;align-items:center}
 .pcd .pcp{grid-column:1/-1;display:flex;gap:10px;align-items:center;font-size:12px;color:var(--mute)}.pcd .pcp .plb2{flex:1;max-width:none;margin:0}.pcd .pcp em{font-style:normal;font-variant-numeric:tabular-nums;min-width:44px;text-align:right}
+.tile.promo .pform{display:grid;gap:10px;margin-top:16px}
+.tile.promo .ppv{position:static;gap:12px;margin-bottom:4px}
+.pset{background:var(--tile2);border:1px solid var(--line);border-radius:20px;padding:14px 16px;display:grid;gap:12px;align-content:start;min-width:0}
+.pset[hidden]{display:none}
+.psh{display:flex;justify-content:space-between;align-items:baseline;gap:10px}.psh .plb{margin:0}.psh i{font-style:normal;font-size:11.5px;color:var(--dim)}
+.psr{display:flex;gap:10px 12px;align-items:center;justify-content:space-between;flex-wrap:wrap}.psr .pch{margin:0;flex:1 1 auto}
+.pset2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.pset .pch button{background:var(--tile3);border-color:transparent}.pset .pch button:hover{background:var(--line2)}.pset .pch button[aria-pressed=true]{background:var(--accent)}
+.pset .step{gap:4px;flex:none;background:var(--tile3);border-radius:14px;padding:3px}
+.pset .step button{width:30px;height:30px;border:0;border-radius:11px;background:transparent;font-size:17px}.pset .step button:hover{background:var(--line2)}
+.pset .step input{width:58px;height:30px;border:0;background:transparent;font-size:14px}
+.pset .field{background:var(--tile3);border-color:transparent}.pset .field:focus{border-color:var(--accent)}
+.pset .bar .field{min-width:0}
+.pset .pgifts{max-height:200px}.pset .pgb{background:var(--tile3);border-color:transparent}.pset .pgb[aria-pressed=true]{border-color:var(--accent)}
+@media(max-width:560px){.pset2{grid-template-columns:1fr}}
 @media(max-width:560px){.pcd{grid-template-columns:1fr}.pcd .pca{grid-column:1;grid-row:auto}}
 
 </style>
@@ -2750,16 +2765,16 @@ function audRefresh(){api("audience",{},"x").then(function(j){if(j&&j.all!=null)
   var dayChips=[7,14,30,90,180,365].map(function(d){return '<button type="button" data-v="'+d+'">'+d+"</button>"}).join("");
   tile.innerHTML=
    '<div class="chartT"><h3>Новые промокоды</h3><div class="seg" id="pKind"><button data-k="pro" aria-pressed="true">PRO</button><button data-k="gift" aria-pressed="false">Подарок</button></div></div>'+
-   '<div class="pgrid"><div class="pform">'+
-    '<div id="pProBox"><div class="plb">Сколько дней PRO</div><div class="pch" id="pDayCh">'+dayChips+'</div><div class="step" id="pDays"><button type="button" data-s="-1">−</button><input type="number" value="30" min="1" max="3650"><button type="button" data-s="1">+</button><span>дней</span></div></div>'+
-    '<div id="pGiftBox" hidden><div class="plb">Какой подарок</div><div class="pgifts" id="pGifts"><p class="hint">Загружаю…</p></div></div>'+
-    '<div class="two"><div><div class="plb">Сколько кодов</div><div class="pch" id="pCntCh"><button type="button" data-v="1">1</button><button type="button" data-v="5">5</button><button type="button" data-v="10">10</button><button type="button" data-v="50">50</button><button type="button" data-v="100">100</button></div><div class="step" id="pCnt"><button type="button" data-s="-1">−</button><input type="number" value="1" min="1" max="5000"><button type="button" data-s="1">+</button></div></div>'+
-    '<div><div class="plb">Использований на код</div><div class="pch" id="pUseCh"><button type="button" data-v="1">1</button><button type="button" data-v="2">2</button><button type="button" data-v="5">5</button><button type="button" data-v="10">10</button><button type="button" data-v="100">100</button></div><div class="step" id="pUse"><button type="button" data-s="-1">−</button><input type="number" value="1" min="1" max="100000"><button type="button" data-s="1">+</button></div></div></div>'+
-    '<div><div class="plb">Срок действия кода</div><div class="pch" id="pExpCh"><button type="button" data-v="0">Без срока</button><button type="button" data-v="7">7 дней</button><button type="button" data-v="30">30 дней</button><button type="button" data-v="90">90 дней</button></div><div class="step" id="pExp"><button type="button" data-s="-1">−</button><input type="number" value="0" min="0" max="3650"><button type="button" data-s="1">+</button><span>дней, 0 = бессрочно</span></div></div>'+
-    '<div id="pCustBox"><div class="plb">Свой код <span class="dm">(только когда код один)</span></div><div class="bar"><input class="field mono" id="pcu" maxlength="24" placeholder="например VOOB-WELCOME" autocomplete="off"><button type="button" class="btn sm" id="pRnd">Случайный</button></div></div>'+
-    '<input class="field" id="pn" maxlength="120" placeholder="Заметка: кому или для чего (не обязательно)">'+
-   '</div><div class="ppv"><div class="plb">Так будет выглядеть</div><div id="pTicket"></div><div class="psum" id="pSum"></div><button class="btn pri wide" id="pgo" type="button">Создать</button><p class="err" id="epr"></p></div></div>'+
-   '<div id="pResult" hidden></div>';
+   '<div class="pform">'+
+    '<div class="ppv"><div id="pTicket"></div><div class="psum" id="pSum"></div></div>'+
+    '<div class="pset" id="pProBox"><div class="psh"><span class="plb">Награда</span><i>дней PRO</i></div><div class="psr"><div class="pch" id="pDayCh">'+dayChips+'</div><div class="step" id="pDays"><button type="button" data-s="-1" aria-label="Меньше">−</button><input type="number" value="30" min="1" max="3650"><button type="button" data-s="1" aria-label="Больше">+</button></div>'+'</div></div>'+
+    '<div class="pset" id="pGiftBox" hidden><div class="psh"><span class="plb">Награда</span><i>какой подарок</i></div><div class="pgifts" id="pGifts"><p class="hint">Загружаю…</p></div></div>'+
+    '<div class="pset2"><div class="pset"><div class="psh"><span class="plb">Сколько кодов</span><i>шт.</i></div><div class="psr"><div class="pch" id="pCntCh"><button type="button" data-v="1">1</button><button type="button" data-v="10">10</button><button type="button" data-v="50">50</button><button type="button" data-v="100">100</button></div><div class="step" id="pCnt"><button type="button" data-s="-1" aria-label="Меньше">−</button><input type="number" value="1" min="1" max="5000"><button type="button" data-s="1" aria-label="Больше">+</button></div></div></div>'+
+    '<div class="pset"><div class="psh"><span class="plb">Использований</span><i>на один код</i></div><div class="psr"><div class="pch" id="pUseCh"><button type="button" data-v="1">1</button><button type="button" data-v="5">5</button><button type="button" data-v="10">10</button><button type="button" data-v="100">100</button></div><div class="step" id="pUse"><button type="button" data-s="-1" aria-label="Меньше">−</button><input type="number" value="1" min="1" max="100000"><button type="button" data-s="1" aria-label="Больше">+</button></div></div></div></div>'+
+    '<div class="pset"><div class="psh"><span class="plb">Срок действия</span><i>дней · 0 — бессрочно</i></div><div class="psr"><div class="pch" id="pExpCh"><button type="button" data-v="0">Без срока</button><button type="button" data-v="7">7</button><button type="button" data-v="30">30</button><button type="button" data-v="90">90</button></div><div class="step" id="pExp"><button type="button" data-s="-1" aria-label="Меньше">−</button><input type="number" value="0" min="0" max="3650"><button type="button" data-s="1" aria-label="Больше">+</button></div></div></div>'+
+    '<div class="pset" id="pCustBox"><div class="psh"><span class="plb">Свой код</span><i>если код один</i></div><div class="bar"><input class="field mono" id="pcu" maxlength="24" placeholder="например VOOB-WELCOME" autocomplete="off"><button type="button" class="btn sm" id="pRnd">Случайный</button></div><input class="field" id="pn" maxlength="120" placeholder="Заметка: кому или для чего (не обязательно)"></div>'+
+    '<button class="btn pri wide" id="pgo" type="button">Создать</button><p class="err" id="epr" style="margin:0"></p>'+
+   '</div><div id="pResult" hidden></div>';
   old.parentNode.replaceChild(tile,old);
   var kind="pro",gift="",gname="",sample=null,exp=0;
   var sd=stepper($("#pDays"),1,3650,function(){upd()}),sc=stepper($("#pCnt"),1,5000,function(){upd()}),su=stepper($("#pUse"),1,100000,function(){upd()}),se=stepper($("#pExp"),0,3650,function(){upd()});
