@@ -1054,7 +1054,7 @@ textarea.field{resize:none;line-height:1.5;min-height:84px;padding:12px 15px;fon
   <section id="t-bc" class="stack" hidden>
     <div class="tile stack">
       <h3>Сообщение в Telegram всем</h3>
-      <select class="field" id="bt"><option value="me">Только мне (проверка)</option><option value="pro">Всем с PRO</option><option value="all">Всем пользователям</option></select>
+      <select class="field" id="bt"><option value="me">Только мне (проверка)</option><option value="pro">Всем с PRO</option><option value="free">Всем без PRO</option><option value="all">Всем пользователям</option></select>
       <textarea class="field" id="btext" maxlength="3500" placeholder="Текст сообщения"></textarea>
       <div class="bimg" id="bimg"><input type="file" id="bfile" accept="image/jpeg,image/png,image/webp" hidden>
         <button class="pclip" id="bpick" type="button" title="Прикрепить картинку (или перетащи сюда)" aria-label="Прикрепить картинку"><i data-ic="clip"></i></button>
@@ -2229,7 +2229,7 @@ $("#bgo").onclick=function(){
   var go=function(){$("#bgo").disabled=true;api("broadcast",{text:t,target:tg,image:bcImg||undefined}).then(function(j){$("#bgo").disabled=false;
     $("#ebc").innerHTML=j.error?esc(j.error):'<span class="ok">Доставлено '+j.sent+" из "+j.total+(j.failed?", не дошло "+j.failed:"")+"</span>";if(!j.error&&tg!=="me"){$("#btext").value="";bcSetImg(null)}})};
   if(tg==="me")return go();
-  dlg('<h3>Отправить рассылку?</h3><p class="hint">'+(tg==="pro"?"Всем с PRO":"Всем пользователям")+'. Остановить после старта нельзя.</p><div class="row"><button class="btn pri sm" id="bcy">Отправить</button><button class="btn sm" data-close>Отмена</button></div>');
+  dlg('<h3>Отправить рассылку?</h3><p class="hint">'+(tg==="pro"?"Всем с PRO":tg==="free"?"Всем без PRO":"Всем пользователям")+'. Остановить после старта нельзя.</p><div class="row"><button class="btn pri sm" id="bcy">Отправить</button><button class="btn sm" data-close>Отмена</button></div>');
   $("#bcy").onclick=function(){closeDlg();go()};
 };
 
@@ -2812,7 +2812,7 @@ var bcImg="";
 function bcRender(){
   if(!bcPrev)return;var t=$("#btext").value.trim(),a=$("#bt").value,lim=bcImg?1000:3500;
   $("#pvBc").innerHTML=tgBubble(t?esc2(t):'<span class="ph">'+(bcImg?"Подпись (необязательно)":"Текст сообщения")+"</span>","",false,bcImg);
-  $("#pvBw").innerHTML=(a==="me"?"Придёт только тебе (проверка)":a==="pro"?"Получат все с PRO: "+fmt(AUD.pro):"Получат все: "+fmt(AUD.all))+" · "+(t.length>lim?'<span class="dn">'+t.length+" / "+lim+" — лишнее обрежется</span>":t.length+" / "+lim)+(bcImg?" · у картинки подпись до 1000 знаков":"");
+  $("#pvBw").innerHTML=(a==="me"?"Придёт только тебе (проверка)":a==="pro"?"Получат все с PRO: "+fmt(AUD.pro):a==="free"?"Получат все без PRO: "+fmt(AUD.free):"Получат все: "+fmt(AUD.all))+" · "+(t.length>lim?'<span class="dn">'+t.length+" / "+lim+" — лишнее обрежется</span>":t.length+" / "+lim)+(bcImg?" · у картинки подпись до 1000 знаков":"");
 }
 function readImg(file,ok){
   if(!/^image\/(jpeg|png|webp)$/.test(file.type)){toast("Нужен JPEG, PNG или WebP","err");return}

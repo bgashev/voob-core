@@ -672,6 +672,12 @@ async function broadcast(body: any) {
   let ids: number[] = [];
   if (target === "me") ids = [ADMIN];
   else if (target === "pro") { const { data } = await db.from("pro_subs").select("tg_id").gt("until", new Date().toISOString()); ids = (data ?? []).map((x: any) => x.tg_id); }
+  else if (target === "free") {
+    const { data: pr } = await db.from("pro_subs").select("tg_id").gt("until", new Date().toISOString());
+    const pro = new Set((pr ?? []).map((x: any) => Number(x.tg_id)));
+    const { data } = await db.from("users").select("tg_id").eq("blocked", false).limit(5000);
+    ids = (data ?? []).map((x: any) => Number(x.tg_id)).filter((i) => !pro.has(i) && i !== ADMIN);
+  }
   else {
     let r = db.from("users").select("tg_id").eq("blocked", false);
     if (target === "active7") r = r.gte("last_seen", new Date(Date.now() - 7 * DAY).toISOString());
