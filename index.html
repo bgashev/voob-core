@@ -951,7 +951,7 @@ textarea.field{resize:none;line-height:1.5;min-height:84px;padding:12px 15px;fon
     <div class="tile utool">
       <div class="bar">
         <input class="field" id="uq" placeholder="Имя, @ник или ID  ·  «/» — поиск" autocomplete="off">
-        <select class="field usel" id="usort" aria-label="Сортировка"><option value="seen">Последняя активность</option><option value="reg">Дата регистрации</option><option value="w">Тренировки</option><option value="pro">Окончание PRO</option><option value="stars">Потрачено ⭐</option><option value="friends">Друзья</option><option value="gifts">Подарки получено</option><option value="lw">Последняя тренировка</option><option value="name">Имя А–Я</option><option value="id">Telegram ID</option></select>
+        <select class="field usel" id="usort" aria-label="Сортировка"><option value="seen">Последняя активность</option><option value="visits">Заходов в VOOB</option><option value="reg">Дата регистрации</option><option value="w">Тренировки</option><option value="pro">Окончание PRO</option><option value="stars">Потрачено ⭐</option><option value="friends">Друзья</option><option value="gifts">Подарки получено</option><option value="lw">Последняя тренировка</option><option value="name">Имя А–Я</option><option value="id">Telegram ID</option></select>
         <button class="btn sm" id="udir" type="button" title="Направление сортировки"></button>
       </div>
       <div class="bar" style="margin-top:10px">
@@ -1507,7 +1507,7 @@ function uMatch(u,now){
 }
 function uVal(u,k){
   if(k==="seen")return Date.parse(u.last_seen)||0;if(k==="reg")return Date.parse(u.created_at)||0;
-  if(k==="w")return u.workouts||0;if(k==="id")return u.tg_id;
+  if(k==="w")return u.workouts||0;if(k==="visits")return u.visits||1;if(k==="id")return u.tg_id;
   if(k==="pro")return u.pro_until?Date.parse(u.pro_until):null;
   if(k==="stars")return u.stars||0;if(k==="friends")return u.friends||0;if(k==="gifts")return u.gifts_in||0;
   if(k==="lw")return u.last_workout?Date.parse(u.last_workout):null;
@@ -1577,7 +1577,7 @@ function uRender(){
       '<label class="ucb"><input type="checkbox" data-sel="'+u.tg_id+'"'+(usel[u.tg_id]?" checked":"")+"><i></i></label>"+
       '<div class="uu">'+av(u)+'<div class="m"><div class="t">'+nm(u)+(u.creator?'<span class="chip">создатель</span>':"")+(u.blocked?'<span class="chip r">блок</span>':"")+(u.private?'<span class="chip">приват</span>':"")+(u.delete_at?'<span class="chip r" title="Удаление аккаунта">удалится '+dshort(u.delete_at)+"</span>":"")+'</div><div class="s">'+(u.handle?"@"+esc(u.handle)+" · ":"")+u.tg_id+((u.platforms||[]).length?" · "+u.platforms.map(function(x){return PLAT[x]||x}).join(", "):"")+'</div>'+((u.tags&&u.tags.length)||u.note?'<div class="s utg" title="'+esc(u.note||"")+'">'+(u.tags||[]).map(function(t){return "#"+esc(t)}).join(" ")+(u.note?(u.tags&&u.tags.length?" · ":"")+esc(u.note):"")+"</div>":"")+"</div></div>"+
       '<div class="c reg" title="'+dt(u.created_at)+'">'+dshort(u.created_at)+"<small>"+ago(u.created_at)+"</small></div>"+
-      '<div class="c seen" title="'+dt(u.last_seen)+'"><span class="dot '+seenCls(u.last_seen)+'"></span>'+ago(u.last_seen)+"</div>"+
+      '<div class="c seen" title="'+dt(u.last_seen)+'"><span class="dot '+seenCls(u.last_seen)+'"></span>'+ago(u.last_seen)+"<small>"+(u.visits||1)+" "+plural(u.visits||1,"заход","захода","заходов")+"</small></div>"+
       '<div class="c n w" title="'+(u.last_workout?"Последняя: "+dt(u.last_workout):"Тренировок не было")+'">'+fmt(u.workouts)+'</div><div class="c n fr" title="Подарков: получено '+(u.gifts_in||0)+", отправлено "+(u.gifts_out||0)+'">'+fmt(u.friends||0)+'</div><div class="c n st">'+(u.stars?fmt(u.stars)+" ⭐":'<span style="color:var(--dim);font-weight:400">—</span>')+'</div><div class="c pro">'+pro+"</div>"+
       (u.handle?'<button class="qa" type="button" data-cp="'+esc(u.handle)+'" title="Скопировать ссылку на профиль"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="12" height="12" rx="3"/><path d="M5 15V6a3 3 0 0 1 3-3h9"/></svg></button>':"<span></span>")+"</div>"}).join(""):'<p class="hint" style="padding:18px 4px">'+(uall.length?"Под такие условия никто не подходит":"Пока никого нет")+"</p>";
   uanim=false;hydrate($("#ulist"));

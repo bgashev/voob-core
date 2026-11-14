@@ -352,7 +352,7 @@ const effFrame = (want: string | undefined, pro: boolean, creator: boolean, _own
 async function users(body: any) {
   const q = String(body?.q ?? "").trim().replace(/^@/, "").replace(/[,()%]/g, "");
   const f = String(body?.filter ?? "all");
-  let r = db.from("users").select("tg_id, first_name, tg_first, vname, username, handle, created_at, last_seen, blocked, block_reason, private, hide_feed, socials, delete_at")
+  let r = db.from("users").select("tg_id, first_name, tg_first, vname, username, handle, created_at, last_seen, visits, blocked, block_reason, private, hide_feed, socials, delete_at")
     .order("last_seen", { ascending: false, nullsFirst: false }).limit(2000);
   if (q) r = /^\d+$/.test(q) ? r.eq("tg_id", Number(q)) : r.or(`first_name.ilike.%${q}%,username.ilike.%${q}%,handle.ilike.%${q}%,tg_first.ilike.%${q}%`);
   if (f === "blocked") r = r.eq("blocked", true);
