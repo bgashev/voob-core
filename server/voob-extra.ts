@@ -348,7 +348,15 @@ Deno.serve(async (req) => {
       if (!okLogin?.length) return json({ error: "Подтверди вход кодом с почты", need_otp: true }, 401);
       if (["announce", "promo_create", "promo_off", "ach"].includes(a)) {
         const { data: fresh } = await db.from("core_otp").select("id").eq("th", th).in("purpose", ["login", "step"]).gte("used_at", new Date(Date.now() - 5 * 60000).toISOString()).limit(1);
-        if (!fresh?.length) return json({ error: "Подтверди действие кодом с почты", need_step: true }, 401);
+        if (!fresh?.length) {
+          // объявление: себе — без кода; остальным — короткий код (его проверяет voob-core, отметка pin_ok в журнале на 5 минут)
+          if (a === "announce") {
+            if (String(body?.audience ?? "") !== "me") {
+              const { data: pin } = await db.from("admin_log").select("id").eq("action", "pin_ok").eq("details->>th", th).gte("at", new Date(Date.now() - 5 * 60000).toISOString()).limit(1);
+              if (!pin?.length) return json({ error: "Введи код подтверждения", need_pin: true }, 401);
+            }
+          } else return json({ error: "Подтверди действие кодом с почты", need_step: true }, 401);
+        }
       }
     } else if (!(await verified(th))) return json({ error: "Подтверди вход кодом из Telegram", need_otp: true }, 401);
     const id = Number(body?.tg_id ?? 0);

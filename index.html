@@ -1355,9 +1355,22 @@ function call(action,extra,fn){
     .then(function(r){setConn(true);if(r.status!==401)lastAct=Date.now();return r.json().catch(function(){return {error:"Сервер ответил не так, как ждали"}}).then(function(j){j._http=r.status;return j})})
     .catch(function(){setConn(false);return {error:"Нет связи с сервером",_http:0}});
 }
+// короткий код подтверждения публикации рассылки и объявления (себе — без кода)
+function askPin(){
+  return new Promise(function(res){
+    dlg('<h3>Подтверди публикацию</h3><p class="hint">Введи код подтверждения (4 цифры).</p><input class="field" id="pinI" type="password" inputmode="numeric" autocomplete="off" maxlength="4" placeholder="••••" style="text-align:center;letter-spacing:.5em;font-size:20px"><p class="err" id="pinE"></p><div class="row"><button class="btn pri sm" id="pinY" type="button">Подтвердить</button><button class="btn sm" id="pinN" type="button">Отмена</button></div>');
+    var i=$("#pinI"),done=false;setTimeout(function(){i.focus()},60);
+    function fin(ok){if(done)return;done=true;closeDlg();res(ok)}
+    function go(){var v=i.value.replace(/\D/g,"");if(v.length<4){$("#pinE").textContent="Введи четыре цифры";return}
+      call("pin_step",{code:v}).then(function(j){if(j.status==="ok")return fin(true);$("#pinE").textContent=j.status==="locked"?"Слишком много попыток, подожди 15 минут":j.status==="wrong"?"Неверный код":(j.error||"Не получилось");i.value="";i.focus()})}
+    $("#pinY").onclick=go;$("#pinN").onclick=function(){fin(false)};i.addEventListener("keydown",function(e){if(e.key==="Enter")go()});
+    i.addEventListener("input",function(){if(i.value.replace(/\D/g,"").length===4)go()});
+  });
+}
 // запрос с автоподтверждением: если нужен свежий код с почты, спрашиваем его в окне и повторяем
 function api(action,extra,fn){
   return call(action,extra,fn).then(function(j){
+    if(j.need_pin)return askPin().then(function(ok){return ok?call(action,extra,fn):j});
     if(j.expired||(j._http===401&&!j.need_otp&&!j.need_step)){bye(true);return j}
     if(j.need_otp){bye(false);return j}
     if(j.need_step)return askStep().then(function(ok){return ok?call(action,extra,fn):j});

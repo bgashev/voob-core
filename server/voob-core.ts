@@ -228,6 +228,19 @@ async function coreFresh(th: string) {
   const { data } = await db.from("core_otp").select("id").eq("th", th).in("purpose", ["login", "step"]).gte("used_at", new Date(Date.now() - STEP_FRESH).toISOString()).limit(1);
   return !!data?.length;
 }
+// ---- WEB: короткий код-подтверждение (7116) только для публикации рассылки/объявления; проверка себе без кода
+const PIN_HASH = "b977df81de0a12b6edd57a525d2984cd5dff30f07a9ea10222c9060ef835bb40", PIN_FRESH = 5 * 60000;
+async function pinFresh(th: string) {
+  const { data } = await db.from("admin_log").select("id").eq("action", "pin_ok").eq("details->>th", th).gte("at", new Date(Date.now() - PIN_FRESH).toISOString()).limit(1);
+  return !!data?.length;
+}
+async function pinStep(th: string, codeIn: unknown) {
+  if (await locked()) return { status: "locked" };
+  const code = String(codeIn ?? "").replace(/\D/g, "");
+  if (code.length !== 4 || !safeEqual(await sha256("corepin:" + code), PIN_HASH)) { await db.from("core_attempts").insert({ kind: "pin", ok: false }); return { status: "wrong" }; }
+  await log("pin_ok", null, { th });
+  return { status: "ok" };
+}
 // ---- WEB: смена почты: свежий код со старой, код на новую, код в бот, затем задержка 24 часа и возможность отмены
 async function chgStart(th: string, emailIn: unknown) {
   const email = String(emailIn ?? "").trim().toLowerCase();
@@ -764,7 +777,11 @@ Deno.serve(async (req) => {
       if (a === "mail_verify") return json(await mailVerify(th, purpose, body?.code));
       if (a === "otp_start" || a === "otp_verify") return json({ error: "Для WEB используется код с почты" }, 400);
       if (!(await coreVerified(th))) return json({ error: "Подтверди вход кодом с почты", need_otp: true }, 401);
-      if (SENS.has(a) && !(await coreFresh(th))) return json({ error: "Подтверди действие кодом с почты", need_step: true }, 401);
+      if (a === "pin_step") return json(await pinStep(th, body?.code));
+      if (SENS.has(a) && !(await coreFresh(th))) {
+        if (a === "broadcast") { if (String(body?.target ?? "") !== "me" && !(await pinFresh(th))) return json({ error: "Введи код подтверждения", need_pin: true }, 401); }
+        else return json({ error: "Подтверди действие кодом с почты", need_step: true }, 401);
+      }
       if (a === "sess_list") {
         const { data } = await db.from("sessions").select("token_hash, created_at, last_seen").eq("tg_id", ADMIN).eq("device", "core").order("last_seen", { ascending: false }).limit(20);
         return json({ status: "ok", items: (data ?? []).map((x: any) => ({ id: String(x.token_hash).slice(0, 12), created_at: x.created_at, last_seen: x.last_seen, current: x.token_hash === th })) });
