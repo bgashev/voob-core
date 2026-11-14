@@ -2489,8 +2489,11 @@ function segFix(s,anim){
   if(anim===false)requestAnimationFrame(function(){requestAnimationFrame(function(){s.classList.remove("nt")})});
 }
 function segAll(anim){$$(".seg").forEach(function(s){if(s.offsetParent)segFix(s,anim)})}
-var segObs=new MutationObserver(function(m){m.forEach(function(x){if(x.attributeName==="aria-pressed"&&x.target.parentNode&&x.target.getAttribute("aria-pressed")==="true")segFix(x.target.parentNode)})});
-$$(".seg button").forEach(function(b){segObs.observe(b,{attributes:true})});
+var segObs=new MutationObserver(function(m){var late=false;m.forEach(function(x){
+  if(x.type==="attributes"){var t=x.target;if(t.parentNode&&t.parentNode.classList.contains("seg")&&t.getAttribute("aria-pressed")==="true")segFix(t.parentNode)}
+  else late=true});
+  if(late)$$(".seg").forEach(function(s){if(!s.querySelector(".th")&&s.offsetParent)segFix(s,false)})});
+segObs.observe(document.body,{attributes:true,attributeFilter:["aria-pressed"],subtree:true,childList:true});
 window.addEventListener("resize",function(){segAll(false)});window.addEventListener("load",function(){segAll(false)});
 
 // счётчик с «досчётом»
