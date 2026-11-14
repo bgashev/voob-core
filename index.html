@@ -2051,7 +2051,7 @@ function pViews(){
   $$("#pview button").forEach(function(b){b.setAttribute("aria-pressed",b.dataset.v===PS.view);if(b.dataset.v==="rq")b.innerHTML="Заявки на возврат"+(n?"<i>"+n+"</i>":"")});
   ["pay","rq","an"].forEach(function(v){$("#pv-"+v).hidden=v!==PS.view});
   $("#pexp").hidden=PS.view==="an";
-  setTimeout(function(){segAll(false)},0);
+  setTimeout(function(){var sg=$("#pview"),th=sg.querySelector(".th");segFix(sg,th&&parseFloat(th.style.width)>0?undefined:false)},0);   /* первый показ — без анимации, дальше плавно */
 }
 /* список платежей */
 function pRow(p,i){
@@ -2127,12 +2127,12 @@ function pAnal(){
   h+='<div class="tile full"><div class="chartT"><h3>PRO: продления</h3><div class="seg" id="prn"><button data-r="exp" aria-pressed="'+exp+'">Заканчивается за 7 дн.</button><button data-r="gone" aria-pressed="'+!exp+'">Закончилась за 30 дн.</button></div></div>'+
    '<div class="plist" style="grid-template-columns:repeat(auto-fill,minmax(380px,1fr))">'+(ls.length?ls.map(function(k){var u=pu(k),d=Math.round(Math.abs(Date.parse(PD.subs[k])-now)/864e5);return '<div class="item"><span data-pa="usr" data-u="'+k+'" style="cursor:pointer">'+av(u)+'</span><div class="m"><div class="t">'+nm(u)+'</div><div class="s">'+(exp?(d?"осталось "+d+" дн.":"заканчивается сегодня"):"закончилась "+(d?d+" дн. назад":"сегодня"))+" · до "+pDs(PD.subs[k])+'</div></div><button class="btn sm" data-pa="rem" data-u="'+k+'" data-e="'+(exp?1:0)+'" type="button">Напомнить</button></div>'}).join(""):'<p class="hint" style="margin:0">Таких подписок нет</p>')+"</div></div>";
   $("#pv-an").innerHTML=h;hydrate($("#pv-an"));
-  seg($("#prn"),function(b){PS.rn=b.dataset.r;pSave();pAnal()});setTimeout(function(){segAll(false)},0);
+  seg($("#prn"),function(b){PS.rn=b.dataset.r;pSave();pAnal()});setTimeout(segSoft,0);
 }
 function pRender(){
   pKpi();pBanner();pViews();pList();pReqs();pAnal();
   $("#pq").value=PS.q;$("#psort").value=PS.sort;$("#psrc").value=PS.src;$("#pstt").value=PS.st;$("#pgf").value=PS.gf;
-  $$("#pper button").forEach(function(b){b.setAttribute("aria-pressed",+b.dataset.d===PS.per)});setTimeout(function(){segAll(false)},0);
+  $$("#pper button").forEach(function(b){b.setAttribute("aria-pressed",+b.dataset.d===PS.per)});setTimeout(segSoft,0);
 }
 function pSetView(v){PS.view=v;pSave();pBanner();pViews()}
 function loadPay(silent){
@@ -2512,6 +2512,7 @@ function segFix(s,anim){
   th.style.width=b.offsetWidth+"px";th.style.transform="translateX("+b.offsetLeft+"px)";
   if(anim===false)requestAnimationFrame(function(){requestAnimationFrame(function(){s.classList.remove("nt")})});
 }
+function segSoft(){$$(".seg").forEach(function(s){if(!s.offsetParent)return;var th=s.querySelector(".th");segFix(s,th&&parseFloat(th.style.width)>0?undefined:false)})}
 function segAll(anim){$$(".seg").forEach(function(s){if(s.offsetParent)segFix(s,anim)})}
 var segObs=new MutationObserver(function(m){var late=false;m.forEach(function(x){
   if(x.type==="attributes"){var t=x.target;if(t.parentNode&&t.parentNode.classList.contains("seg")&&t.getAttribute("aria-pressed")==="true")segFix(t.parentNode)}
