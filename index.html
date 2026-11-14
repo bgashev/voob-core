@@ -1045,7 +1045,7 @@ textarea.field{resize:none;line-height:1.5;min-height:84px;padding:12px 15px;fon
       <div class="gpk" id="agk" hidden></div>
       <input class="field" id="at" maxlength="80" placeholder="Заголовок">
       <textarea class="field" id="ab" maxlength="600" placeholder="Текст"></textarea>
-      <input class="field" id="ac" placeholder="Кнопка: pro или ссылка https:// (не обязательно)">
+      <input class="field" id="ac" placeholder="Кнопка: pro или ссылка t.me/… (не обязательно)">
       <div class="bimg"><input type="file" id="afile" accept="image/jpeg,image/png,image/webp" hidden>
         <button class="pclip" id="apick" type="button" title="Прикрепить картинку (или перетащи сюда)" aria-label="Прикрепить картинку"><i data-ic="clip"></i></button>
         <span class="ihint" id="ahint">JPEG, PNG или WebP до 5 МБ · лучше 1200×675 (16:9): в окне приложения показывается во всю ширину, высоту обрежет до ~40% экрана — важное держи ближе к центру</span>
@@ -1063,7 +1063,7 @@ textarea.field{resize:none;line-height:1.5;min-height:84px;padding:12px 15px;fon
       <select class="field" id="bt"><option value="me">Только мне (проверка)</option><option value="pro">Всем с PRO</option><option value="free">Всем без PRO</option><option value="all">Всем пользователям</option></select>
       <textarea class="field" id="btext" maxlength="3500" placeholder="Текст сообщения"></textarea>
       <input class="field" id="bbt" maxlength="40" placeholder="Кнопка: название (не обязательно)">
-      <input class="field" id="bbu" placeholder="Кнопка: ссылка https://… (не обязательно)">
+      <input class="field" id="bbu" placeholder="Кнопка: ссылка, например t.me/boost/voobkz (не обязательно)">
       <p class="hint" style="margin:-4px 0 0">Если кнопку не задавать, под сообщением будет «Открыть VOOB». Заданная кнопка её заменяет.</p>
       <div class="bimg" id="bimg"><input type="file" id="bfile" accept="image/jpeg,image/png,image/webp" hidden>
         <button class="pclip" id="bpick" type="button" title="Прикрепить картинку (или перетащи сюда)" aria-label="Прикрепить картинку"><i data-ic="clip"></i></button>
@@ -2232,8 +2232,9 @@ setInterval(function(){if(token&&CUR==="pay"&&!document.hidden&&$("#dlg").hidden
 var pRz=0;window.addEventListener("resize",function(){clearTimeout(pRz);pRz=setTimeout(function(){if(CUR==="pay"&&PD)pKpi()},200)});
 
 /* ---------- рассылка ---------- */
+function normUrl(s){s=String(s||"").trim();if(!s)return s;if(/^@\w{4,}$/.test(s))return"https://t.me/"+s.slice(1);if(!/^[a-z][a-z0-9+.-]*:\/\//i.test(s))s="https://"+s.replace(/^\/+/,"");return s}
 $("#bgo").onclick=function(){
-  var t=$("#btext").value.trim(),tg=$("#bt").value,bb=$("#bbt").value.trim(),bu=$("#bbu").value.trim();$("#ebc").textContent="";
+  var t=$("#btext").value.trim(),tg=$("#bt").value,bb=$("#bbt").value.trim(),bu=normUrl($("#bbu").value);if(bu)$("#bbu").value=bu;$("#ebc").textContent="";
   if(t.length<2&&!bcImg){$("#ebc").textContent="Напиши текст или прикрепи картинку";return}
   if((bb||bu)&&!(bb&&bu)){$("#ebc").textContent="Для кнопки нужны и название, и ссылка";return}
   if(bu&&!/^https:\/\/\S+$/i.test(bu)){$("#ebc").textContent="Ссылка кнопки должна начинаться с https://";return}
@@ -2268,7 +2269,7 @@ function loadAnn(){
   });
 }
 $("#ago").onclick=function(){
-  var aud=$("#aa").value,kind=$("#ak").value,b={kind:kind,audience:aud,title:$("#at").value.trim(),body:$("#ab").value.trim(),cta:$("#ac").value.trim()||null,notify:$("#an").checked,image:anImg||undefined};
+  var aud=$("#aa").value,kind=$("#ak").value,b={kind:kind,audience:aud,title:$("#at").value.trim(),body:$("#ab").value.trim(),cta:(function(v){v=v.trim();return v==="pro"?v:normUrl(v)})($("#ac").value)||null,notify:$("#an").checked,image:anImg||undefined};
   if(kind==="gift")b.gift_kind=$("#agk").value;if(aud==="list")b.targets=$("#alist").value;
   $("#eab").textContent="";if(b.title.length<2){$("#eab").textContent="Нужен заголовок";return}
   var go=function(){$("#ago").disabled=true;api("announce",b,"x").then(function(j){$("#ago").disabled=false;

@@ -225,8 +225,10 @@ async function announce(b: any) {
     const { data: gt } = await db.from("gift_types").select("kind").eq("kind", gk).maybeSingle();
     if (!gt || gk === "pro") return { error: "Выбери подарок" };
   }
-  const cta = b?.cta ? String(b.cta).slice(0, 300) : null;
-  if (cta && cta !== "pro" && !/^https:\/\/\S+$/.test(cta)) return { error: "Кнопка: «pro» или ссылка https://" };
+  const cta0 = b?.cta ? String(b.cta).trim().slice(0, 300) : "";
+  // ссылку можно писать без https://: t.me/..., @ник, example.kz/...
+  const cta = !cta0 ? null : cta0 === "pro" ? cta0 : /^@\w{4,}$/.test(cta0) ? "https://t.me/" + cta0.slice(1) : /^[a-z][a-z0-9+.-]*:\/\//i.test(cta0) ? cta0 : "https://" + cta0.replace(/^\/+/, "");
+  if (cta && cta !== "pro" && !/^https:\/\/\S+$/.test(cta)) return { error: "Кнопка: «pro» или ссылка (например t.me/boost/voobkz)" };
   const ids = await audienceIds(aud, b?.targets);
   if (!ids.length) return { error: aud === "list" ? "В списке никого не нашли — проверь ники и ID" : "В этой аудитории никого нет" };
   const up = await uploadImage(b?.image);

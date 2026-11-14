@@ -657,6 +657,13 @@ async function refundReject(body: any) {
   return { status: "ok" };
 }
 
+// ссылку можно писать без https://: t.me/..., @ник, example.kz/...
+const normUrl = (s: string) => {
+  s = s.trim(); if (!s) return s;
+  if (/^@\w{4,}$/.test(s)) return "https://t.me/" + s.slice(1);
+  if (!/^[a-z][a-z0-9+.-]*:\/\//i.test(s)) s = "https://" + s.replace(/^\/+/, "");
+  return s;
+};
 async function broadcast(body: any) {
   const img = typeof body?.image === "string" && body.image.length ? body.image : "";
   const text = String(body?.text ?? "").trim().slice(0, img ? 1000 : 3500);
@@ -670,7 +677,7 @@ async function broadcast(body: any) {
   }
   // своя кнопка под сообщением (необязательно): заменяет «Открыть VOOB»
   let markup: unknown = openBtn;
-  const btnText = String(body?.btn_text ?? "").trim(), btnUrl = String(body?.btn_url ?? "").trim();
+  const btnText = String(body?.btn_text ?? "").trim(), btnUrl = normUrl(String(body?.btn_url ?? ""));
   if (btnText || btnUrl) {
     if (!btnText || !btnUrl) return { error: "Для кнопки нужны и название, и ссылка" };
     if ([...btnText].length > 40) return { error: "Название кнопки не длиннее 40 знаков" };
