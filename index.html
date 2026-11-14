@@ -590,6 +590,30 @@ section.pg{display:grid;gap:14px;align-content:start}
 .pal .field{border-radius:14px}
 #toast{position:fixed;left:50%;bottom:26px;z-index:90;display:flex;align-items:center;gap:12px;background:var(--tile3);border:1px solid var(--line2);border-radius:16px;padding:10px 18px 10px 12px;font-size:13px;font-weight:600;opacity:0;transform:translate(-50%,16px);pointer-events:none;transition:opacity .28s,transform .28s var(--ease);max-width:calc(100vw - 32px)}
 #toast.on{opacity:1;transform:translate(-50%,0)}
+/* уведомление о новом пользователе */
+#nu{position:fixed;right:24px;bottom:24px;z-index:95;width:320px;max-width:calc(100vw - 32px);display:flex;align-items:center;gap:14px;padding:14px 16px 16px;border-radius:22px;background:rgba(29,29,33,.86);backdrop-filter:blur(22px) saturate(1.3);-webkit-backdrop-filter:blur(22px) saturate(1.3);border:1px solid var(--line2);box-shadow:0 22px 60px -14px rgba(0,0,0,.75),0 0 0 1px rgba(168,85,247,.12);cursor:pointer;overflow:hidden;color:var(--fg);font:inherit;text-align:left;opacity:0;transform:translateX(30px) scale(.96);pointer-events:none;transition:opacity .35s var(--ease),transform .5s cubic-bezier(.2,.9,.3,1.15)}
+#nu.on{opacity:1;transform:none;pointer-events:auto}
+#nu:hover{border-color:rgba(192,132,252,.5)}
+#nu.nu-pro{box-shadow:0 22px 60px -14px rgba(0,0,0,.75),0 0 0 1px rgba(255,201,74,.2),0 0 40px -10px rgba(255,201,74,.35)}
+#nu.nu-pro:hover{border-color:rgba(255,201,74,.55)}
+#nu.nu-pro .nua:after{border-color:rgba(255,201,74,.6)}
+#nu .nut small.g{color:#ffc94a}
+#nu.nu-pro .nub{background:linear-gradient(90deg,#8b5cf6,#ffc94a)}
+#nu .nua{position:relative;flex:none}
+#nu .nua:after{content:"";position:absolute;inset:-5px;border-radius:50%;border:2px solid rgba(192,132,252,.55);animation:nuPulse 1.8s ease-out infinite}
+#nu .nut{min-width:0;flex:1}
+#nu .nut small{display:block;font-size:11px;letter-spacing:.12em;text-transform:uppercase;font-weight:700;color:#c084fc}
+#nu .nut b{display:block;font-size:15.5px;font-weight:650;margin-top:2px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+#nu .nut span{display:block;font-size:12.5px;color:var(--mute);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+#nu .nuc{flex:none;color:var(--dim);font-size:18px;line-height:1}
+#nu .nub{position:absolute;left:0;bottom:0;height:3px;width:100%;background:linear-gradient(90deg,#3b82f6,#8b5cf6,#c084fc);transform-origin:left;transform:scaleX(1)}
+#nu.on .nub{animation:nuBar 10s linear forwards}
+@keyframes nuBar{to{transform:scaleX(0)}}
+@keyframes nuPulse{0%{transform:scale(.9);opacity:.9}100%{transform:scale(1.35);opacity:0}}
+@media (max-width:640px){#nu{right:16px;left:16px;width:auto;bottom:16px}}
+@media (prefers-reduced-motion:reduce){#nu .nua:after{animation:none}}
+.nul{display:grid;gap:8px;margin-top:14px;max-height:60vh;overflow:auto}
+.nul .item{cursor:pointer}.nul .item:hover{background:var(--tile2)}
 #toast i{width:24px;height:24px;border-radius:50%;display:grid;place-items:center;background:rgba(52,211,153,.16);color:var(--green);flex:none}
 #toast.err i{background:rgba(251,113,133,.16);color:var(--bad)}
 #toast svg{width:14px;height:14px}
@@ -3095,6 +3119,45 @@ function imgWarn(w,h,wide){
   return m.join(", ");
 }
 
+/* уведомления: новый пользователь и новая подписка PRO. Опрос раз в 45 с, окошко живёт 10 с, по клику — список последних */
+var NU={base:"",t:0,busy:0,q:[],cur:null};
+function nuHide(){var e=$("#nu");if(!e)return;e.classList.remove("on");clearTimeout(NU.t);NU.cur=null;setTimeout(nuNext,450)}
+function nuNext(){if(NU.cur||!NU.q.length)return;var it=NU.q.shift();NU.cur=it;nuShow(it)}
+function nuShow(it){
+  var e=$("#nu");if(!e){e=document.createElement("button");e.id="nu";e.type="button";document.body.appendChild(e);e.onclick=function(){var k=NU.cur&&NU.cur.kind;nuHide();nuList(k||"user")}}
+  var pro=it.kind==="pro",u=it.list[0],n=it.total,h;
+  if(pro){var p=u,who=p.user,gift=p.payer_id&&p.payer_id!==p.tg_id;
+    h='<span class="nua">'+av(who)+'</span><span class="nut"><small class="g">'+(n>1?"Новые подписки PRO":"Новая подписка PRO")+'</small><b>'+(n>1?"Оформили: "+n:nm(who))+'</b><span>'+(n>1?nm(who)+" и ещё "+(n-1):"PRO · "+(p.stars||0)+" ⭐"+(gift?" · подарок":""))+'</span></span><span class="nuc">›</span><i class="nub"></i>'}
+  else h='<span class="nua">'+av(u)+'</span><span class="nut"><small>'+(n>1?"Новые пользователи":"Новый пользователь")+'</small><b>'+(n>1?"Зарегистрировались: "+n:nm(u))+'</b><span>'+(n>1?nm(u)+" и ещё "+(n-1):(u.handle?"@"+esc(u.handle):dt(u.created_at)))+'</span></span><span class="nuc">›</span><i class="nub"></i>';
+  e.className=pro?"nu-pro":"";e.innerHTML=h;
+  try{hydrate(e)}catch(x){}
+  void e.offsetWidth;e.classList.add("on");
+  clearTimeout(NU.t);NU.t=setTimeout(nuHide,10000)}
+function nuList(kind){
+  var since=new Date(Date.now()-30*864e5).toISOString();
+  call("events",{since:since}).then(function(j){
+    if(!j||j.error){toast(j&&j.error||"Не получилось загрузить","err");return}
+    var pro=kind==="pro",rows;
+    if(pro){var ps=j.pro||[];rows=ps.map(function(p){var g=p.payer_id&&p.payer_id!==p.tg_id;return '<div class="item" data-id="'+p.tg_id+'">'+av(p.user)+'<div class="m"><div class="t">'+nm(p.user)+'</div><div class="s">PRO · '+(p.stars||0)+' ⭐'+(g?" · подарок от "+nm(p.payer):"")+" · "+dt(p.created_at)+'</div></div></div>'}).join("");
+      dlg('<h3 style="margin:0">Подписки PRO</h3><div class="sub" style="margin-top:4px">'+(ps.length?"Последние за 30 дней: "+ps.length:"За 30 дней покупок нет")+'</div><div class="nul" id="nul">'+rows+'</div><div style="margin-top:14px;text-align:right"><button class="btn" id="nux" type="button">Закрыть</button></div>')}
+    else{var us=j.new_users||[];rows=us.map(function(u){return '<div class="item" data-id="'+u.tg_id+'">'+av(u)+'<div class="m"><div class="t">'+nm(u)+'</div><div class="s">'+(u.handle?"@"+esc(u.handle)+" · ":"")+dt(u.created_at)+'</div></div></div>'}).join("");
+      dlg('<h3 style="margin:0">Новые пользователи</h3><div class="sub" style="margin-top:4px">'+(j.new_count?"За 30 дней: "+j.new_count+(j.new_count>us.length?" · показаны последние "+us.length:""):"За 30 дней никого нет")+'</div><div class="nul" id="nul">'+rows+'</div><div style="margin-top:14px;text-align:right"><button class="btn" id="nux" type="button">Закрыть</button></div>')}
+    try{hydrate($("#nul"))}catch(x){}
+    $$("#nul .item").forEach(function(it){it.onclick=function(){closeDlg();openUser(+it.dataset.id)}});
+    $("#nux").onclick=closeDlg})}
+function nuPoll(){
+  if(!token||$("#app").hidden||NU.busy)return;
+  if(!NU.base){NU.base=new Date().toISOString();return}
+  NU.busy=1;
+  call("events",{since:NU.base}).then(function(j){
+    NU.busy=0;if(!j||j.error)return;
+    var us=j.new_users||[],ps=(j.pro||[]).filter(function(p){return p.user});
+    if(!us.length&&!ps.length)return;
+    var mx=NU.base;us.concat(ps).forEach(function(x){if(x.created_at>mx)mx=x.created_at});NU.base=mx;
+    if(ps.length)NU.q.push({kind:"pro",list:ps,total:ps.length});
+    if(us.length)NU.q.push({kind:"user",list:us,total:Math.max(us.length,j.new_count||0)});
+    nuNext()}).catch(function(){NU.busy=0})}
+setInterval(function(){if(!document.hidden)nuPoll()},45000);setTimeout(nuPoll,4000);
 /* финал зажима: вспышка, кольцо-ударная волна и искры */
 function boom(h,lab,again){
   if(h.classList.contains("bx-boom"))return;
