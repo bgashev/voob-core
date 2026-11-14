@@ -36,7 +36,7 @@ async function tg(method: string, payload: Record<string, unknown>) {
   catch { return { ok: false }; }
 }
 const openBtn = { inline_keyboard: [[{ text: "Открыть VOOB", web_app: { url: "https://bgashev.github.io/STEPS/" } }]] };
-const say = (to: number, text: string) => tg("sendMessage", { chat_id: to, text, reply_markup: openBtn });
+const say = (to: number, text: string, markup: unknown = openBtn) => tg("sendMessage", { chat_id: to, text, reply_markup: markup });
 async function log(action: string, target: number | null, details: unknown = null) {
   await db.from("admin_log").insert({ action, target, details });
 }
@@ -668,6 +668,17 @@ async function broadcast(body: any) {
     try { bytes = Uint8Array.from(atob(m[2]), (c) => c.charCodeAt(0)); } catch { return { error: "Картинка повреждена" }; }
     if (bytes.length > 5_000_000) return { error: "Картинка больше 5 МБ" };
   }
+  // своя кнопка под сообщением (необязательно): заменяет «Открыть VOOB»
+  let markup: unknown = openBtn;
+  const btnText = String(body?.btn_text ?? "").trim(), btnUrl = String(body?.btn_url ?? "").trim();
+  if (btnText || btnUrl) {
+    if (!btnText || !btnUrl) return { error: "Для кнопки нужны и название, и ссылка" };
+    if ([...btnText].length > 40) return { error: "Название кнопки не длиннее 40 знаков" };
+    let u: URL;
+    try { u = new URL(btnUrl); } catch { return { error: "Ссылка кнопки не похожа на ссылку" }; }
+    if (u.protocol !== "https:") return { error: "Ссылка кнопки должна начинаться с https://" };
+    markup = { inline_keyboard: [[{ text: btnText, url: u.toString() }]] };
+  }
   const target = String(body?.target ?? "all");
   let ids: number[] = [];
   if (target === "me") ids = [ADMIN];
@@ -686,10 +697,10 @@ async function broadcast(body: any) {
   }
   let fileId = "";
   const sendImg = async (to: number): Promise<boolean> => {
-    if (fileId) { const r = await tg("sendPhoto", { chat_id: to, photo: fileId, caption: text || undefined, reply_markup: openBtn }); return !!r?.ok; }
+    if (fileId) { const r = await tg("sendPhoto", { chat_id: to, photo: fileId, caption: text || undefined, reply_markup: markup }); return !!r?.ok; }
     const fd = new FormData();
     fd.append("chat_id", String(to)); if (text) fd.append("caption", text);
-    fd.append("reply_markup", JSON.stringify(openBtn));
+    fd.append("reply_markup", JSON.stringify(markup));
     fd.append("photo", new Blob([bytes!], { type: "image/jpeg" }), "voob.jpg");
     try {
       const r = await (await fetch(`https://api.telegram.org/bot${BOT}/sendPhoto`, { method: "POST", body: fd })).json();
@@ -699,11 +710,11 @@ async function broadcast(body: any) {
   };
   let sent = 0, failed = 0;
   for (const id of ids) {
-    const ok = bytes ? await sendImg(id) : !!(await say(id, text))?.ok;
+    const ok = bytes ? await sendImg(id) : !!(await say(id, text, markup))?.ok;
     if (ok) sent++; else failed++;
     await new Promise((res) => setTimeout(res, 40));
   }
-  await log("broadcast", null, { target, sent, failed, text: text.slice(0, 200), image: !!bytes });
+  await log("broadcast", null, { target, sent, failed, text: text.slice(0, 200), image: !!bytes, btn: btnText ? { text: btnText, url: btnUrl } : null });
   return { status: "ok", sent, failed, total: ids.length };
 }
 

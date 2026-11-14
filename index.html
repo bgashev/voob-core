@@ -1062,6 +1062,9 @@ textarea.field{resize:none;line-height:1.5;min-height:84px;padding:12px 15px;fon
       <h3>Сообщение в Telegram всем</h3>
       <select class="field" id="bt"><option value="me">Только мне (проверка)</option><option value="pro">Всем с PRO</option><option value="free">Всем без PRO</option><option value="all">Всем пользователям</option></select>
       <textarea class="field" id="btext" maxlength="3500" placeholder="Текст сообщения"></textarea>
+      <input class="field" id="bbt" maxlength="40" placeholder="Кнопка: название (не обязательно)">
+      <input class="field" id="bbu" placeholder="Кнопка: ссылка https://… (не обязательно)">
+      <p class="hint" style="margin:-4px 0 0">Если кнопку не задавать, под сообщением будет «Открыть VOOB». Заданная кнопка её заменяет.</p>
       <div class="bimg" id="bimg"><input type="file" id="bfile" accept="image/jpeg,image/png,image/webp" hidden>
         <button class="pclip" id="bpick" type="button" title="Прикрепить картинку (или перетащи сюда)" aria-label="Прикрепить картинку"><i data-ic="clip"></i></button>
         <span class="ihint" id="bhint">JPEG, PNG или WebP до 5 МБ · лучше 1280×720 (16:9) или квадрат 1080×1080 · сожмётся до 1600 px</span>
@@ -2230,12 +2233,14 @@ var pRz=0;window.addEventListener("resize",function(){clearTimeout(pRz);pRz=setT
 
 /* ---------- рассылка ---------- */
 $("#bgo").onclick=function(){
-  var t=$("#btext").value.trim(),tg=$("#bt").value;$("#ebc").textContent="";
+  var t=$("#btext").value.trim(),tg=$("#bt").value,bb=$("#bbt").value.trim(),bu=$("#bbu").value.trim();$("#ebc").textContent="";
   if(t.length<2&&!bcImg){$("#ebc").textContent="Напиши текст или прикрепи картинку";return}
-  var go=function(){$("#bgo").disabled=true;api("broadcast",{text:t,target:tg,image:bcImg||undefined}).then(function(j){$("#bgo").disabled=false;
-    $("#ebc").innerHTML=j.error?esc(j.error):'<span class="ok">Доставлено '+j.sent+" из "+j.total+(j.failed?", не дошло "+j.failed:"")+"</span>";if(!j.error&&tg!=="me"){$("#btext").value="";bcSetImg(null)}})};
+  if((bb||bu)&&!(bb&&bu)){$("#ebc").textContent="Для кнопки нужны и название, и ссылка";return}
+  if(bu&&!/^https:\/\/\S+$/i.test(bu)){$("#ebc").textContent="Ссылка кнопки должна начинаться с https://";return}
+  var go=function(){$("#bgo").disabled=true;api("broadcast",{text:t,target:tg,image:bcImg||undefined,btn_text:bb||undefined,btn_url:bu||undefined}).then(function(j){$("#bgo").disabled=false;
+    $("#ebc").innerHTML=j.error?esc(j.error):'<span class="ok">Доставлено '+j.sent+" из "+j.total+(j.failed?", не дошло "+j.failed:"")+"</span>";if(!j.error&&tg!=="me"){$("#btext").value="";$("#bbt").value="";$("#bbu").value="";bcSetImg(null)}})};
   if(tg==="me")return go();
-  dlg('<h3>Отправить рассылку?</h3><p class="hint">'+(tg==="pro"?"Всем с PRO":tg==="free"?"Всем без PRO":"Всем пользователям")+'. Остановить после старта нельзя.</p><div class="row"><button class="btn pri sm" id="bcy">Отправить</button><button class="btn sm" data-close>Отмена</button></div>');
+  dlg('<h3>Отправить рассылку?</h3><p class="hint">'+(tg==="pro"?"Всем с PRO":tg==="free"?"Всем без PRO":"Всем пользователям")+'. Остановить после старта нельзя.'+(bb?" Кнопка: «"+esc(bb)+"».":"")+'</p><div class="row"><button class="btn pri sm" id="bcy">Отправить</button><button class="btn sm" data-close>Отмена</button></div>');
   $("#bcy").onclick=function(){closeDlg();go()};
 };
 
@@ -2817,7 +2822,7 @@ function annRender(){
 var bcImg="";
 function bcRender(){
   if(!bcPrev)return;var t=$("#btext").value.trim(),a=$("#bt").value,lim=bcImg?1000:3500;
-  $("#pvBc").innerHTML=tgBubble(t?esc2(t):'<span class="ph">'+(bcImg?"Подпись (необязательно)":"Текст сообщения")+"</span>","",false,bcImg);
+  $("#pvBc").innerHTML=tgBubble(t?esc2(t):'<span class="ph">'+(bcImg?"Подпись (необязательно)":"Текст сообщения")+"</span>",'<span>'+esc($("#bbt").value.trim()||"Открыть VOOB")+"</span>",false,bcImg);
   $("#pvBw").innerHTML=(a==="me"?"Придёт только тебе (проверка)":a==="pro"?"Получат все с PRO: "+fmt(AUD.pro):a==="free"?"Получат все без PRO: "+fmt(AUD.free):"Получат все: "+fmt(AUD.all))+" · "+(t.length>lim?'<span class="dn">'+t.length+" / "+lim+" — лишнее обрежется</span>":t.length+" / "+lim)+(bcImg?" · у картинки подпись до 1000 знаков":"");
 }
 function readImg(file,ok){
@@ -2869,7 +2874,7 @@ if(annPrev){
   $("#ak").addEventListener("change",function(){if(this.value==="gift")gifts(function(){annRender()})});
   annRender();
 }
-if(bcPrev){["#btext","#bt"].forEach(function(s){$(s).addEventListener("input",bcRender);$(s).addEventListener("change",bcRender)});bcRender()}
+if(bcPrev){["#btext","#bt","#bbt","#bbu"].forEach(function(s){$(s).addEventListener("input",bcRender);$(s).addEventListener("change",bcRender)});bcRender()}
 function audRefresh(){api("audience",{},"x").then(function(j){if(j&&j.all!=null){AUD=j;annRender();bcRender()}})}
 
 /* ---------- промокоды: конструктор ---------- */
