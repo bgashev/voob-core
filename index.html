@@ -652,8 +652,8 @@ textarea.field{resize:none;line-height:1.5;min-height:84px;padding:12px 15px;fon
 .plg{display:flex;gap:6px 18px;flex-wrap:wrap;margin-top:10px;font-size:12.5px;color:var(--mute)}.plg span{display:inline-flex;gap:7px;align-items:center}.plg i{width:8px;height:8px;border-radius:50%;flex:none}.plg b{color:var(--fg);font-variant-numeric:tabular-nums}
 .chip.gd{color:var(--gold);background:rgba(251,191,36,.13)}.chip.gn{color:var(--green);background:rgba(52,211,153,.13)}.chip.vi{color:var(--violet);background:rgba(179,157,255,.14)}
 .pgrp{display:flex;justify-content:space-between;gap:12px;padding:16px 6px 2px;font-size:12px;color:var(--mute)}.pgrp b{color:var(--fg);font-size:13px}
-.phead,.prow{display:grid;grid-template-columns:40px minmax(0,2fr) minmax(0,1.3fr) 92px 124px 104px 34px;gap:12px;align-items:center}
-.phead{padding:0 16px;font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--mute)}
+.pyh,.prow{display:grid;grid-template-columns:40px minmax(0,2fr) minmax(0,1.3fr) 92px 124px 104px 34px;gap:12px;align-items:center}
+.pyh{padding:0 16px;font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--mute)}
 .prow{background:var(--tile);border:1px solid var(--line);border-radius:18px;padding:10px 16px;cursor:pointer;transition:background .16s,border-color .16s;animation:rise .4s var(--ease) both}
 .prow:hover{background:var(--tile2);border-color:var(--line2)}
 .prow .av{width:38px;height:38px;font-size:14px}
@@ -680,13 +680,13 @@ textarea.field{resize:none;line-height:1.5;min-height:84px;padding:12px 15px;fon
 .pbk{height:8px;border-radius:99px;background:var(--tile3);overflow:hidden}.pbk i{display:block;height:100%;border-radius:99px;background:var(--gold);transition:width .6s var(--ease)}
 .plist{display:grid;gap:8px;margin-top:14px}.plist .item{background:var(--tile2)}.plist .item.click:hover{background:var(--tile3)}
 .pdh{display:flex;justify-content:space-between;gap:12px;align-items:flex-start}.pdh b{font-size:32px;letter-spacing:-.02em;font-variant-numeric:tabular-nums;line-height:1.1}
-.pfx{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin-top:16px}.pfx div{padding:10px 14px;border-radius:16px;background:var(--tile2);min-width:0}.pfx span{display:block;font-size:10.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--mute)}.pfx b{display:block;font-weight:650;font-size:13.5px;margin-top:3px;overflow-wrap:anywhere}
-.pfx a,.pfx button.lk{all:unset;cursor:pointer;color:var(--fg);text-decoration:underline;text-decoration-color:var(--line2);text-underline-offset:4px;font-weight:650;font-size:13.5px}
+.pdf{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin-top:16px}.pdf div{padding:10px 14px;border-radius:16px;background:var(--tile2);min-width:0}.pdf span{display:block;font-size:10.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--mute)}.pdf b{display:block;font-weight:650;font-size:13.5px;margin-top:3px;overflow-wrap:anywhere}
+.pdf a,.pdf button.lk{all:unset;cursor:pointer;color:var(--fg);text-decoration:underline;text-decoration-color:var(--line2);text-underline-offset:4px;font-weight:650;font-size:13.5px}
 .pcons{display:grid;gap:8px;margin-top:14px;padding:14px 16px;border-radius:18px;background:var(--tile2);font-size:13px;color:var(--mute)}.pcons b{color:var(--fg)}
 .pchk{display:flex;gap:10px;align-items:center;font-size:13px;color:var(--mute);cursor:pointer;margin-top:12px}.pchk input{accent-color:var(--accent);width:16px;height:16px;flex:none}
 .ptpl{display:flex;gap:6px;flex-wrap:wrap;margin-top:10px}
 @media(max-width:1100px){.pan{grid-template-columns:1fr}.rqg{grid-template-columns:1fr}}
-@media(max-width:760px){.phead{display:none}.prow{grid-template-columns:40px minmax(0,1fr) auto}.prow .pw,.prow .pd,.prow .ps,.prow .qa{display:none}.prow .mo{display:block}.pbars .r{grid-template-columns:1fr 2fr 80px}}
+@media(max-width:760px){.pyh{display:none}.prow{grid-template-columns:40px minmax(0,1fr) auto}.prow .pw,.prow .pd,.prow .ps,.prow .qa{display:none}.prow .mo{display:block}.pbars .r{grid-template-columns:1fr 2fr 80px}}
 .utable{display:grid;gap:8px}
 .uhead,.urow{display:grid;grid-template-columns:34px minmax(0,2.4fr) minmax(0,1fr) minmax(0,1fr) 62px 62px 82px minmax(0,1fr) 34px;gap:12px;align-items:center}
 .uhead{padding:0 16px;font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--mute)}
@@ -808,6 +808,29 @@ textarea.field{resize:none;line-height:1.5;min-height:84px;padding:12px 15px;fon
 .prform{position:sticky;top:14px}
 .prform .two{gap:10px}
 @media(max-width:1100px){.ovrow{grid-template-columns:minmax(0,1fr)}.prgrid{grid-template-columns:minmax(0,1fr)}.prform{position:static}}
+/* ---- промокоды: две колонки ---- */
+@media(min-width:1100px){
+  .prgrid{grid-template-columns:minmax(400px,5fr) minmax(0,6fr);gap:16px}
+  .prgrid>.tile.promo{position:sticky;top:14px;max-height:calc(100vh - 28px);overflow:auto;scrollbar-width:thin}
+  .tile.promo .pgrid{grid-template-columns:minmax(0,1fr);gap:20px}
+  .tile.promo .ppv{position:static}
+}
+.pls{display:grid;grid-template-columns:repeat(auto-fit,minmax(104px,1fr));gap:8px;margin:14px 0}
+.pls div{padding:11px 14px;border-radius:16px;background:var(--tile2);border:1px solid var(--line)}
+.pls b{display:block;font-size:20px;font-weight:700;letter-spacing:-.01em;font-variant-numeric:tabular-nums}.pls span{font-size:11.5px;color:var(--mute)}
+.pls .w b{color:var(--gold)}
+.plhd{display:flex;justify-content:space-between;gap:10px;align-items:center;flex-wrap:wrap}
+.plhd .row{margin:0;gap:6px}
+.pltb{display:flex;gap:8px;flex-wrap:wrap;align-items:center}.pltb .seg{flex:0 0 auto;max-width:100%}.pltb .field{flex:1;min-width:150px}.pltb select.field{flex:0 0 auto;min-width:0;width:auto;padding-right:34px}
+.pcd{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:6px 12px;align-items:center;background:var(--tile2);border:1px solid var(--line);border-radius:18px;padding:12px 14px;transition:border-color .16s,opacity .16s;animation:rise .35s var(--ease) both}
+.pcd:hover{border-color:var(--line2)}.pcd.off,.pcd.end{opacity:.6}.pcd:hover.off,.pcd:hover.end{opacity:.9}
+.pcd .pcc{all:unset;cursor:pointer;font:600 14px var(--mono,ui-monospace,monospace);letter-spacing:.02em}.pcd .pcc:hover{text-decoration:underline;text-underline-offset:4px;text-decoration-color:var(--line2)}
+.pcd .pct{display:flex;gap:8px;align-items:center;flex-wrap:wrap;min-width:0}
+.pcd .pcs{grid-column:1;color:var(--mute);font-size:12.5px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.pcd .pcs b{color:var(--fg);font-weight:650}
+.pcd .pca{grid-column:2;grid-row:1/3;display:flex;gap:6px;align-items:center}
+.pcd .pcp{grid-column:1/-1;display:flex;gap:10px;align-items:center;font-size:12px;color:var(--mute)}.pcd .pcp .plb2{flex:1;max-width:none;margin:0}.pcd .pcp em{font-style:normal;font-variant-numeric:tabular-nums;min-width:44px;text-align:right}
+@media(max-width:560px){.pcd{grid-template-columns:1fr}.pcd .pca{grid-column:1;grid-row:auto}}
+
 </style>
 </head>
 <body>
@@ -963,7 +986,7 @@ textarea.field{resize:none;line-height:1.5;min-height:84px;padding:12px 15px;fon
           <select class="field usel" id="pgf" aria-label="Подарки"><option value="">Свои и подарки</option><option value="1">Только подарки</option><option value="0">Без подарков</option></select></div>
       </div>
       <div class="row" style="margin:0"><span class="hint" id="pcnt" style="margin:0"></span><span style="flex:1"></span><button class="btn sm" id="preset" type="button" hidden>Сбросить фильтры</button></div>
-      <div class="utable"><div class="phead"><span></span><span>Покупатель</span><span>Что</span><span style="text-align:right">Сумма</span><span>Статус</span><span>Когда</span><span></span></div><div class="list" id="plist"></div></div>
+      <div class="utable"><div class="pyh"><span></span><span>Покупатель</span><span>Что</span><span style="text-align:right">Сумма</span><span>Статус</span><span>Когда</span><span></span></div><div class="list" id="plist"></div></div>
       <button class="btn wide" id="pmore" type="button" hidden>Показать ещё</button>
     </div>
     <div class="stack" id="pv-rq" hidden>
@@ -2085,7 +2108,7 @@ function payDetail(c){
   if(p.refunded_at)f.push(["Возврат",dt(p.refunded_at)+" · через "+pDur(Date.parse(p.refunded_at)-p.t)]);
   f.push(["Номер платежа",'<button class="lk" data-d="cp" type="button" style="word-break:break-all">'+esc(p.charge_id)+"</button>"]);
   var h='<div class="pdh"><div><div class="hint" style="margin:0 0 4px">'+esc(pWhat(p))+"</div><b>"+(p.refunded_at?'<s style="color:var(--dim)">'+p.stars+"</s>":p.stars)+" ⭐</b></div><div>"+pChip(p)+"</div></div>"+
-   '<div class="pfx">'+f.map(function(x){return "<div><span>"+x[0]+"</span><b>"+x[1]+"</b></div>"}).join("")+"</div>"+
+   '<div class="pdf">'+f.map(function(x){return "<div><span>"+x[0]+"</span><b>"+x[1]+"</b></div>"}).join("")+"</div>"+
    '<p class="hint" style="margin-top:14px">Покупатель: потрачено <b style="color:var(--fg)">'+fmt(a.net)+" ⭐</b> · платежей "+a.n+" · возвратов всего "+a.ref+(a.refY?" (за год "+a.refY+")":"")+"</p>";
   if(rs.length)h+='<div style="margin-top:16px"><div class="hint" style="margin:0 0 8px;text-transform:uppercase;letter-spacing:.1em;font-size:11px">Заявки на возврат</div><div class="plist" style="margin-top:0">'+rs.map(function(r){return '<div class="item" style="display:block"><div class="t">'+esc(RFR[r.reason]||r.reason)+" · "+(r.status==="approved"?"возвращено":r.status==="rejected"?"отклонено":"ждёт решения")+'</div><div class="s">'+dt(r.created_at)+(r.decided_at?" → "+dt(r.decided_at):"")+"</div>"+(r.note?'<div class="rqq" style="margin-top:6px">'+esc(r.note)+"</div>":"")+(r.flags?'<div class="rqf" style="margin-top:6px">'+pFlagChips(r.flags)+"</div>":"")+"</div>"}).join("")+"</div></div>";
   h+='<div class="row">'+(p.st!=="refunded"?'<button class="btn bad sm" data-d="ref" type="button">Вернуть '+p.stars+" ⭐</button>":"")+'<button class="btn sm" data-d="msg" type="button">Написать</button><button class="btn sm" data-close type="button">Закрыть</button></div>';
@@ -2174,7 +2197,7 @@ $("#pk").onchange=function(){var g=this.value==="gift";$("#pgk").hidden=!g;$("#p
 function loadPromo(){
   api("promo_list",{},"x").then(function(j){
     if(j.error)return;
-    PL=j.items||[];plDraw();
+    PL=j.items||[];plDraw();gifts(function(){plDraw()});
   });
 }
 $("#plst").onclick=function(e){var b=e.target.closest("[data-p]");if(!b)return;api("promo_off",{code:b.dataset.p,on:b.dataset.on==="1"},"x").then(function(j){if(!j.error)loadPromo()})};
@@ -2784,14 +2807,20 @@ function audRefresh(){api("audience",{},"x").then(function(j){if(j&&j.all!=null)
   mark2($("#pDayCh"),30);upd();
 })();
 
-/* список кодов: статус, прогресс использования, поиск и фильтр */
-var PL=[],plF="all";
+/* список кодов: сводка, статус, прогресс, поиск, сортировка, экспорт */
+var PL=[],plF="all",plSort="new";
 (function(){
   var box=$("#plst");if(!box)return;var t=box.parentNode;
-  var bar=document.createElement("div");bar.className="bar";bar.innerHTML='<div class="seg" id="plF"><button data-f="all" aria-pressed="true">Все</button><button data-f="on" aria-pressed="false">Активные</button><button data-f="off" aria-pressed="false">Выключенные</button><button data-f="end" aria-pressed="false">Закончились</button></div><input class="field" id="plQ" placeholder="Поиск по коду или заметке" autocomplete="off">';
-  t.insertBefore(bar,box);
+  var h3=t.querySelector("h3");
+  var hd=document.createElement("div");hd.className="plhd";hd.innerHTML='<h3>Все коды <span class="dm" id="plN" style="font-weight:500;color:var(--dim)"></span></h3><div class="row"><button class="btn sm" id="plCp" type="button">Скопировать</button><button class="btn sm" id="plCsv" type="button">Скачать .csv</button></div>';
+  t.replaceChild(hd,h3);
+  var st=document.createElement("div");st.className="pls";st.id="plS";t.insertBefore(st,box);
+  var bar=document.createElement("div");bar.className="pltb";bar.innerHTML='<div class="seg" id="plF"><button data-f="all" aria-pressed="true">Все</button><button data-f="on" aria-pressed="false">Активные</button><button data-f="off" aria-pressed="false">Выключены</button><button data-f="end" aria-pressed="false">Закончились</button></div><input class="field" id="plQ" placeholder="Код или заметка" autocomplete="off"><select class="field" id="plO" aria-label="Сортировка"><option value="new">Сначала новые</option><option value="used">Больше использований</option><option value="exp">Скоро истекают</option><option value="code">По коду А–Я</option></select>';
+  t.insertBefore(bar,box);box.style.marginTop="12px";
   $("#plF").onclick=function(e){var b=e.target.closest("button");if(!b)return;plF=b.dataset.f;$$("button",this).forEach(function(x){x.setAttribute("aria-pressed",x===b)});plDraw()};
-  $("#plQ").addEventListener("input",plDraw);
+  $("#plQ").addEventListener("input",plDraw);$("#plO").onchange=function(){plSort=this.value;plDraw()};
+  $("#plCp").onclick=function(){var r=plRows();copyText(r.map(function(x){return x.code}).join("\n"),"Скопировано кодов: "+r.length)};
+  $("#plCsv").onclick=function(){var r=plRows();saveFile("voob-promo-list.csv","code;kind;value;used;max_uses;status;expires;note\n"+r.map(function(x){return [x.code,x.kind,x.value,x.used||0,x.max_uses,plState(x)[1],x.expires_at||"",'"'+String(x.note||"").replace(/"/g,'""')+'"'].join(";")}).join("\n"),"text/csv;charset=utf-8")};
 })();
 function plState(x){
   if(!x.active)return["off","выключен"];
@@ -2799,12 +2828,28 @@ function plState(x){
   if((x.used||0)>=x.max_uses)return["end","исчерпан"];
   return["on","активен"];
 }
-function plDraw(){
+function plRows(){
   var q=($("#plQ").value||"").trim().toLowerCase();
   var rows=PL.filter(function(x){var s=plState(x)[0];if(plF!=="all"&&s!==plF)return false;return !q||String(x.code).toLowerCase().indexOf(q)>=0||String(x.note||"").toLowerCase().indexOf(q)>=0});
-  $("#plst").innerHTML=rows.length?rows.slice(0,200).map(function(x){
+  var cmp={new:function(a,b){return String(b.created_at||"")<String(a.created_at||"")?-1:1},used:function(a,b){return (b.used||0)-(a.used||0)},exp:function(a,b){return (a.expires_at?Date.parse(a.expires_at):9e15)-(b.expires_at?Date.parse(b.expires_at):9e15)},code:function(a,b){return a.code<b.code?-1:1}}[plSort];
+  return rows.slice().sort(cmp);
+}
+function plWhat(x){
+  if(x.kind==="pro")return "PRO · "+esc(x.value)+" "+plural(+x.value,"день","дня","дней");
+  var g=(GT2||[]).filter(function(y){return y.kind===x.value})[0];return "🎁 "+esc(g?g.title:x.value);
+}
+function plDraw(){
+  var now=Date.now(),on=0,uses=0,cap=0,soon=0;
+  PL.forEach(function(x){if(plState(x)[0]==="on"){on++;uses+=x.used||0;cap+=x.max_uses;if(x.expires_at&&Date.parse(x.expires_at)<now+7*864e5)soon++}});
+  var totalUsed=PL.reduce(function(a,x){return a+(x.used||0)},0);
+  $("#plS").innerHTML='<div><b>'+PL.length+'</b><span>всего кодов</span></div><div><b>'+on+'</b><span>активных</span></div><div><b>'+fmt(totalUsed)+'</b><span>активаций за всё время</span></div><div><b>'+(cap-uses>0?fmt(cap-uses):0)+'</b><span>свободных активаций</span></div>'+(soon?'<div class="w"><b>'+soon+'</b><span>истекают за 7 дн.</span></div>':"");
+  var rows=plRows();$("#plN").textContent=rows.length===PL.length?"":"· найдено "+rows.length;
+  $("#plst").innerHTML=rows.length?rows.slice(0,200).map(function(x,i){
     var s=plState(x),pc=Math.min(100,Math.round((x.used||0)/Math.max(1,x.max_uses)*100));
-    return '<div class="item pli"><div class="m"><div class="t mono" style="font-weight:500">'+esc(x.code)+' <span class="chip '+(s[0]==="on"?"g":s[0]==="off"?"":"r")+'">'+s[1]+'</span></div><div class="s">'+(x.kind==="pro"?esc(x.value)+" дн. PRO":"подарок "+esc(x.value))+(x.note?" · "+esc(x.note):"")+(x.expires_at?" · до "+dt(x.expires_at):"")+'</div><div class="plb2"><i style="width:'+pc+'%"></i></div><div class="s">использовано '+(x.used||0)+" из "+x.max_uses+'</div></div><div class="row" style="margin:0;gap:6px"><button class="btn sm" data-cp="'+esc(x.code)+'">Копировать</button><button class="btn sm" data-p="'+esc(x.code)+'" data-on="'+(x.active?"0":"1")+'">'+(x.active?"Выключить":"Включить")+"</button></div></div>"}).join("")+(rows.length>200?'<p class="hint">Показаны первые 200 из '+rows.length+"</p>":""):'<p class="hint">Ничего не нашлось</p>';
+    return '<div class="pcd '+s[0]+'" style="animation-delay:'+Math.min(i,10)*25+'ms"><div class="pct"><button class="pcc" type="button" data-cp="'+esc(x.code)+'" title="Копировать код">'+esc(x.code)+'</button><span class="chip '+(s[0]==="on"?"g":s[0]==="off"?"":"r")+'">'+s[1]+'</span></div>'+
+      '<div class="pcs"><b>'+plWhat(x)+'</b>'+(x.note?" · "+esc(x.note):"")+(x.expires_at?" · до "+new Date(x.expires_at).toLocaleDateString("ru-RU"):"")+'</div>'+
+      '<div class="pca"><button class="btn sm" type="button" data-p="'+esc(x.code)+'" data-on="'+(x.active?"0":"1")+'">'+(x.active?"Выключить":"Включить")+'</button></div>'+
+      '<div class="pcp"><div class="plb2"><i style="width:'+pc+'%"></i></div><em>'+(x.used||0)+" / "+x.max_uses+"</em></div></div>"}).join("")+(rows.length>200?'<p class="hint">Показаны первые 200 из '+rows.length+"</p>":""):'<p class="hint" style="margin:6px 0 0">'+(PL.length?"Под фильтр ничего не подходит":"Промокодов пока нет")+"</p>";
 }
 $("#plst").addEventListener("click",function(e){var b=e.target.closest("[data-cp]");if(b)copyText(b.dataset.cp,"Код скопирован")});
 
