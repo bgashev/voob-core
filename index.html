@@ -240,6 +240,7 @@ section[id^=p]{animation:rise .42s var(--ease) both}
 #nav button[aria-selected=true]{color:var(--on-accent);background:none}
 #nav button[aria-selected=true] .lb{font-weight:700}
 #nav button.hasb:after{content:"";position:absolute;left:34px;top:3px;width:12px;height:12px;border-radius:50%;background:var(--bad);border:2px solid var(--tile)}
+.pvai{width:100%;max-height:150px;object-fit:cover;border-radius:14px;display:block}
 .bimg{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
 .bthumb{display:flex;gap:12px;align-items:center;background:var(--tile2);border:1px solid var(--line);border-radius:14px;padding:6px 8px 6px 6px;min-width:0}
 .bthumb img{width:48px;height:48px;border-radius:10px;object-fit:cover;flex:none}
@@ -1031,6 +1032,9 @@ textarea.field{resize:none;line-height:1.5;min-height:84px;padding:12px 15px;fon
       <input class="field" id="at" maxlength="80" placeholder="Заголовок">
       <textarea class="field" id="ab" maxlength="600" placeholder="Текст"></textarea>
       <input class="field" id="ac" placeholder="Кнопка: pro или ссылка https:// (не обязательно)">
+      <div class="bimg"><input type="file" id="afile" accept="image/jpeg,image/png,image/webp" hidden>
+        <button class="btn sm" id="apick" type="button"><i data-ic="image"></i>Прикрепить картинку</button>
+        <div class="bthumb" id="athumb" hidden><img id="athumbi" alt=""><div><b id="athumbn"></b><small id="athumbs"></small></div><button class="btn sm" id="arm" type="button" title="Убрать картинку">Убрать</button></div></div>
       <label class="hint" style="display:flex;gap:8px;align-items:center;margin:0"><input type="checkbox" id="an" checked> Ещё и сообщением в Telegram</label>
       <p class="hint" id="acnt" style="margin:0"></p>
       <div class="row" style="margin:0"><button class="btn pri" id="ago" type="button">Отправить</button></div>
@@ -2243,11 +2247,11 @@ function loadAnn(){
   });
 }
 $("#ago").onclick=function(){
-  var aud=$("#aa").value,kind=$("#ak").value,b={kind:kind,audience:aud,title:$("#at").value.trim(),body:$("#ab").value.trim(),cta:$("#ac").value.trim()||null,notify:$("#an").checked};
+  var aud=$("#aa").value,kind=$("#ak").value,b={kind:kind,audience:aud,title:$("#at").value.trim(),body:$("#ab").value.trim(),cta:$("#ac").value.trim()||null,notify:$("#an").checked,image:anImg||undefined};
   if(kind==="gift")b.gift_kind=$("#agk").value;if(aud==="list")b.targets=$("#alist").value;
   $("#eab").textContent="";if(b.title.length<2){$("#eab").textContent="Нужен заголовок";return}
   var go=function(){$("#ago").disabled=true;api("announce",b,"x").then(function(j){$("#ago").disabled=false;
-    $("#eab").innerHTML=j.error?esc(j.error):'<span class="ok">Отправлено: '+j.total+", в Telegram дошло "+j.sent+"</span>";if(!j.error){if(aud!=="me"){$("#at").value=$("#ab").value=""}loadAnn()}})};
+    $("#eab").innerHTML=j.error?esc(j.error):'<span class="ok">Отправлено: '+j.total+", в Telegram дошло "+j.sent+"</span>";if(!j.error){if(aud!=="me"){$("#at").value=$("#ab").value="";anSetImg(null)}loadAnn()}})};
   if(aud==="me")return go();
   dlg('<h3>Отправить объявление?</h3><p class="hint">'+esc(b.title)+". Остановить после старта нельзя.</p><div class=\"row\"><button class=\"btn pri sm\" id=\"any\">Отправить</button><button class=\"btn sm\" data-close>Отмена</button></div>");
   $("#any").onclick=function(){closeDlg();go()};
@@ -2782,13 +2786,13 @@ function annRender(){
   var g=null;if(kind==="gift"&&GT2)g=GT2.filter(function(x){return x.kind===gk})[0]||null;
   var ctaT=cta==="pro"?"Оформить PRO":cta?"Открыть":"";
   $("#pvApp").innerHTML='<div class="pvphone"><div class="pvnotch"></div><div class="pvscr"><div class="pvbg"></div><div class="pva kd-'+kind+'"><div class="pvab">'+k[0]+" "+k[1]+"</div>"+
-    (kind==="gift"?'<div class="pvag">'+(g?gArt(g.kind,g.emoji):"🎁")+"</div>":"")+
+    (anImg?'<img class="pvai" src="'+anImg+'" alt="">':kind==="gift"?'<div class="pvag">'+(g?gArt(g.kind,g.emoji):"🎁")+"</div>":"")+
     '<div class="pvat">'+(title?esc(title):'<span class="ph">Заголовок</span>')+"</div>"+
     '<div class="pvaw">'+(body?esc2(body):'<span class="ph">Текст объявления</span>')+"</div>"+
     (kind==="gift"?'<div class="pvas">'+(g?esc(g.title)+" · уже в коллекции":"Подарок уже в коллекции")+"</div>":"")+
     (ctaT?'<div class="pvac">'+ctaT+"</div>":"")+'<div class="pvax">Закрыть</div></div></div></div>';
   var head=kind==="gift"?"🎁 ":kind==="promo"?"✨ ":"📣 ";
-  $("#pvTg").innerHTML=tgBubble(esc2(head+(title||"Заголовок"))+"<br><br>"+esc2(body||"Текст объявления")+"<br><br>— команда VOOB",'<span>Открыть VOOB</span>',!notify)+(notify?"":'<p class="hint" style="text-align:center;margin-top:10px">Галочка «в Telegram» выключена: сообщение не уйдёт.</p>');
+  $("#pvTg").innerHTML=tgBubble(esc2(head+(title||"Заголовок"))+"<br><br>"+esc2(body||"Текст объявления")+"<br><br>— команда VOOB",'<span>Открыть VOOB</span>',!notify,anImg)+(notify?"":'<p class="hint" style="text-align:center;margin-top:10px">Галочка «в Telegram» выключена: сообщение не уйдёт.</p>');
   var who=aud==="me"?"Увидишь только ты (проверка)":aud==="list"?"Получат люди из списка":aud==="all"?"Получат все: "+fmt(AUD.all):aud==="pro"?"Получат PRO: "+fmt(AUD.pro):"Получат без PRO: "+fmt(AUD.free);
   $("#pvWho").innerHTML=who+(title.length>80||body.length>600?' · <span class="dn">текст длиннее лимита</span>':"");
 }
@@ -2798,16 +2802,26 @@ function bcRender(){
   $("#pvBc").innerHTML=tgBubble(t?esc2(t):'<span class="ph">'+(bcImg?"Подпись (необязательно)":"Текст сообщения")+"</span>","",false,bcImg);
   $("#pvBw").innerHTML=(a==="me"?"Придёт только тебе (проверка)":a==="pro"?"Получат все с PRO: "+fmt(AUD.pro):"Получат все: "+fmt(AUD.all))+" · "+(t.length>lim?'<span class="dn">'+t.length+" / "+lim+" — лишнее обрежется</span>":t.length+" / "+lim)+(bcImg?" · у картинки подпись до 1000 знаков":"");
 }
-function bcSetImg(file){
-  if(!file){bcImg="";$("#bthumb").hidden=true;$("#bfile").value="";bcRender();return}
+function readImg(file,ok){
   if(!/^image\/(jpeg|png|webp)$/.test(file.type)){toast("Нужен JPEG, PNG или WebP","err");return}
   var fr=new FileReader();fr.onload=function(){var im=new Image();im.onload=function(){
     var m=Math.min(1,1600/Math.max(im.width,im.height)),c=document.createElement("canvas");c.width=Math.round(im.width*m);c.height=Math.round(im.height*m);
     var x=c.getContext("2d");x.fillStyle="#fff";x.fillRect(0,0,c.width,c.height);x.drawImage(im,0,0,c.width,c.height);
-    bcImg=c.toDataURL("image/jpeg",.86);
-    $("#bthumbi").src=bcImg;$("#bthumbn").textContent=file.name;$("#bthumbs").textContent=im.width+"×"+im.height+" · "+Math.round(bcImg.length*.75/1024)+" КБ";$("#bthumb").hidden=false;bcRender()};
+    var d=c.toDataURL("image/jpeg",.86);ok(d,im.width+"×"+im.height+" · "+Math.round(d.length*.75/1024)+" КБ")};
     im.onerror=function(){toast("Не получилось открыть картинку","err")};im.src=fr.result};fr.readAsDataURL(file);
 }
+function bcSetImg(file){
+  if(!file){bcImg="";$("#bthumb").hidden=true;$("#bfile").value="";bcRender();return}
+  readImg(file,function(d,info){bcImg=d;$("#bthumbi").src=d;$("#bthumbn").textContent=file.name;$("#bthumbs").textContent=info;$("#bthumb").hidden=false;bcRender()});
+}
+var anImg="";
+function anSetImg(file){
+  if(!file){anImg="";$("#athumb").hidden=true;$("#afile").value="";annRender();return}
+  readImg(file,function(d,info){anImg=d;$("#athumbi").src=d;$("#athumbn").textContent=file.name;$("#athumbs").textContent=info;$("#athumb").hidden=false;annRender()});
+}
+$("#apick").onclick=function(){$("#afile").click()};
+$("#afile").onchange=function(){anSetImg(this.files[0])};
+$("#arm").onclick=function(){anSetImg(null)};
 $("#bpick").onclick=function(){$("#bfile").click()};
 $("#bfile").onchange=function(){bcSetImg(this.files[0])};
 $("#brm").onclick=function(){bcSetImg(null)};
