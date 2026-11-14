@@ -2,7 +2,7 @@
 // Windows-путь (сессии device != "core"): сессия Telegram + 4-значный код из бота, как раньше.
 // WEB-путь (device = "core"): QR-вход через Telegram + 6-значный код с почты, короткая сессия, свежий код для опасных действий.
 // Каждое действие пишется в admin_log. Ключ базы остаётся на сервере.
-// v13: список людей отдаёт друзей, подарки, потрачено ⭐, платформы, последнюю тренировку, удаление аккаунта, заметки и теги (user_notes); действие note_set.
+// v15: платежи — PRO и магазин вместе, заявки на возврат, решения из CORE. v13: список людей отдаёт друзей, подарки, потрачено ⭐, платформы, последнюю тренировку, удаление аккаунта, заметки и теги (user_notes); действие note_set.
 import { createClient } from "npm:@supabase/supabase-js@2";
 
 const SB_URL = Deno.env.get("SUPABASE_URL") ?? "";
@@ -292,7 +292,7 @@ async function overview(body: any) {
   const days = Math.max(7, Math.min(730, Math.round(Number(body?.days) || 30)));
   const now = Date.now(), start = now - days * DAY, pstart = now - 2 * days * DAY;
   const sinceP = new Date(pstart).toISOString();
-  const [{ count: users }, us, ses, { data: subs }, pays, { count: fbNew }, recs, { count: blocked }] = await Promise.all([
+  const [{ count: users }, us, ses, { data: subs }, pays0, { count: fbNew }, recs, { count: blocked }, shopP, { count: rfNew }] = await Promise.all([
     db.from("users").select("tg_id", { count: "exact", head: true }),
     all((a, b) => db.from("users").select("created_at").gte("created_at", sinceP).order("created_at").range(a, b)),
     all((a, b) => db.from("sessions").select("tg_id, last_seen").gte("last_seen", sinceP).order("last_seen").range(a, b)),
@@ -301,7 +301,10 @@ async function overview(body: any) {
     db.from("feedback").select("id", { count: "exact", head: true }).eq("status", "new"),
     all((a, b) => db.from("records").select("tg_id, updated, deleted").eq("kind", "workout").gte("updated", pstart).order("updated").range(a, b), 200000),
     db.from("users").select("tg_id", { count: "exact", head: true }).eq("blocked", true),
+    all((a, b) => db.from("shop_owned").select("stars, created_at, refunded_at").gte("created_at", sinceP).order("created_at").range(a, b)),
+    db.from("refund_requests").select("id", { count: "exact", head: true }).eq("status", "pending"),
   ]);
+  const pays = [...pays0, ...shopP];
   const list: string[] = [];
   for (let i = 2 * days - 1; i >= 0; i--) list.push(iso(new Date(now - i * DAY)));
   const nu: Record<string, number> = {}, act: Record<string, Set<number>> = {}, wk: Record<string, number> = {}, rev: Record<string, number> = {};
@@ -314,7 +317,7 @@ async function overview(body: any) {
   const today = iso(new Date()), yest = iso(new Date(now - DAY));
   const pack = (x: any) => ({ active: x.active.size, new: x.new, stars: x.stars, workouts: x.workouts });
   return {
-    days, users: users ?? 0, blocked: blocked ?? 0, pro: (subs ?? []).length, fb_new: fbNew ?? 0,
+    days, users: users ?? 0, blocked: blocked ?? 0, pro: (subs ?? []).length, fb_new: fbNew ?? 0, rf_new: rfNew ?? 0,
     active_today: (act[today] ?? new Set()).size, active_yesterday: (act[yest] ?? new Set()).size,
     cur: pack(cur), prev: pack(prev),
     series: list.slice(-days).map((d) => ({ d, new: nu[d] ?? 0, active: (act[d] ?? new Set()).size, workouts: wk[d] ?? 0, stars: rev[d] ?? 0 })),
@@ -416,7 +419,7 @@ async function noteSet(id: number, body: any) {
 }
 
 async function user(id: number) {
-  const [{ data: u }, { data: sub }, { data: pays }, { data: gin }, { data: gout }, { data: fr }, { data: fb }, recsAll, { data: ses }, { data: nt }] = await Promise.all([
+  const [{ data: u }, { data: sub }, { data: pays }, { data: gin }, { data: gout }, { data: fr }, { data: fb }, recsAll, { data: ses }, { data: nt }, { data: shopU }, { data: rqU }] = await Promise.all([
     db.from("users").select("*").eq("tg_id", id).maybeSingle(),
     db.from("pro_subs").select("*").eq("tg_id", id).maybeSingle(),
     db.from("pro_payments").select("*").or(`tg_id.eq.${id},payer_id.eq.${id}`).order("created_at", { ascending: false }).limit(50),
@@ -427,6 +430,8 @@ async function user(id: number) {
     all((a, b) => db.from("records").select("kind, id, data, deleted, updated").eq("tg_id", id).in("kind", ["workout", "weight", "meta"]).range(a, b)),
     db.from("sessions").select("device, created_at, last_seen").eq("tg_id", id).order("last_seen", { ascending: false }).limit(10),
     db.from("user_notes").select("note, tags").eq("tg_id", id).maybeSingle(),
+    db.from("shop_owned").select("*").or(`tg_id.eq.${id},payer_id.eq.${id}`).order("created_at", { ascending: false }).limit(50),
+    db.from("refund_requests").select("id, charge_id, src, reason, status, created_at").eq("tg_id", id).order("created_at", { ascending: false }).limit(30),
   ]);
   if (!u) return { error: "Пользователь не найден" };
   const recsA: any[] = recsAll as any[];
@@ -438,7 +443,7 @@ async function user(id: number) {
   const meta = Object.fromEntries(recsA.filter((r: any) => r.kind === "meta" && !r.deleted).map((r: any) => [r.id, r.data]));
   const proOn = !!sub?.until && Date.parse(sub.until) > Date.now();
   const frame = effFrame((meta as any).settings?.frame, proOn, id === ADMIN);
-  return { user: u, pro: sub, payments: pays ?? [], gifts_in: gin ?? [], gifts_out: gout ?? [], friends: fu ?? [], feedback: fb ?? [],
+  return { user: u, pro: sub, payments: [...(pays ?? []).map((x: any) => ({ ...x, src: "pro" })), ...(shopU ?? []).map((x: any) => ({ ...x, src: "shop" }))].sort((a: any, b: any) => (a.created_at < b.created_at ? 1 : -1)), refund_reqs: rqU ?? [], gifts_in: gin ?? [], gifts_out: gout ?? [], friends: fu ?? [], feedback: fb ?? [],
     workouts: ws, workouts_total: ws.length, weights, meta, sessions: ses ?? [], frame, frames: [], creator: id === ADMIN,
     note: nt?.note ?? "", tags: nt?.tags ?? [] };
 }
@@ -566,25 +571,77 @@ async function feedback(body: any) {
   return { items: (data ?? []).map((x: any) => ({ ...x, from: m.get(x.from_id) ?? null, target: x.target_id ? m.get(x.target_id) ?? null : null })) };
 }
 
-async function payments() {
-  const { data } = await db.from("pro_payments").select("*").order("created_at", { ascending: false }).limit(300);
-  const ids = [...new Set((data ?? []).flatMap((x: any) => [x.tg_id, x.payer_id]).filter(Boolean))];
-  const { data: us } = ids.length ? await db.from("users").select("tg_id, first_name, handle").in("tg_id", ids) : { data: [] };
-  const m = new Map((us ?? []).map((u: any) => [u.tg_id, u]));
-  return { items: (data ?? []).map((p: any) => ({ ...p, user: m.get(p.tg_id) ?? null, payer: p.payer_id ? m.get(p.payer_id) ?? null : null })) };
+// люди по списку id — пачками, чтобы адрес запроса не раздувался
+async function userMap(ids: any[]) {
+  const out = new Map<number, any>(), u = [...new Set(ids.map(Number).filter(Boolean))];
+  for (let i = 0; i < u.length; i += 120) {
+    const { data } = await db.from("users").select("tg_id, first_name, handle, username, blocked").in("tg_id", u.slice(i, i + 120));
+    for (const x of data ?? []) out.set(x.tg_id, x);
+  }
+  return out;
 }
 
-async function refund(charge: string) {
-  const { data: p } = await db.from("pro_payments").select("*").eq("charge_id", charge).maybeSingle();
-  if (!p) return { error: "Платёж не найден" };
-  if (p.refunded_at) return { error: "Уже возвращён" };
-  const r = await tg("refundStarPayment", { user_id: p.payer_id ?? p.tg_id, telegram_payment_charge_id: charge });
-  if (!r?.ok) return { error: "Telegram: " + (r?.description ?? "ошибка") };
-  await db.from("pro_payments").update({ refunded_at: new Date().toISOString() }).eq("id", p.id);
-  const { data: s } = await db.from("pro_subs").select("until").eq("tg_id", p.tg_id).maybeSingle();
-  if (s?.until) await db.from("pro_subs").update({ until: new Date(new Date(s.until).getTime() - (p.days + (p.bonus_days ?? 0)) * DAY).toISOString(), updated_at: new Date().toISOString() }).eq("tg_id", p.tg_id);
-  await say(p.payer_id ?? p.tg_id, `↩️ Возврат ${p.stars}⭐ за VOOB PRO оформлен.`);
-  await log("refund", p.tg_id, { charge, stars: p.stars });
+const REFUND_WINDOW_H = 48; // как в боте: без причины «не сработало» вернуть можно в течение 48 часов
+// все платежи (PRO и магазин), заявки на возврат, люди и подписки — одним ответом; фильтры и итоги считает страница
+async function payments(_body: any) {
+  const [pp, sp, rq, { data: subs }, { data: plans }] = await Promise.all([
+    all((a, b) => db.from("pro_payments").select("id, tg_id, payer_id, plan, stars, days, bonus_days, charge_id, until_after, refunded_at, created_at").order("created_at", { ascending: false }).range(a, b), 20000),
+    all((a, b) => db.from("shop_owned").select("id, tg_id, payer_id, kind, item, stars, charge_id, refunded_at, created_at").order("created_at", { ascending: false }).range(a, b), 20000),
+    all((a, b) => db.from("refund_requests").select("id, tg_id, charge_id, src, reason, note, status, flags, created_at, decided_at").order("created_at", { ascending: false }).range(a, b), 20000),
+    db.from("pro_subs").select("tg_id, until").gt("until", new Date(Date.now() - 60 * DAY).toISOString()),
+    db.from("pro_plans").select("plan, title, stars, days").order("sort"),
+  ]);
+  const items = [...pp.map((x: any) => ({ ...x, src: "pro" })), ...sp.map((x: any) => ({ ...x, src: "shop" }))]
+    .sort((a: any, b: any) => (a.created_at < b.created_at ? 1 : -1));
+  const um = await userMap([...items.flatMap((x: any) => [x.tg_id, x.payer_id]), ...rq.map((x: any) => x.tg_id), ...(subs ?? []).map((x: any) => x.tg_id)]);
+  const users: Record<string, any> = {};
+  for (const [k, v] of um) users[k] = v;
+  return { items, reqs: rq, users, subs: Object.fromEntries((subs ?? []).map((x: any) => [x.tg_id, x.until])), plans: plans ?? [], window_h: REFUND_WINDOW_H, now: Date.now() };
+}
+
+async function refund(body: any) {
+  const charge = String(body?.charge ?? "");
+  const keepPro = !!body?.keep_pro, tell = body?.notify !== false;
+  if (!charge) return { error: "Не указан платёж" };
+  const [{ data: so }, { data: p }] = await Promise.all([
+    db.from("shop_owned").select("*").eq("charge_id", charge).maybeSingle(),
+    db.from("pro_payments").select("*").eq("charge_id", charge).maybeSingle(),
+  ]);
+  const rec: any = so ?? p, src = so ? "shop" : "pro";
+  if (!rec) return { error: "Платёж не найден" };
+  if (rec.refunded_at) return { error: "Уже возвращён" };
+  const payer = Number(rec.payer_id ?? rec.tg_id);
+  const r = await tg("refundStarPayment", { user_id: payer, telegram_payment_charge_id: charge });
+  // Telegram мог вернуть эти звёзды раньше (вручную) — тогда просто выравниваем базу
+  if (!r?.ok && !String(r?.description ?? "").includes("CHARGE_ALREADY_REFUNDED")) return { error: "Telegram: " + (r?.description ?? "ошибка") };
+  const nowIso = new Date().toISOString();
+  await db.from(src === "shop" ? "shop_owned" : "pro_payments").update({ refunded_at: nowIso }).eq("id", rec.id);
+  let cut = 0;
+  if (src === "pro" && !keepPro) {
+    const { data: s } = await db.from("pro_subs").select("until").eq("tg_id", rec.tg_id).maybeSingle();
+    cut = (rec.days ?? 0) + (rec.bonus_days ?? 0);
+    if (s?.until) await db.from("pro_subs").update({ until: new Date(new Date(s.until).getTime() - cut * DAY).toISOString(), updated_at: nowIso }).eq("tg_id", rec.tg_id);
+  }
+  await db.from("refund_requests").update({ status: "approved", decided_at: nowIso }).eq("charge_id", charge).eq("status", "pending");
+  if (tell) {
+    const what = src === "pro" ? "VOOB PRO" : rec.kind === "frame" ? "рамку" : rec.kind === "kit" ? "комплект" : "фон";
+    await say(payer, `↩️ Возврат ${rec.stars}⭐ за ${what} оформлен. Звёзды вернутся на баланс Telegram.`);
+    if (src === "shop" && rec.payer_id && rec.payer_id !== rec.tg_id) await say(rec.tg_id, `Подарок (${what}) отозван: платёж был возвращён.`);
+  }
+  await log("refund", rec.tg_id, { charge, src, stars: rec.stars, keep_pro: keepPro, cut_days: cut, notified: tell });
+  return { status: "ok" };
+}
+
+// отклонить заявку на возврат; text — своё сообщение покупателю (пусто — стандартное)
+async function refundReject(body: any) {
+  const id = Number(body?.id);
+  const { data: r } = await db.from("refund_requests").select("*").eq("id", id).maybeSingle();
+  if (!r) return { error: "Заявка не найдена" };
+  if (r.status !== "pending") return { error: "Заявка уже обработана" };
+  await db.from("refund_requests").update({ status: "rejected", decided_at: new Date().toISOString() }).eq("id", id);
+  const t = String(body?.text ?? "").trim().slice(0, 600);
+  if (body?.notify !== false) await say(r.tg_id, t ? `Заявку на возврат отклонили.\n\n${t}` : "Заявку на возврат отклонили. Если это ошибка, напиши в «Идеи и жалобы».");
+  await log("refund_reject", r.tg_id, { id, charge: r.charge_id, text: t || null });
   return { status: "ok" };
 }
 
@@ -701,8 +758,9 @@ Deno.serve(async (req) => {
         await log("fb_reply", f.from_id, { id: body?.id });
         return json({ status: r?.ok ? "ok" : "undelivered" });
       }
-      case "payments": return json(await payments());
-      case "refund": return json(await refund(String(body?.charge ?? "")));
+      case "payments": return json(await payments(body));
+      case "refund": return json(await refund(body));
+      case "refund_reject": return json(await refundReject(body));
       case "broadcast": return json(await broadcast(body));
       case "log": { const { data } = await db.from("admin_log").select("id, at, action, target, details").order("id", { ascending: false }).limit(300); return json({ items: (data ?? []).map((x: any) => x.action === "login" ? { ...x, details: {} } : x) }); }
       case "gift_types": { const { data } = await db.from("gift_types").select("kind, emoji, title").order("sort"); return json({ items: data ?? [] }); }

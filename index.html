@@ -639,6 +639,54 @@ textarea.field{resize:none;line-height:1.5;min-height:84px;padding:12px 15px;fon
 .uviews .k{font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--mute);margin-right:4px}
 .uvw{display:inline-flex;align-items:center;height:28px;border-radius:999px;background:var(--tile3);font-size:12.5px;font-weight:650;overflow:hidden}
 .uvw button{all:unset;cursor:pointer;padding:0 10px;height:100%;display:inline-flex;align-items:center}.uvw button:hover{background:var(--line2)}.uvw button+button{color:var(--mute);padding:0 9px 0 7px}
+/* ---- платежи ---- */
+@keyframes pingr{0%{box-shadow:0 0 0 0 rgba(251,113,133,.5)}70%,100%{box-shadow:0 0 0 9px rgba(251,113,133,0)}}
+.pbar,.pview{display:flex;gap:10px;align-items:center;flex-wrap:wrap;justify-content:space-between}
+.ust button.hot{border-color:rgba(251,113,133,.45)}.ust button.hot b{color:var(--bad)}
+.ust small.up{color:var(--green)}.ust small.dn{color:var(--bad)}
+.pbn{display:flex;gap:12px;align-items:center;flex-wrap:wrap;padding:12px 18px;border-radius:20px;background:rgba(251,113,133,.08);border:1px solid rgba(251,113,133,.28);animation:rise .4s var(--ease) both;font-size:13.5px}
+.pbn i{width:9px;height:9px;border-radius:50%;background:var(--bad);animation:pingr 2.2s infinite;flex:none}.pbn .sp1{flex:1}
+.pview .seg button i{font-style:normal;margin-left:7px;font-size:11px;font-weight:700;padding:1px 7px;border-radius:99px;background:var(--bad);color:#0b0b0d}
+.psplit{display:flex;height:8px;border-radius:99px;overflow:hidden;background:var(--tile3);gap:2px;margin-top:14px}
+.psplit i{display:block;height:100%;min-width:0;transition:flex .5s var(--ease)}
+.plg{display:flex;gap:6px 18px;flex-wrap:wrap;margin-top:10px;font-size:12.5px;color:var(--mute)}.plg span{display:inline-flex;gap:7px;align-items:center}.plg i{width:8px;height:8px;border-radius:50%;flex:none}.plg b{color:var(--fg);font-variant-numeric:tabular-nums}
+.chip.gd{color:var(--gold);background:rgba(251,191,36,.13)}.chip.gn{color:var(--green);background:rgba(52,211,153,.13)}.chip.vi{color:var(--violet);background:rgba(179,157,255,.14)}
+.pgrp{display:flex;justify-content:space-between;gap:12px;padding:16px 6px 2px;font-size:12px;color:var(--mute)}.pgrp b{color:var(--fg);font-size:13px}
+.phead,.prow{display:grid;grid-template-columns:40px minmax(0,2fr) minmax(0,1.3fr) 92px 124px 104px 34px;gap:12px;align-items:center}
+.phead{padding:0 16px;font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--mute)}
+.prow{background:var(--tile);border:1px solid var(--line);border-radius:18px;padding:10px 16px;cursor:pointer;transition:background .16s,border-color .16s;animation:rise .4s var(--ease) both}
+.prow:hover{background:var(--tile2);border-color:var(--line2)}
+.prow .av{width:38px;height:38px;font-size:14px}
+.prow .t{font-weight:650;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.prow .s{color:var(--mute);font-size:12.5px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.prow .am{font-weight:700;font-variant-numeric:tabular-nums;text-align:right}.prow .am s{color:var(--dim);font-weight:600}
+.prow .pd{font-size:12.5px;color:var(--mute)}
+.prow .qa{all:unset;cursor:pointer;width:30px;height:30px;border-radius:50%;display:grid;place-items:center;color:var(--mute);opacity:0;transition:opacity .16s,background .16s,color .16s}
+.prow:hover .qa,.prow .qa:focus-visible{opacity:1}.prow .qa:hover{background:rgba(251,113,133,.14);color:var(--bad)}
+.prow .mo{display:none}
+.rqc{background:var(--tile);border:1px solid var(--line);border-radius:24px;padding:18px 20px;display:grid;gap:12px;align-content:start;animation:rise .45s var(--ease) both;min-width:0}
+.rqc.pend{border-color:rgba(251,191,36,.38)}
+.rqh{display:flex;gap:12px;align-items:center}.rqh .m{flex:1;min-width:0}.rqh .t{font-weight:650;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.rqh .s{color:var(--mute);font-size:12.5px}
+.rqw{display:flex;flex-wrap:wrap;gap:4px 16px;font-size:13px;color:var(--mute)}.rqw b{color:var(--fg);font-weight:650}
+.rqq{border-left:2px solid var(--line2);padding:2px 0 2px 12px;font-size:13.5px;white-space:pre-wrap;overflow-wrap:anywhere}
+.rqf{display:flex;gap:6px;flex-wrap:wrap}
+.rqt{display:grid;gap:5px;font-size:12.5px;color:var(--mute)}.rqt div{display:flex;gap:8px;align-items:flex-start}.rqt i{width:7px;height:7px;border-radius:50%;margin-top:6px;flex:none;background:var(--dim)}.rqt .g i{background:var(--green)}.rqt .w i{background:var(--gold)}.rqt .b i{background:var(--bad)}
+.rqa{display:flex;gap:8px;flex-wrap:wrap;margin-top:2px}
+.rqg{display:grid;grid-template-columns:repeat(auto-fill,minmax(400px,1fr));gap:12px;align-items:start}
+.pan{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px;align-items:start}.pan .full{grid-column:1/-1}
+.pnum{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin-top:14px}
+.pnum div{padding:14px 16px;border-radius:18px;background:var(--tile2);border:1px solid var(--line)}.pnum b{display:block;font-size:20px;font-weight:700;letter-spacing:-.01em;font-variant-numeric:tabular-nums}.pnum span{font-size:12px;color:var(--mute)}.pnum small{display:block;font-size:11px;color:var(--dim);margin-top:2px}
+.pbars{display:grid;gap:12px;margin-top:14px}.pbars .r{display:grid;grid-template-columns:minmax(100px,1.3fr) 3fr 92px;gap:12px;align-items:center;font-size:13px}.pbars .r em{font-style:normal;text-align:right;font-variant-numeric:tabular-nums;font-weight:650}
+.pbk{height:8px;border-radius:99px;background:var(--tile3);overflow:hidden}.pbk i{display:block;height:100%;border-radius:99px;background:var(--gold);transition:width .6s var(--ease)}
+.plist{display:grid;gap:8px;margin-top:14px}.plist .item{background:var(--tile2)}.plist .item.click:hover{background:var(--tile3)}
+.pdh{display:flex;justify-content:space-between;gap:12px;align-items:flex-start}.pdh b{font-size:32px;letter-spacing:-.02em;font-variant-numeric:tabular-nums;line-height:1.1}
+.pfx{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin-top:16px}.pfx div{padding:10px 14px;border-radius:16px;background:var(--tile2);min-width:0}.pfx span{display:block;font-size:10.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--mute)}.pfx b{display:block;font-weight:650;font-size:13.5px;margin-top:3px;overflow-wrap:anywhere}
+.pfx a,.pfx button.lk{all:unset;cursor:pointer;color:var(--fg);text-decoration:underline;text-decoration-color:var(--line2);text-underline-offset:4px;font-weight:650;font-size:13.5px}
+.pcons{display:grid;gap:8px;margin-top:14px;padding:14px 16px;border-radius:18px;background:var(--tile2);font-size:13px;color:var(--mute)}.pcons b{color:var(--fg)}
+.pchk{display:flex;gap:10px;align-items:center;font-size:13px;color:var(--mute);cursor:pointer;margin-top:12px}.pchk input{accent-color:var(--accent);width:16px;height:16px;flex:none}
+.ptpl{display:flex;gap:6px;flex-wrap:wrap;margin-top:10px}
+@media(max-width:1100px){.pan{grid-template-columns:1fr}.rqg{grid-template-columns:1fr}}
+@media(max-width:760px){.phead{display:none}.prow{grid-template-columns:40px minmax(0,1fr) auto}.prow .pw,.prow .pd,.prow .ps,.prow .qa{display:none}.prow .mo{display:block}.pbars .r{grid-template-columns:1fr 2fr 80px}}
 .utable{display:grid;gap:8px}
 .uhead,.urow{display:grid;grid-template-columns:34px minmax(0,2.4fr) minmax(0,1fr) minmax(0,1fr) 62px 62px 82px minmax(0,1fr) 34px;gap:12px;align-items:center}
 .uhead{padding:0 16px;font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--mute)}
@@ -900,7 +948,30 @@ textarea.field{resize:none;line-height:1.5;min-height:84px;padding:12px 15px;fon
     <div class="list" id="flist"></div><p class="err" id="efb"></p>
   </section>
   <section id="t-pay" class="stack" hidden>
-    <div class="row" style="margin:0"><button class="btn sm" id="pexp">Скачать таблицу</button></div><div class="list" id="plist"></div><p class="err" id="epay"></p>
+    <div class="pbar"><div class="seg" id="pper"><button data-d="7" aria-pressed="false">7 дней</button><button data-d="30" aria-pressed="true">30 дней</button><button data-d="90" aria-pressed="false">90 дней</button><button data-d="365" aria-pressed="false">Год</button><button data-d="0" aria-pressed="false">Всё время</button></div><span class="hint" id="psub" style="margin:0"></span></div>
+    <div class="ust" id="pst"></div>
+    <div class="tile"><div class="chartT"><h3>Выручка</h3><span class="sub" id="pgran"></span></div><div id="pch"></div><div class="psplit" id="psplit"></div><div class="plg" id="plg"></div></div>
+    <div id="pbn"></div>
+    <div class="pview"><div class="seg" id="pview"><button data-v="pay" aria-pressed="true">Платежи</button><button data-v="rq" aria-pressed="false">Заявки на возврат</button><button data-v="an" aria-pressed="false">Аналитика</button></div><button class="btn sm" id="pexp" type="button">Скачать таблицу</button></div>
+    <div class="stack" id="pv-pay">
+      <div class="tile utool">
+        <div class="bar"><input class="field" id="pq" placeholder="Имя, @ник, ID или номер платежа  ·  «/» — поиск" autocomplete="off">
+          <select class="field usel" id="psort" aria-label="Сортировка"><option value="new">Сначала новые</option><option value="old">Сначала старые</option><option value="big">Сумма: по убыванию</option><option value="small">Сумма: по возрастанию</option></select></div>
+        <div class="bar" style="margin-top:10px">
+          <select class="field usel" id="psrc" aria-label="Что куплено"><option value="">Всё: PRO и магазин</option><option value="pro">Только PRO</option><option value="pro:month">PRO · месяц</option><option value="pro:year">PRO · год</option><option value="shop">Только магазин</option><option value="shop:frame">Рамки</option><option value="shop:bg">Фоны</option><option value="shop:kit">Наборы</option></select>
+          <select class="field usel" id="pstt" aria-label="Статус"><option value="">Любой статус</option><option value="paid">Оплачены</option><option value="refunded">Возвращены</option><option value="pending">Ждут решения</option><option value="rejected">Возврат отклонён</option></select>
+          <select class="field usel" id="pgf" aria-label="Подарки"><option value="">Свои и подарки</option><option value="1">Только подарки</option><option value="0">Без подарков</option></select></div>
+      </div>
+      <div class="row" style="margin:0"><span class="hint" id="pcnt" style="margin:0"></span><span style="flex:1"></span><button class="btn sm" id="preset" type="button" hidden>Сбросить фильтры</button></div>
+      <div class="utable"><div class="phead"><span></span><span>Покупатель</span><span>Что</span><span style="text-align:right">Сумма</span><span>Статус</span><span>Когда</span><span></span></div><div class="list" id="plist"></div></div>
+      <button class="btn wide" id="pmore" type="button" hidden>Показать ещё</button>
+    </div>
+    <div class="stack" id="pv-rq" hidden>
+      <div class="ufl" id="rqfl" style="margin:0"></div>
+      <div class="rqg" id="rqlist"></div>
+    </div>
+    <div class="pan" id="pv-an" hidden></div>
+    <p class="err" id="epay"></p>
   </section>
   <section id="t-an" class="stack" hidden>
     <div class="tile stack">
@@ -1716,7 +1787,8 @@ function openUser(id,np){
     if(st.length)P.state=tl("Состояние",'<p class="hint dn" style="margin:0">'+esc(st.join(" · "))+"</p>");
     P.wk=tl("Тренировки (последние 15)",j.workouts.length?'<div class="list">'+j.workouts.slice(0,15).map(function(w){return '<div class="item"><div class="m"><div class="t">'+esc(w.date||"без даты")+'</div><div class="s">'+sumW(w)+'</div></div><button class="btn sm bad" data-w="'+esc(w.rid)+'">Удалить</button></div>'}).join("")+"</div>":'<p class="hint">Нет</p>');
     if(j.weights.length)P.wt=tl("Вес",'<p class="hint" style="margin:0">'+j.weights.slice(0,10).map(function(w){return esc(w.date)+": "+esc(w.kg!=null?w.kg:(w.value!=null?w.value:""))}).join(" · ")+"</p>");
-    if(j.payments.length)P.pay=tl("Платежи",'<p class="hint" style="margin:0">'+j.payments.map(function(p){return p.stars+"⭐ "+dt(p.created_at)+(p.refunded_at?" (возврат)":"")}).join(" · ")+"</p>");
+    if(j.payments.length)P.pay=tl("Платежи",'<div class="list">'+j.payments.slice(0,8).map(function(p){var gift=p.payer_id&&p.payer_id!==p.tg_id,mine=p.tg_id===id,what=p.src==="shop"?({frame:"Рамка",bg:"Фон",kit:"Набор"}[p.kind]||p.kind)+" · "+esc(p.item):"PRO · "+(p.plan==="month"?"месяц":p.plan==="year"?"год":esc(p.plan));
+      return '<div class="item click" data-pay="'+esc(p.charge_id)+'"><div class="m"><div class="t">'+what+(gift?(mine?" · подарок":" · подарил другу"):"")+'</div><div class="s">'+dt(p.created_at)+'</div></div><b>'+(p.refunded_at?'<s style="color:var(--dim)">'+p.stars+"</s>":p.stars)+" ⭐</b>"+(p.refunded_at?'<span class="chip r">возврат</span>':"")+"</div>"}).join("")+"</div>"+((j.refund_reqs||[]).some(function(r){return r.status==="pending"})?'<p class="hint dn" style="margin-top:10px">Есть заявка на возврат, ждёт решения</p>':"")+(j.payments.length>8?'<p class="hint" style="margin-top:10px">Показаны последние 8 из '+j.payments.length+"</p>":""));
     if(j.feedback.length)P.fb=tl("Обращения",'<div class="list">'+j.feedback.slice(0,5).map(function(x){return '<div class="item"><div class="m"><div class="s wrap">'+esc(x.text)+"</div></div></div>"}).join("")+"</div>");
     P.ses=tl("Сессии",'<p class="hint" style="margin:0 0 8px">'+(j.sessions.length?j.sessions.map(function(x){return esc(x.device||"?")+" · "+dt(x.last_seen)}).join("<br>"):"Нет активных")+"</p>"+(u.creator?"":'<button class="btn sm bad" id="ukick">Завершить все сессии</button>'));
     if(!u.creator)P.acc=tl("Доступ",u.blocked?'<button class="btn sm" id="ublk">Разблокировать</button>':'<button class="btn sm bad" id="ublk">Заблокировать</button>');
@@ -1747,6 +1819,7 @@ function openUser(id,np){
     $("#efeed").onclick=function(){api("edit",{tg_id:id,field:"hide_feed",value:!u.hide_feed}).then(again)};
     armed($("#esoc"),function(){api("edit",{tg_id:id,field:"socials"}).then(function(r){say(r,"Соцсети сброшены")})});
     $("#ggo").onclick=function(){api("gift",{tg_id:id,kind:$("#gk").value}).then(function(r){if(r.error)say(r);else{say(r,"Подарок отправлен");}})};
+    $$("[data-pay]").forEach(function(b){b.onclick=function(){payOpen(b.dataset.pay)}});
     $$("[data-w]").forEach(function(b){armed(b,function(){api("del_workout",{tg_id:id,rid:b.dataset.w}).then(again)})});
     if($("#ukick"))armed($("#ukick"),function(){api("kick",{tg_id:id}).then(function(r){if(r.error)say(r);else say(r,"Завершено сессий: "+r.n)})});
     if($("#ublk")){
@@ -1798,19 +1871,260 @@ $("#flist").onclick=function(e){
 };
 
 /* ---------- платежи ---------- */
-function loadPay(){
+var PD=null,PKEY="voobcore.pay",PS=Object.assign({per:30,view:"",q:"",src:"",st:"",gf:"",sort:"new",rq:"pending",rn:"exp"},lsGet(PKEY,{})),pLim=80,pSig="";
+function pSave(){lsSet(PKEY,PS)}
+var KL={frame:"Рамка",bg:"Фон",kit:"Набор"},RFR={nofx:"Оплата прошла, но не появилось или не работает",mistake:"Оплатил по ошибке",other:"Другое"};
+function pu(id){return (PD&&PD.users[id])||{tg_id:id}}
+function pDay(x){var d=new Date(x);return d.getFullYear()+"-"+("0"+(d.getMonth()+1)).slice(-2)+"-"+("0"+d.getDate()).slice(-2)}
+function pDayLbl(k){if(k===pDay(Date.now()))return "Сегодня";if(k===pDay(Date.now()-864e5))return "Вчера";var d=new Date(k+"T12:00:00");return d.toLocaleDateString("ru-RU",{day:"numeric",month:"long",weekday:"short"})+(d.getFullYear()!==new Date().getFullYear()?" "+d.getFullYear():"")}
+function pAgo(x){var m=(Date.now()-new Date(x))/6e4;if(m<2)return "только что";if(m<60)return Math.round(m)+" мин назад";var h=m/60;if(h<24)return Math.round(h)+" ч назад";var d=h/24;if(d<60)return Math.round(d)+" дн. назад";return Math.round(d/30)+" мес. назад"}
+function pDur(ms){var h=ms/36e5;if(h<1)return Math.max(1,Math.round(ms/6e4))+" мин";if(h<48)return Math.round(h)+" ч";return Math.round(h/24)+" дн."}
+function pDs(x){return new Date(x).toLocaleDateString("ru-RU",{day:"2-digit",month:"2-digit",year:"2-digit"})}
+function pItem(p){var n=typeof FRN!=="undefined"&&p.kind==="frame"?FRN[frKey(p.item)]:null;return n||p.item}
+function pPlan(p){return p.plan==="month"?"месяц":p.plan==="year"?"год":p.plan}
+function pWhat(p){return p.src==="pro"?"PRO · "+pPlan(p):(KL[p.kind]||p.kind)+" · "+pItem(p)}
+function pKey(p){return p.src==="pro"?"pro:"+p.plan:"shop:"+p.kind}
+function pCopy(t,m){try{navigator.clipboard.writeText(t).then(function(){toast(m||"Скопировано")})}catch(e){toast("Не получилось скопировать","err")}}
+function pIndex(j){
+  PD=j;PD.byC={};PD.byId={};PD.agg={};
+  j.reqs.forEach(function(r){(PD.byC[r.charge_id]=PD.byC[r.charge_id]||[]).push(r)});
+  j.items.forEach(function(p){
+    p.t=Date.parse(p.created_at);p.who=p.payer_id||p.tg_id;p.gift=!!p.payer_id&&p.payer_id!==p.tg_id;
+    p.rq=(PD.byC[p.charge_id]||[])[0]||null;
+    p.st=p.refunded_at?"refunded":p.rq&&p.rq.status==="pending"?"pending":p.rq&&p.rq.status==="rejected"?"rejected":"paid";
+    PD.byId[p.charge_id]=p;
+    var a=PD.agg[p.who]||(PD.agg[p.who]={net:0,n:0,ref:0,refY:0,last:0});
+    if(p.refunded_at){a.ref++;if(Date.parse(p.refunded_at)>Date.now()-365*864e5)a.refY++}else{a.net+=p.stars;a.n++}
+    if(p.t>a.last)a.last=p.t;
+  });
+  PD.pending=j.reqs.filter(function(r){return r.status==="pending"});
+  var pb=$('#nav [data-tab="pay"]');if(pb)pb.classList.toggle("hasb",PD.pending.length>0);
+}
+function pChip(p){
+  return p.st==="refunded"?'<span class="chip r">возвращён</span>':p.st==="pending"?'<span class="chip gd">заявка на возврат</span>':p.st==="rejected"?'<span class="chip">возврат отклонён</span>':'<span class="chip gn">оплачен</span>';
+}
+function pInPer(k){var n=Date.now(),L=PS.per*864e5;return function(p){return PS.per?(p.t>=n-(k+1)*L&&p.t<n-k*L):!k}}
+function pStats(rows){
+  var s={n:rows.length,net:0,paid:0,ref:0,refS:0,pro:0,shop:0,gifts:0,payers:{}};
+  rows.forEach(function(p){if(p.gift)s.gifts++;if(p.refunded_at){s.ref++;s.refS+=p.stars}else{s.net+=p.stars;s.paid++;s.payers[p.who]=(s.payers[p.who]||0)+1;s[p.src]+=p.stars}});
+  s.np=Object.keys(s.payers).length;s.avg=s.paid?Math.round(s.net/s.paid):0;return s;
+}
+function pDelta(a,b){if(!b)return "";var d=Math.round((a-b)/b*100);return '<small class="'+(d>0?"up":d<0?"dn":"")+'">'+(d>0?"▲ +":d<0?"▼ ":"")+d+"% к прошлому периоду</small>"}
+function pPerLbl(){return PS.per===0?"за всё время":PS.per===365?"за год":"за "+PS.per+" дн."}
+function pFiltered(){
+  var q=PS.q.trim().toLowerCase().replace(/^@/,""),from=PS.per?Date.now()-PS.per*864e5:0;
+  var rows=PD.items.filter(function(p){
+    if(p.t<from)return false;
+    if(PS.src&&PS.src!==pKey(p)&&PS.src!==p.src)return false;
+    if(PS.st&&p.st!==PS.st)return false;
+    if(PS.gf==="1"&&!p.gift)return false;if(PS.gf==="0"&&p.gift)return false;
+    if(q){if(!p._h){var s=[p.charge_id,p.who,p.tg_id,pWhat(p)];[pu(p.who),pu(p.tg_id)].forEach(function(u){s.push(u.first_name,u.handle,u.username)});p._h=s.join(" ").toLowerCase()}if(p._h.indexOf(q)<0)return false}
+    return true});
+  var cmp={new:function(a,b){return b.t-a.t},old:function(a,b){return a.t-b.t},big:function(a,b){return b.stars-a.stars||b.t-a.t},small:function(a,b){return a.stars-b.stars||b.t-a.t}}[PS.sort]||0;
+  return rows.sort(cmp);
+}
+/* сводка */
+function pKpi(){
+  var cur=PD.items.filter(pInPer(0)),s=pStats(cur),pv=PS.per?pStats(PD.items.filter(pInPer(1))):null;
+  var rate=s.n?Math.round(s.ref/s.n*100):0,pro=0,soon=0,now=Date.now();
+  for(var k in PD.subs){var u=Date.parse(PD.subs[k]);if(u>now){pro++;if(u<now+7*864e5)soon++}}
+  var t=[
+    ["rev","Выручка",fmt(s.net)+" ⭐",pv?pDelta(s.net,pv.net):"<small>после возвратов</small>",""],
+    ["cnt","Платежей",s.paid,"<small>всего "+s.n+" "+pPerLbl()+"</small>",""],
+    ["avg","Средний чек",s.avg+" ⭐","<small>"+s.np+" "+plural(s.np,"плательщик","плательщика","плательщиков")+"</small>",""],
+    ["ref","Возвраты",s.ref,"<small>"+fmt(s.refS)+" ⭐ · "+rate+"% платежей</small>",rate>=10&&s.ref?"hot":""],
+    ["pend","Ждут решения",PD.pending.length,"<small>"+(PD.pending.length?"самая старая — "+pAgo(PD.pending[PD.pending.length-1].created_at):"всё разобрано")+"</small>",PD.pending.length?"hot":""],
+    ["pro","PRO сейчас",pro,"<small>"+(soon?soon+" истекает за 7 дн.":"продления в аналитике")+"</small>",""]];
+  $("#pst").innerHTML=t.map(function(x,i){return '<button type="button" data-k="'+x[0]+'" class="'+x[4]+'" style="--i:'+i+'"><span>'+x[1]+"</span><b>"+x[2]+"</b>"+x[3]+"</button>"}).join("");
+  $("#psub").textContent="Обновлено в "+new Date().toLocaleTimeString("ru-RU",{hour:"2-digit",minute:"2-digit"});
+  /* график */
+  var days=PS.per;if(!days){var o=PD.items.length?PD.items[PD.items.length-1].t:Date.now();days=Math.min(730,Math.max(14,Math.ceil((Date.now()-o)/864e5)+1))}
+  var by={};PD.items.forEach(function(p){if(!p.refunded_at)by[pDay(p.t)]=(by[pDay(p.t)]||0)+p.stars});
+  var ser=[];for(var i=days-1;i>=0;i--){var d=pDay(Date.now()-i*864e5);ser.push({d:d,stars:by[d]||0})}
+  var bk=bucket(ser,days);chart("pch",bk.rows,[["stars","звёзд","gold"]],"bar",190);delete CHS.pch;$("#pgran").textContent=bk.gran;
+  var tot=s.pro+s.shop||1;
+  $("#psplit").innerHTML='<i style="flex:'+s.pro+';background:var(--gold)"></i><i style="flex:'+s.shop+';background:var(--violet)"></i>'+(s.net?"":'<i style="flex:1"></i>');
+  $("#plg").innerHTML='<span><i style="background:var(--gold)"></i>PRO <b>'+fmt(s.pro)+" ⭐</b> · "+Math.round(s.pro/tot*100)+'%</span><span><i style="background:var(--violet)"></i>Магазин <b>'+fmt(s.shop)+" ⭐</b> · "+Math.round(s.shop/tot*100)+"%</span>"+(s.refS?'<span><i style="background:var(--bad)"></i>Возвращено <b>−'+fmt(s.refS)+" ⭐</b></span>":"");
+}
+function pBanner(){
+  var n=PD.pending.length;
+  $("#pbn").innerHTML=n&&PS.view!=="rq"?'<div class="pbn"><i></i><span><b>'+n+" "+plural(n,"заявка","заявки","заявок")+'</b> на возврат ждут решения · самая старая — '+pAgo(PD.pending[n-1].created_at)+'</span><span class="sp1"></span><button class="btn sm pri" data-pa="view" data-v="rq" type="button">Разобрать</button></div>':"";
+}
+function pViews(){
+  var n=PD.pending.length;
+  $$("#pview button").forEach(function(b){b.setAttribute("aria-pressed",b.dataset.v===PS.view);if(b.dataset.v==="rq")b.innerHTML="Заявки на возврат"+(n?"<i>"+n+"</i>":"")});
+  ["pay","rq","an"].forEach(function(v){$("#pv-"+v).hidden=v!==PS.view});
+  $("#pexp").hidden=PS.view==="an";
+  setTimeout(function(){segAll(false)},0);
+}
+/* список платежей */
+function pRow(p,i){
+  var u=pu(p.who),to=pu(p.tg_id),who=p.gift?"🎁 "+nm(u)+" → "+nm(to):nm(u),sub=u.handle?"@"+esc(u.handle):u.username?"@"+esc(u.username):"id "+p.who;
+  var what=p.src==="pro"?"PRO · "+pPlan(p):(KL[p.kind]||p.kind)+" · "+esc(pItem(p)),det=p.src==="pro"?p.days+(p.bonus_days?" + "+p.bonus_days+" бонус":"")+" дн.":"магазин";
+  return '<div class="prow" data-pa="open" data-c="'+esc(p.charge_id)+'" style="--i:'+Math.min(i,12)+'">'+av(u)+
+    '<div style="min-width:0"><div class="t">'+who+'</div><div class="s">'+sub+'</div><div class="s mo">'+what+" · "+pAgo(p.created_at)+" · "+pChip(p)+"</div></div>"+
+    '<div class="pw" style="min-width:0"><div class="t" style="font-size:13.5px">'+what+'</div><div class="s">'+esc(det)+"</div></div>"+
+    '<div class="am">'+(p.refunded_at?"<s>"+p.stars+"</s>":p.stars)+" ⭐</div><div class=\"ps\">"+pChip(p)+'</div><div class="pd" title="'+dt(p.created_at)+'">'+pAgo(p.created_at)+"</div>"+
+    (p.st!=="refunded"?'<button class="qa" type="button" data-pa="ref" data-c="'+esc(p.charge_id)+'" title="Вернуть платёж">'+ic("refresh",2)+"</button>":"<span></span>")+"</div>";
+}
+function pList(){
+  var rows=pFiltered(),s=pStats(rows),any=PS.q||PS.src||PS.st||PS.gf;
+  $("#pcnt").innerHTML="Найдено <b>"+rows.length+"</b> · нетто <b>"+fmt(s.net)+" ⭐</b>"+(s.refS?" · возвращено "+fmt(s.refS)+" ⭐":"")+" · "+pPerLbl();
+  $("#preset").hidden=!any;
+  if(!rows.length){$("#plist").innerHTML='<div class="tile"><p class="hint" style="margin:0">'+(PD.items.length?"Под эти фильтры ничего не подходит":"Платежей пока нет")+"</p></div>";$("#pmore").hidden=true;return}
+  var show=rows.slice(0,pLim),h="",last="",byDate=PS.sort==="new"||PS.sort==="old";
+  if(byDate){var tot={};show.forEach(function(p){var k=pDay(p.t),g=tot[k]||(tot[k]={n:0,s:0});g.n++;if(!p.refunded_at)g.s+=p.stars})}
+  show.forEach(function(p,i){
+    if(byDate){var k=pDay(p.t);if(k!==last){last=k;h+='<div class="pgrp"><b>'+pDayLbl(k)+"</b><span>"+tot[k].n+" "+plural(tot[k].n,"платёж","платежа","платежей")+" · "+fmt(tot[k].s)+" ⭐</span></div>"}}
+    h+=pRow(p,i)});
+  $("#plist").innerHTML=h;hydrate($("#plist"));
+  $("#pmore").hidden=rows.length<=pLim;$("#pmore").textContent="Показать ещё "+Math.min(80,rows.length-pLim)+" из "+(rows.length-pLim);
+}
+/* заявки */
+function pFlagChips(f){
+  return String(f||"").split(" · ").filter(Boolean).map(function(x){var c=/⚠️|надет/.test(x)?"r":/сбой/.test(x)?"gd":"";return '<span class="chip '+c+'">'+esc(x.replace("⚠️","").trim())+"</span>"}).join("");
+}
+function pReqCard(r,i){
+  var p=PD.byId[r.charge_id],u=pu(r.tg_id),pend=r.status==="pending",a=PD.agg[r.tg_id]||{net:0,n:0,ref:0,refY:0},hrs=p?(Date.parse(r.created_at)-p.t)/36e5:null,tips=[];
+  if(r.reason==="nofx")tips.push(["g","Сбой оплаты: лимиты и сроки не проверялись. Проверь профиль, включилось ли купленное, и обычно возврат уместен."]);
+  else if(hrs!=null)tips.push([hrs<=PD.window_h?"g":"b",hrs<=PD.window_h?"Запрос в пределах "+PD.window_h+" ч после оплаты":"Позже "+PD.window_h+" ч: прошло "+Math.round(hrs)+" ч"]);
+  if(a.refY>=3)tips.push(["b","Уже "+a.refY+" "+plural(a.refY,"возврат","возврата","возвратов")+" за год"]);else if(a.refY)tips.push(["w","Возвраты за год: "+a.refY]);
+  if(/надет/.test(r.flags||""))tips.push(["w","Предмет сейчас надет у человека"]);
+  if(p&&p.gift)tips.push(["w","Подарок: получатель "+nm(pu(p.tg_id))+" потеряет покупку"]);
+  var st=r.status==="approved"?'<span class="chip gn">возвращено</span>':r.status==="rejected"?'<span class="chip">отклонено</span>':'<span class="chip gd">ждёт · '+pAgo(r.created_at).replace(" назад","")+"</span>";
+  var h='<div class="rqc'+(pend?" pend":"")+'" style="--i:'+Math.min(i,10)+'"><div class="rqh">'+av(u)+'<div class="m"><div class="t">'+nm(u)+'</div><div class="s">'+(u.handle?"@"+esc(u.handle)+" · ":"")+"заявка №"+r.id+" · "+dt(r.created_at)+"</div></div>"+st+"</div>"+
+   '<div class="rqw"><span><b>'+(p?esc(pWhat(p)):r.src==="pro"?"PRO":"магазин")+"</b> · "+(p?"<b>"+p.stars+" ⭐</b>":"платёж не найден")+"</span>"+(p?"<span>оплачен "+pAgo(p.created_at)+"</span>":"")+"</div>"+
+   '<div class="rqw"><span>Причина: <b>'+esc(RFR[r.reason]||r.reason)+"</b></span></div>"+(r.note?'<div class="rqq">'+esc(r.note)+"</div>":"")+
+   (r.flags?'<div class="rqf">'+pFlagChips(r.flags)+"</div>":"")+
+   '<div class="rqw"><span>Покупатель: потрачено <b>'+fmt(a.net)+" ⭐</b></span><span>платежей <b>"+a.n+"</b></span><span>возвратов всего <b>"+a.ref+"</b></span></div>"+
+   (pend&&tips.length?'<div class="rqt">'+tips.map(function(t){return '<div class="'+t[0]+'"><i></i><span>'+esc(t[1])+"</span></div>"}).join("")+"</div>":"")+
+   (!pend&&r.decided_at?'<div class="rqw"><span>Решено '+dt(r.decided_at)+" · за "+pDur(Date.parse(r.decided_at)-Date.parse(r.created_at))+"</span></div>":"")+
+   '<div class="rqa">'+(pend&&p?'<button class="btn bad sm" data-pa="ref" data-c="'+esc(r.charge_id)+'" data-id="'+r.id+'" type="button">Вернуть '+p.stars+" ⭐</button>":"")+(pend?'<button class="btn sm" data-pa="rej" data-id="'+r.id+'" type="button">Отклонить</button>':"")+
+   '<button class="btn sm" data-pa="msg" data-u="'+r.tg_id+'" type="button">Написать</button><button class="btn sm" data-pa="usr" data-u="'+r.tg_id+'" type="button">Профиль</button>'+(p?'<button class="btn sm" data-pa="open" data-c="'+esc(r.charge_id)+'" type="button">Платёж</button>':"")+"</div></div>";
+  return h;
+}
+function pReqs(){
+  var c={pending:0,approved:0,rejected:0,all:PD.reqs.length};PD.reqs.forEach(function(r){c[r.status]++});
+  var f=[["pending","Ждут решения"],["approved","Возвращены"],["rejected","Отклонены"],["all","Все"]];
+  $("#rqfl").innerHTML=f.map(function(x){return '<button class="ufc" type="button" data-pa="rqf" data-v="'+x[0]+'" aria-pressed="'+(PS.rq===x[0])+'">'+x[1]+" <i>"+c[x[0]]+"</i></button>"}).join("");
+  var rows=PD.reqs.filter(function(r){return PS.rq==="all"||r.status===PS.rq});
+  if(PS.rq==="pending")rows=rows.slice().reverse();
+  $("#rqlist").innerHTML=rows.length?rows.map(pReqCard).join(""):'<div class="tile" style="grid-column:1/-1"><p class="hint" style="margin:0">'+(PS.rq==="pending"?"Нет заявок, которые ждут решения":"Заявок нет")+"</p></div>";
+  hydrate($("#rqlist"));
+}
+/* аналитика */
+function pAnal(){
+  var cur=PD.items.filter(pInPer(0)),s=pStats(cur),now=Date.now(),by={},best=null,rep=0,ref=cur.filter(function(p){return p.refunded_at});
+  cur.forEach(function(p){if(!p.refunded_at){var k=pDay(p.t);by[k]=(by[k]||0)+p.stars;if(!best||by[k]>best[1])best=[k,by[k]]}});
+  Object.keys(s.payers).forEach(function(w){if((PD.agg[w]||{}).n>=2)rep++});
+  var avgRef=ref.length?ref.reduce(function(a,p){return a+Date.parse(p.refunded_at)-p.t},0)/ref.length:0,gross=s.net+s.refS;
+  var nums=[["ARPPU",s.np?Math.round(s.net/s.np)+" ⭐":"—","выручка на плательщика"],["Повторные покупатели",s.np?Math.round(rep/s.np*100)+"%":"—",rep+" из "+s.np],
+   ["Возвраты по сумме",gross?Math.round(s.refS/gross*100)+"%":"0%",fmt(s.refS)+" из "+fmt(gross)+" ⭐"],["Возврат через",ref.length?pDur(avgRef):"—","в среднем после оплаты"],
+   ["Подарки",s.n?Math.round(s.gifts/s.n*100)+"%":"0%",s.gifts+" из "+s.n+" платежей"],["Лучший день",best?fmt(best[1])+" ⭐":"—",best?pDayLbl(best[0]):"нет данных"]];
+  var h='<div class="tile full"><h3>Показатели · '+pPerLbl()+'</h3><div class="pnum">'+nums.map(function(x){return "<div><span>"+x[0]+"</span><b>"+x[1]+"</b><small>"+x[2]+"</small></div>"}).join("")+"</div></div>";
+  var g={};cur.forEach(function(p){if(p.refunded_at)return;var k=p.src==="pro"?"PRO · "+pPlan(p):({frame:"Рамки",bg:"Фоны",kit:"Наборы"}[p.kind]||p.kind);var x=g[k]||(g[k]={n:0,s:0});x.n++;x.s+=p.stars});
+  var gk=Object.keys(g).sort(function(a,b){return g[b].s-g[a].s}),mx=gk.length?g[gk[0]].s:1;
+  h+='<div class="tile"><h3>Что покупают</h3><div class="pbars">'+(gk.length?gk.map(function(k){return '<div class="r"><span>'+esc(k)+" · "+g[k].n+'</span><div class="pbk"><i style="width:'+Math.round(g[k].s/mx*100)+'%"></i></div><em>'+fmt(g[k].s)+" ⭐</em></div>"}).join(""):'<p class="hint" style="margin:0">Нет данных</p>')+"</div></div>";
+  var tp=Object.keys(s.payers).map(function(w){var a=0,n=0;cur.forEach(function(p){if(p.who==w&&!p.refunded_at){a+=p.stars;n++}});return {w:w,s:a,n:n}}).sort(function(a,b){return b.s-a.s}).slice(0,8);
+  h+='<div class="tile"><h3>Топ плательщиков</h3><div class="plist">'+(tp.length?tp.map(function(x){var u=pu(x.w),ag=PD.agg[x.w]||{},sb=PD.subs[x.w];return '<div class="item click" data-pa="usr" data-u="'+x.w+'">'+av(u)+'<div class="m"><div class="t">'+nm(u)+'</div><div class="s">'+x.n+" "+plural(x.n,"платёж","платежа","платежей")+(ag.ref?" · возвратов "+ag.ref:"")+" · последний "+pAgo(ag.last)+'</div></div><b>'+fmt(x.s)+" ⭐</b></div>"}).join(""):'<p class="hint" style="margin:0">Нет данных</p>')+"</div></div>";
+  var exp=PS.rn==="exp",lim=exp?[now,now+7*864e5]:[now-30*864e5,now],ls=Object.keys(PD.subs).filter(function(k){var u=Date.parse(PD.subs[k]);return u>=lim[0]&&u<=lim[1]}).sort(function(a,b){return exp?Date.parse(PD.subs[a])-Date.parse(PD.subs[b]):Date.parse(PD.subs[b])-Date.parse(PD.subs[a])});
+  h+='<div class="tile full"><div class="chartT"><h3>PRO: продления</h3><div class="seg" id="prn"><button data-r="exp" aria-pressed="'+exp+'">Заканчивается за 7 дн.</button><button data-r="gone" aria-pressed="'+!exp+'">Закончилась за 30 дн.</button></div></div>'+
+   '<div class="plist" style="grid-template-columns:repeat(auto-fill,minmax(380px,1fr))">'+(ls.length?ls.map(function(k){var u=pu(k),d=Math.round(Math.abs(Date.parse(PD.subs[k])-now)/864e5);return '<div class="item"><span data-pa="usr" data-u="'+k+'" style="cursor:pointer">'+av(u)+'</span><div class="m"><div class="t">'+nm(u)+'</div><div class="s">'+(exp?(d?"осталось "+d+" дн.":"заканчивается сегодня"):"закончилась "+(d?d+" дн. назад":"сегодня"))+" · до "+pDs(PD.subs[k])+'</div></div><button class="btn sm" data-pa="rem" data-u="'+k+'" data-e="'+(exp?1:0)+'" type="button">Напомнить</button></div>'}).join(""):'<p class="hint" style="margin:0">Таких подписок нет</p>')+"</div></div>";
+  $("#pv-an").innerHTML=h;hydrate($("#pv-an"));
+  seg($("#prn"),function(b){PS.rn=b.dataset.r;pSave();pAnal()});setTimeout(function(){segAll(false)},0);
+}
+function pRender(){
+  pKpi();pBanner();pViews();pList();pReqs();pAnal();
+  $("#pq").value=PS.q;$("#psort").value=PS.sort;$("#psrc").value=PS.src;$("#pstt").value=PS.st;$("#pgf").value=PS.gf;
+  $$("#pper button").forEach(function(b){b.setAttribute("aria-pressed",+b.dataset.d===PS.per)});setTimeout(function(){segAll(false)},0);
+}
+function pSetView(v){PS.view=v;pSave();pBanner();pViews()}
+function loadPay(silent){
   api("payments").then(function(j){
     if(j.error){$("#epay").textContent=j.error;return}$("#epay").textContent="";
-    lastPay=j.items;$("#plist").innerHTML=j.items.length?j.items.map(function(p){
-      return '<div class="item">'+av(p.user)+'<div class="m"><div class="t">'+p.stars+" ⭐ · "+esc(p.plan)+" · "+nm(p.user)+'</div><div class="s">'+dt(p.created_at)+(p.payer&&p.payer.tg_id!==p.tg_id?" · оплатил "+nm(p.payer):"")+(p.refunded_at?" · возврат "+dt(p.refunded_at):"")+'</div></div>'+
-        (p.refunded_at?'<span class="chip r">возврат</span>':'<button class="btn sm bad" data-c="'+esc(p.charge_id)+'">Вернуть</button>')+"</div>"}).join(""):'<p class="hint">Платежей нет</p>';hydrate($("#plist"));
+    var sig=j.items.length+"|"+j.reqs.map(function(r){return r.id+r.status}).join(",")+"|"+j.items.filter(function(p){return p.refunded_at}).length;
+    if(silent&&sig===pSig&&PD)return;pSig=sig;
+    var first=!PD;pIndex(j);
+    if(!PS.view)PS.view="pay";
+    if(first&&PD.pending.length){PS.view="rq";PS.rq="pending"}
+    pRender();
   });
 }
-$("#plist").onclick=function(e){
-  var b=e.target.closest("[data-c]");if(!b)return;
-  dlg('<h3>Вернуть платёж?</h3><p class="hint">Звёзды вернутся пользователю, PRO сократится. Это нельзя отменить.</p><div class="row"><button class="btn bad sm" id="rfy">Вернуть</button><button class="btn sm" data-close>Отмена</button></div><p class="err" id="erf"></p>');
-  $("#rfy").onclick=function(){api("refund",{charge:b.dataset.c}).then(function(j){if(j.error)$("#erf").textContent=j.error;else{closeDlg();loadPay()}})};
+/* диалоги */
+function pMsg(uid,text){
+  dlg('<h3>Написать: '+nm(pu(uid))+'</h3><p class="hint">Сообщение придёт от бота VOOB.</p><textarea class="field" id="pmt" rows="5" style="margin-top:12px"></textarea><div class="row"><button class="btn pri sm" id="pmg" type="button">Отправить</button><button class="btn sm" data-close type="button">Отмена</button></div><p class="err" id="pme"></p>');
+  $("#pmt").value=text||"";$("#pmt").focus();
+  $("#pmg").onclick=function(){var t=$("#pmt").value.trim(),b=this;if(t.length<2)return;busy(b,1);api("message",{tg_id:uid,text:t}).then(function(j){busy(b,0);if(j&&j.status==="ok"){closeDlg();toast("Отправлено")}else $("#pme").textContent=(j&&j.error)||"Не отправилось"})};
+}
+function pRefund(p){
+  var u=pu(p.tg_id),c=[];
+  if(p.src==="pro"){var cut=(p.days||0)+(p.bonus_days||0),un=PD.subs[p.tg_id];
+    c.push(un?"PRO у <b>"+nm(u)+"</b> сократится на <b>"+cut+" дн.</b>: до "+pDs(un)+" → "+(Date.parse(un)-cut*864e5>Date.now()?pDs(Date.parse(un)-cut*864e5):"<b>выключится сразу</b>"):"У <b>"+nm(u)+"</b> нет активной подписки, вычитать дни не из чего")}
+  else c.push("Предмет «"+esc(pWhat(p))+"» будет отнят у <b>"+nm(u)+"</b>");
+  if(p.gift)c.push("Это подарок: платил <b>"+nm(pu(p.who))+"</b>, получатель — <b>"+nm(u)+"</b>. Звёзды вернутся тому, кто платил.");
+  c.push("Звёзды вернутся на баланс Telegram. Отменить возврат нельзя.");
+  dlg('<h3>Вернуть '+p.stars+' ⭐?</h3><p class="hint">'+esc(pWhat(p))+" · "+nm(pu(p.who))+" · "+dt(p.created_at)+'</p><div class="pcons">'+c.map(function(x){return "<div>"+x+"</div>"}).join("")+"</div>"+
+   (p.src==="pro"?'<label class="pchk"><input type="checkbox" id="prk"> Оставить дни PRO (вернуть деньги, подписку не сокращать)</label>':"")+
+   '<label class="pchk"><input type="checkbox" id="prn2" checked> Сообщить покупателю в Telegram</label><div class="row"><button class="btn bad sm" id="prfy" type="button">Вернуть '+p.stars+' ⭐</button><button class="btn sm" data-close type="button">Отмена</button></div><p class="err" id="erf"></p>');
+  $("#prfy").onclick=function(){var b=this;busy(b,1);$("#erf").textContent="";api("refund",{charge:p.charge_id,keep_pro:!!($("#prk")&&$("#prk").checked),notify:$("#prn2").checked}).then(function(j){busy(b,0);if(j&&j.error){$("#erf").textContent=j.error;return}closeDlg();toast("Возврат оформлен: "+p.stars+" ⭐");loadPay()})};
+}
+var RJT=["Возврат возможен только в первые "+48+" ч после оплаты.","Похоже, покупка уже работает. Если нет, напиши в «Идеи и жалобы», разберёмся.","Эту покупку уже использовали, поэтому вернуть её не получится.","Опиши, пожалуйста, что именно не так, в «Идеи и жалобы»."];
+function pReject(id){
+  var r=PD.reqs.filter(function(x){return x.id==id})[0];if(!r)return;
+  dlg('<h3>Отклонить заявку №'+r.id+'?</h3><p class="hint">'+nm(pu(r.tg_id))+' получит сообщение от бота. Можно добавить пояснение.</p><textarea class="field" id="rjt" rows="3" maxlength="600" placeholder="Пояснение (необязательно)" style="margin-top:12px"></textarea><div class="ptpl">'+RJT.map(function(t,i){return '<button class="ufc" type="button" data-t="'+i+'">'+esc(t.length>34?t.slice(0,34)+"…":t)+"</button>"}).join("")+'</div><label class="pchk"><input type="checkbox" id="rjn" checked> Сообщить покупателю</label><div class="row"><button class="btn bad sm" id="rjy" type="button">Отклонить</button><button class="btn sm" data-close type="button">Отмена</button></div><p class="err" id="erj"></p>');
+  $$(".ptpl button").forEach(function(b){b.onclick=function(){$("#rjt").value=RJT[+b.dataset.t];$("#rjt").focus()}});
+  $("#rjy").onclick=function(){var b=this;busy(b,1);api("refund_reject",{id:r.id,text:$("#rjt").value,notify:$("#rjn").checked}).then(function(j){busy(b,0);if(j&&j.error){$("#erj").textContent=j.error;return}closeDlg();toast("Заявка отклонена");loadPay()})};
+}
+function payDetail(c){
+  var p=PD.byId[c];if(!p)return toast("Платёж не найден","err");
+  var buyer=pu(p.who),to=pu(p.tg_id),rs=PD.byC[c]||[],a=PD.agg[p.who]||{net:0,n:0,ref:0,refY:0};
+  var f=[["Дата",dt(p.created_at)],["Покупатель",'<button class="lk" data-d="usr" data-u="'+p.who+'" type="button">'+nm(buyer)+"</button>"+(buyer.handle?" · @"+esc(buyer.handle):"")]];
+  if(p.gift)f.push(["Получатель",'<button class="lk" data-d="usr" data-u="'+p.tg_id+'" type="button">'+nm(to)+"</button>"]);
+  f.push(["Что",esc(pWhat(p))]);
+  if(p.src==="pro"){f.push(["Срок",p.days+(p.bonus_days?" + "+p.bonus_days+" бонус":"")+" дн."]);if(p.until_after)f.push(["PRO до (после оплаты)",pDs(p.until_after)])}
+  if(p.refunded_at)f.push(["Возврат",dt(p.refunded_at)+" · через "+pDur(Date.parse(p.refunded_at)-p.t)]);
+  f.push(["Номер платежа",'<button class="lk" data-d="cp" type="button" style="word-break:break-all">'+esc(p.charge_id)+"</button>"]);
+  var h='<div class="pdh"><div><div class="hint" style="margin:0 0 4px">'+esc(pWhat(p))+"</div><b>"+(p.refunded_at?'<s style="color:var(--dim)">'+p.stars+"</s>":p.stars)+" ⭐</b></div><div>"+pChip(p)+"</div></div>"+
+   '<div class="pfx">'+f.map(function(x){return "<div><span>"+x[0]+"</span><b>"+x[1]+"</b></div>"}).join("")+"</div>"+
+   '<p class="hint" style="margin-top:14px">Покупатель: потрачено <b style="color:var(--fg)">'+fmt(a.net)+" ⭐</b> · платежей "+a.n+" · возвратов всего "+a.ref+(a.refY?" (за год "+a.refY+")":"")+"</p>";
+  if(rs.length)h+='<div style="margin-top:16px"><div class="hint" style="margin:0 0 8px;text-transform:uppercase;letter-spacing:.1em;font-size:11px">Заявки на возврат</div><div class="plist" style="margin-top:0">'+rs.map(function(r){return '<div class="item" style="display:block"><div class="t">'+esc(RFR[r.reason]||r.reason)+" · "+(r.status==="approved"?"возвращено":r.status==="rejected"?"отклонено":"ждёт решения")+'</div><div class="s">'+dt(r.created_at)+(r.decided_at?" → "+dt(r.decided_at):"")+"</div>"+(r.note?'<div class="rqq" style="margin-top:6px">'+esc(r.note)+"</div>":"")+(r.flags?'<div class="rqf" style="margin-top:6px">'+pFlagChips(r.flags)+"</div>":"")+"</div>"}).join("")+"</div></div>";
+  h+='<div class="row">'+(p.st!=="refunded"?'<button class="btn bad sm" data-d="ref" type="button">Вернуть '+p.stars+" ⭐</button>":"")+'<button class="btn sm" data-d="msg" type="button">Написать</button><button class="btn sm" data-close type="button">Закрыть</button></div>';
+  dlg(h);
+  $$("#dbody [data-d]").forEach(function(b){b.onclick=function(){var d=b.dataset.d;if(d==="usr"){closeDlg();openUser(b.dataset.u)}else if(d==="cp")pCopy(p.charge_id,"Номер платежа скопирован");else if(d==="ref")pRefund(p);else if(d==="msg")pMsg(p.who)}});
+}
+function payOpen(c){if(PD)return payDetail(c);api("payments").then(function(j){if(j.error)return toast(j.error,"err");pIndex(j);payDetail(c)})}
+/* события страницы */
+$("#t-pay").addEventListener("click",function(e){
+  var b=e.target.closest("[data-pa],#pst button[data-k]");if(!b)return;
+  if(b.dataset.k){var k=b.dataset.k;
+    if(k==="ref"){PS.st="refunded";PS.view="pay";pLim=80;pSave();pRender()}else if(k==="pend")pSetView("rq");else if(k==="pro"){PS.view="an";PS.rn="exp";pSave();pRender()}
+    else{PS.view="pay";pSave();pViews();pBanner()}return}
+  var a=b.dataset.pa,c=b.dataset.c;
+  if(a==="ref"){e.stopPropagation();var p=PD.byId[c];if(p)pRefund(p)}
+  else if(a==="open")payDetail(c);
+  else if(a==="rej")pReject(b.dataset.id);
+  else if(a==="msg")pMsg(+b.dataset.u);
+  else if(a==="usr")openUser(+b.dataset.u);
+  else if(a==="view")pSetView(b.dataset.v);
+  else if(a==="rqf"){PS.rq=b.dataset.v;pSave();pReqs()}
+  else if(a==="rem"){var u=+b.dataset.u,d=pDs(PD.subs[u]);pMsg(u,b.dataset.e==="1"?"Привет! Твой VOOB PRO заканчивается "+d+". Продлить можно в приложении: Профиль → PRO 💛":"Привет! Твой VOOB PRO закончился "+d+". Вернуться можно в любой момент: Профиль → PRO 💛")}
+});
+seg($("#pper"),function(b){PS.per=+b.dataset.d;pLim=80;pSave();pRender()});
+seg($("#pview"),function(b){pSetView(b.dataset.v)});
+var pqT=0;$("#pq").oninput=function(){PS.q=this.value;pLim=80;pSave();clearTimeout(pqT);pqT=setTimeout(pList,120)};
+[["psort","sort"],["psrc","src"],["pstt","st"],["pgf","gf"]].forEach(function(x){$("#"+x[0]).onchange=function(){PS[x[1]]=this.value;pLim=80;pSave();pList()}});
+$("#preset").onclick=function(){PS.q=PS.src=PS.st=PS.gf="";pSave();$("#pq").value="";pRender()};
+$("#pmore").onclick=function(){pLim+=80;pList()};
+$("#pexp").onclick=function(){
+  if(PS.view==="rq"){csv("voob-refund-requests.csv",[["заявка","дата","покупатель","id","причина","комментарий","статус","решено","платёж"]].concat(PD.reqs.map(function(r){var u=pu(r.tg_id);return [r.id,r.created_at,u.first_name||"",r.tg_id,RFR[r.reason]||r.reason,r.note||"",r.status,r.decided_at||"",r.charge_id]})));return}
+  csv("voob-payments.csv",[["дата","источник","что","звёзд","статус","покупатель","id покупателя","id получателя","подарок","возврат","платёж"]].concat(pFiltered().map(function(p){return [p.created_at,p.src==="pro"?"PRO":"магазин",pWhat(p),p.stars,{paid:"оплачен",refunded:"возвращён",pending:"ждёт решения",rejected:"возврат отклонён"}[p.st],pu(p.who).first_name||"",p.who,p.tg_id,p.gift?"да":"",p.refunded_at||"",p.charge_id]})));
 };
+document.addEventListener("keydown",function(e){
+  if(CUR!=="pay"||$("#t-pay").hidden||!$("#dlg").hidden)return;var tg=(e.target.tagName||"").toLowerCase();
+  if(e.key==="/"&&tg!=="input"&&tg!=="textarea"&&tg!=="select"&&PS.view==="pay"){e.preventDefault();$("#pq").focus();$("#pq").select()}
+});
+setInterval(function(){if(token&&CUR==="pay"&&!document.hidden&&$("#dlg").hidden)loadPay(true)},60000);
+var pRz=0;window.addEventListener("resize",function(){clearTimeout(pRz);pRz=setTimeout(function(){if(CUR==="pay"&&PD)pKpi()},200)});
 
 /* ---------- рассылка ---------- */
 $("#bgo").onclick=function(){
@@ -1823,7 +2137,6 @@ $("#bgo").onclick=function(){
   $("#bcy").onclick=function(){closeDlg();go()};
 };
 
-$("#pexp").onclick=function(){csv("voob-payments.csv",[["дата","id","звёзд","план","дней","возврат"]].concat(lastPay.map(function(p){return [p.created_at,p.tg_id,p.stars,p.plan,p.days,p.refunded_at]})))};
 
 /* ---------- объявления и промокоды (voob-extra) ---------- */
 var GT2=null;
@@ -2116,7 +2429,7 @@ function countUp(el,to,ms){
 
 // шапка страницы и переходы
 var TITLES={ov:["обзор","Обзор"],us:["люди","Пользователи"],fb:["обращения","Жалобы и идеи"],pay:["деньги","Платежи"],bc:["рассылка","Рассылка"],an:["в приложении","Объявления"],pr:["коды","Промокоды"],lg:["действия","Журнал"],set:["доступ","Настройки"]};
-var SUBS={us:"Все, кто заходил в VOOB",fb:"Что пишут люди из приложения",pay:"Оплаты Stars и возвраты",bc:"Сообщение в Telegram",an:"Окно внутри VOOB при следующем входе",pr:"PRO и подарки по коду",lg:"Кто и что делал в Core",set:"Сессия, почта, оформление"};
+var SUBS={us:"Все, кто заходил в VOOB",fb:"Что пишут люди из приложения",pay:"Оплаты Stars, заявки на возврат и продления PRO",bc:"Сообщение в Telegram",an:"Окно внутри VOOB при следующем входе",pr:"PRO и подарки по коду",lg:"Кто и что делал в Core",set:"Сессия, почта, оформление"};
 var CUR="ov";
 function greet(){var h=new Date().getHours();return (h<5?"Доброй ночи":h<12?"Доброе утро":h<18?"Добрый день":"Добрый вечер")+", Влад"}
 function pheads(){
@@ -2165,10 +2478,10 @@ document.addEventListener("keydown",function(e){
 });
 
 // значок «ждут ответа» на обращениях, обновление раз в 2 минуты
-function setBadge(n){$('#nav [data-tab="fb"]').classList.toggle("hasb",n>0)}
+function setBadge(n,m){$('#nav [data-tab="fb"]').classList.toggle("hasb",n>0);if(m!==undefined)$('#nav [data-tab="pay"]').classList.toggle("hasb",m>0)}
 setInterval(function(){
   if(!token||$("#app").hidden||document.hidden)return;
-  var la=lastAct;call("overview",{days:7}).then(function(j){lastAct=la;if(j&&!j.error)setBadge(j.fb_new||0)});
+  var la=lastAct;call("overview",{days:7}).then(function(j){lastAct=la;if(j&&!j.error)setBadge(j.fb_new||0,j.rf_new||0)});
 },120000);
 
 // период обзора
@@ -2284,7 +2597,7 @@ function loadOv(){
     $("#gran").textContent=bk.gran;
     $("#perCmp").textContent="% — сравнение с предыдущими "+daysSel+" днями";
     var d=new Date();$("#sub-ov").textContent="Пульс VOOB за "+daysSel+" дн.  ·  обновлено в "+("0"+d.getHours()).slice(-2)+":"+("0"+d.getMinutes()).slice(-2);
-    setBadge(j.fb_new||0);
+    setBadge(j.fb_new||0,j.rf_new||0);
   });
 }
 
