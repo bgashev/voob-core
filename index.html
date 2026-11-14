@@ -240,6 +240,12 @@ section[id^=p]{animation:rise .42s var(--ease) both}
 #nav button[aria-selected=true]{color:var(--on-accent);background:none}
 #nav button[aria-selected=true] .lb{font-weight:700}
 #nav button.hasb:after{content:"";position:absolute;left:34px;top:3px;width:12px;height:12px;border-radius:50%;background:var(--bad);border:2px solid var(--tile)}
+.pclip{display:inline-grid;place-items:center;width:38px;height:38px;border-radius:50%;border:1px solid var(--line);background:var(--tile2);color:var(--mute);cursor:pointer;transition:color .2s,border-color .2s,background .2s,transform .2s}
+.pclip:hover{color:var(--fg);border-color:var(--line2);transform:rotate(-12deg)}
+.pclip svg{width:18px;height:18px}
+.dz{position:relative}
+.dz.over{outline:2px dashed var(--accent);outline-offset:-6px}
+.dz.over::after{content:"Отпусти картинку";position:absolute;inset:0;display:grid;place-items:center;border-radius:inherit;background:color-mix(in srgb,var(--tile) 82%,transparent);backdrop-filter:blur(3px);font-weight:700;font-size:15px;color:var(--fg);pointer-events:none;z-index:5}
 .pvai{width:100%;max-height:150px;object-fit:cover;border-radius:14px;display:block}
 .bimg{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
 .bthumb{display:flex;gap:12px;align-items:center;background:var(--tile2);border:1px solid var(--line);border-radius:14px;padding:6px 8px 6px 6px;min-width:0}
@@ -1033,7 +1039,7 @@ textarea.field{resize:none;line-height:1.5;min-height:84px;padding:12px 15px;fon
       <textarea class="field" id="ab" maxlength="600" placeholder="Текст"></textarea>
       <input class="field" id="ac" placeholder="Кнопка: pro или ссылка https:// (не обязательно)">
       <div class="bimg"><input type="file" id="afile" accept="image/jpeg,image/png,image/webp" hidden>
-        <button class="btn sm" id="apick" type="button"><i data-ic="image"></i>Прикрепить картинку</button>
+        <button class="pclip" id="apick" type="button" title="Прикрепить картинку (или перетащи сюда)" aria-label="Прикрепить картинку"><i data-ic="clip"></i></button>
         <div class="bthumb" id="athumb" hidden><img id="athumbi" alt=""><div><b id="athumbn"></b><small id="athumbs"></small></div><button class="btn sm" id="arm" type="button" title="Убрать картинку">Убрать</button></div></div>
       <label class="hint" style="display:flex;gap:8px;align-items:center;margin:0"><input type="checkbox" id="an" checked> Ещё и сообщением в Telegram</label>
       <p class="hint" id="acnt" style="margin:0"></p>
@@ -1048,7 +1054,7 @@ textarea.field{resize:none;line-height:1.5;min-height:84px;padding:12px 15px;fon
       <select class="field" id="bt"><option value="me">Только мне (проверка)</option><option value="pro">Всем с PRO</option><option value="all">Всем пользователям</option></select>
       <textarea class="field" id="btext" maxlength="3500" placeholder="Текст сообщения"></textarea>
       <div class="bimg" id="bimg"><input type="file" id="bfile" accept="image/jpeg,image/png,image/webp" hidden>
-        <button class="btn sm" id="bpick" type="button"><i data-ic="image"></i>Прикрепить картинку</button>
+        <button class="pclip" id="bpick" type="button" title="Прикрепить картинку (или перетащи сюда)" aria-label="Прикрепить картинку"><i data-ic="clip"></i></button>
         <div class="bthumb" id="bthumb" hidden><img id="bthumbi" alt=""><div><b id="bthumbn"></b><small id="bthumbs"></small></div><button class="btn sm" id="brm" type="button" title="Убрать картинку">Убрать</button></div></div>
       <div class="row" style="margin:0"><button class="btn pri" id="bgo" type="button">Отправить</button></div>
       <p class="err" id="ebc"></p>
@@ -2399,6 +2405,7 @@ $("#chgCancel").onclick=function(){api("chg_cancel").then(function(j){$("#eset")
 
 /* ---------- оформление как в программе VOOB CORE ---------- */
 var IC={
+ clip:'<path d="M20 11.5l-7.6 7.6a5 5 0 0 1-7.1-7.1l8-8a3.4 3.4 0 0 1 4.8 4.8l-8 8a1.8 1.8 0 0 1-2.5-2.5l7.3-7.3"/>',
  image:'<rect x="3" y="4" width="18" height="16" rx="3"/><circle cx="9" cy="10" r="1.8"/><path d="M21 16l-5-5-9 9"/>',
  ov:'<rect x="3" y="3" width="7" height="9" rx="2"/><rect x="14" y="3" width="7" height="5" rx="2"/><rect x="14" y="12" width="7" height="9" rx="2"/><rect x="3" y="16" width="7" height="5" rx="2"/>',
  us:'<circle cx="9" cy="8" r="3.5"/><path d="M2.5 20c.6-3.6 3.4-5.5 6.5-5.5s5.9 1.9 6.5 5.5"/><circle cx="17.5" cy="9" r="2.5"/><path d="M18 14.5c2 .3 3.2 1.8 3.5 4.5"/>',
@@ -2822,6 +2829,19 @@ function anSetImg(file){
 $("#apick").onclick=function(){$("#afile").click()};
 $("#afile").onchange=function(){anSetImg(this.files[0])};
 $("#arm").onclick=function(){anSetImg(null)};
+/* перетаскивание картинок в формы рассылки и объявлений */
+function dropZone(el,take){
+  if(!el)return;el.classList.add("dz");var n=0;
+  var has=function(e){return e.dataTransfer&&[].indexOf.call(e.dataTransfer.types||[],"Files")>-1};
+  el.addEventListener("dragenter",function(e){if(!has(e))return;e.preventDefault();n++;el.classList.add("over")});
+  el.addEventListener("dragover",function(e){if(!has(e))return;e.preventDefault();e.dataTransfer.dropEffect="copy"});
+  el.addEventListener("dragleave",function(e){if(!has(e))return;if(--n<=0){n=0;el.classList.remove("over")}});
+  el.addEventListener("drop",function(e){if(!has(e))return;e.preventDefault();n=0;el.classList.remove("over");var f=e.dataTransfer.files&&e.dataTransfer.files[0];if(f)take(f)});
+}
+dropZone($("#t-bc .tile"),bcSetImg);
+dropZone($("#t-an .tile"),anSetImg);
+window.addEventListener("dragover",function(e){e.preventDefault()});window.addEventListener("drop",function(e){e.preventDefault()});
+
 $("#bpick").onclick=function(){$("#bfile").click()};
 $("#bfile").onchange=function(){bcSetImg(this.files[0])};
 $("#brm").onclick=function(){bcSetImg(null)};
