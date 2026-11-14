@@ -247,6 +247,8 @@ section[id^=p]{animation:rise .42s var(--ease) both}
 .dz.over{outline:2px dashed var(--accent);outline-offset:-6px}
 .dz.over::after{content:"Отпусти картинку";position:absolute;inset:0;display:grid;place-items:center;border-radius:inherit;background:color-mix(in srgb,var(--tile) 82%,transparent);backdrop-filter:blur(3px);font-weight:700;font-size:15px;color:var(--fg);pointer-events:none;z-index:5}
 .pvai{width:100%;max-height:150px;object-fit:cover;border-radius:14px;display:block}
+.ihint{flex:1 1 220px;font-size:12px;line-height:1.4;color:var(--dim);min-width:0}
+.ihint.warn,.bthumb small.warn{color:var(--gold)}
 .bimg{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
 .bthumb{display:flex;gap:12px;align-items:center;background:var(--tile2);border:1px solid var(--line);border-radius:14px;padding:6px 8px 6px 6px;min-width:0}
 .bthumb img{width:48px;height:48px;border-radius:10px;object-fit:cover;flex:none}
@@ -1040,6 +1042,7 @@ textarea.field{resize:none;line-height:1.5;min-height:84px;padding:12px 15px;fon
       <input class="field" id="ac" placeholder="Кнопка: pro или ссылка https:// (не обязательно)">
       <div class="bimg"><input type="file" id="afile" accept="image/jpeg,image/png,image/webp" hidden>
         <button class="pclip" id="apick" type="button" title="Прикрепить картинку (или перетащи сюда)" aria-label="Прикрепить картинку"><i data-ic="clip"></i></button>
+        <span class="ihint" id="ahint">JPEG, PNG или WebP до 5 МБ · лучше 1200×675 (16:9): в окне приложения показывается во всю ширину, высоту обрежет до ~40% экрана — важное держи ближе к центру</span>
         <div class="bthumb" id="athumb" hidden><img id="athumbi" alt=""><div><b id="athumbn"></b><small id="athumbs"></small></div><button class="btn sm" id="arm" type="button" title="Убрать картинку">Убрать</button></div></div>
       <label class="hint" style="display:flex;gap:8px;align-items:center;margin:0"><input type="checkbox" id="an" checked> Ещё и сообщением в Telegram</label>
       <p class="hint" id="acnt" style="margin:0"></p>
@@ -1055,6 +1058,7 @@ textarea.field{resize:none;line-height:1.5;min-height:84px;padding:12px 15px;fon
       <textarea class="field" id="btext" maxlength="3500" placeholder="Текст сообщения"></textarea>
       <div class="bimg" id="bimg"><input type="file" id="bfile" accept="image/jpeg,image/png,image/webp" hidden>
         <button class="pclip" id="bpick" type="button" title="Прикрепить картинку (или перетащи сюда)" aria-label="Прикрепить картинку"><i data-ic="clip"></i></button>
+        <span class="ihint" id="bhint">JPEG, PNG или WebP до 5 МБ · лучше 1280×720 (16:9) или квадрат 1080×1080 · сожмётся до 1600 px</span>
         <div class="bthumb" id="bthumb" hidden><img id="bthumbi" alt=""><div><b id="bthumbn"></b><small id="bthumbs"></small></div><button class="btn sm" id="brm" type="button" title="Убрать картинку">Убрать</button></div></div>
       <div class="row" style="margin:0"><button class="btn pri" id="bgo" type="button">Отправить</button></div>
       <p class="err" id="ebc"></p>
@@ -2814,17 +2818,23 @@ function readImg(file,ok){
   var fr=new FileReader();fr.onload=function(){var im=new Image();im.onload=function(){
     var m=Math.min(1,1600/Math.max(im.width,im.height)),c=document.createElement("canvas");c.width=Math.round(im.width*m);c.height=Math.round(im.height*m);
     var x=c.getContext("2d");x.fillStyle="#fff";x.fillRect(0,0,c.width,c.height);x.drawImage(im,0,0,c.width,c.height);
-    var d=c.toDataURL("image/jpeg",.86);ok(d,im.width+"×"+im.height+" · "+Math.round(d.length*.75/1024)+" КБ")};
+    var d=c.toDataURL("image/jpeg",.86);ok(d,im.width+"×"+im.height+" · "+Math.round(d.length*.75/1024)+" КБ",im.width,im.height)};
     im.onerror=function(){toast("Не получилось открыть картинку","err")};im.src=fr.result};fr.readAsDataURL(file);
 }
+function imgWarn(w,h,wide){
+  var r=w/h,m=[];
+  if(Math.max(w,h)<600)m.push("маловато пикселей — будет мыльно");
+  if(r>(wide?2.4:4)||r<(wide?.5:.25))m.push(wide?"сильно вытянутая — в окне обрежется":"слишком вытянутая — Telegram может не принять");
+  return m.join(", ");
+}
 function bcSetImg(file){
-  if(!file){bcImg="";$("#bthumb").hidden=true;$("#bfile").value="";bcRender();return}
-  readImg(file,function(d,info){bcImg=d;$("#bthumbi").src=d;$("#bthumbn").textContent=file.name;$("#bthumbs").textContent=info;$("#bthumb").hidden=false;bcRender()});
+  if(!file){bcImg="";$("#bthumb").hidden=true;$("#bhint").hidden=false;$("#bfile").value="";bcRender();return}
+  readImg(file,function(d,info,w,h){bcImg=d;$("#bthumbi").src=d;$("#bthumbn").textContent=file.name;var wn=imgWarn(w,h,false),sm=$("#bthumbs");sm.textContent=info+(wn?" · "+wn:"");sm.className=wn?"warn":"";$("#bthumb").hidden=false;$("#bhint").hidden=true;bcRender()});
 }
 var anImg="";
 function anSetImg(file){
-  if(!file){anImg="";$("#athumb").hidden=true;$("#afile").value="";annRender();return}
-  readImg(file,function(d,info){anImg=d;$("#athumbi").src=d;$("#athumbn").textContent=file.name;$("#athumbs").textContent=info;$("#athumb").hidden=false;annRender()});
+  if(!file){anImg="";$("#athumb").hidden=true;$("#ahint").hidden=false;$("#afile").value="";annRender();return}
+  readImg(file,function(d,info,w,h){anImg=d;$("#athumbi").src=d;$("#athumbn").textContent=file.name;var wn=imgWarn(w,h,true),sm=$("#athumbs");sm.textContent=info+(wn?" · "+wn:"");sm.className=wn?"warn":"";$("#athumb").hidden=false;$("#ahint").hidden=true;annRender()});
 }
 $("#apick").onclick=function(){$("#afile").click()};
 $("#afile").onchange=function(){anSetImg(this.files[0])};
