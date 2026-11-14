@@ -434,6 +434,18 @@ async function user(id: number) {
     db.from("refund_requests").select("id, charge_id, src, reason, status, created_at").eq("tg_id", id).order("created_at", { ascending: false }).limit(30),
   ]);
   if (!u) return { error: "Пользователь не найден" };
+  // откуда у человека PRO и покупки: использованные промокоды, ручные выдачи, имена дарителей
+  const [{ data: pus }, { data: grants }] = await Promise.all([
+    db.from("promo_uses").select("code, used_at").eq("tg_id", id).order("used_at", { ascending: false }).limit(50),
+    db.from("admin_log").select("at, action, details").eq("target", id).in("action", ["pro", "gift"]).order("id", { ascending: false }).limit(50),
+  ]);
+  const pcodes = (pus ?? []).map((x: any) => x.code);
+  const { data: pcs } = pcodes.length ? await db.from("promo_codes").select("code, kind, value, note").in("code", pcodes) : { data: [] };
+  const pcm = new Map((pcs ?? []).map((c: any) => [c.code, c]));
+  const promos = (pus ?? []).map((x: any) => ({ ...x, kind: pcm.get(x.code)?.kind ?? null, value: pcm.get(x.code)?.value ?? null, note: pcm.get(x.code)?.note ?? null }));
+  const nm = await userMap([...(pays ?? []), ...(shopU ?? [])].flatMap((x: any) => [x.tg_id, x.payer_id]).concat((gin ?? []).map((x: any) => x.from_id)));
+  const names: Record<string, any> = {};
+  for (const [k, v] of nm) names[k] = { tg_id: v.tg_id, first_name: v.first_name, handle: v.handle };
   const recsA: any[] = recsAll as any[];
   const fids = (fr ?? []).map((x: any) => x.b);
   const { data: fu } = fids.length ? await db.from("users").select("tg_id, first_name, handle, username, blocked").in("tg_id", fids) : { data: [] };
@@ -443,7 +455,7 @@ async function user(id: number) {
   const meta = Object.fromEntries(recsA.filter((r: any) => r.kind === "meta" && !r.deleted).map((r: any) => [r.id, r.data]));
   const proOn = !!sub?.until && Date.parse(sub.until) > Date.now();
   const frame = effFrame((meta as any).settings?.frame, proOn, id === ADMIN);
-  return { user: u, pro: sub, payments: [...(pays ?? []).map((x: any) => ({ ...x, src: "pro" })), ...(shopU ?? []).map((x: any) => ({ ...x, src: "shop" }))].sort((a: any, b: any) => (a.created_at < b.created_at ? 1 : -1)), refund_reqs: rqU ?? [], gifts_in: gin ?? [], gifts_out: gout ?? [], friends: fu ?? [], feedback: fb ?? [],
+  return { user: u, pro: sub, payments: [...(pays ?? []).map((x: any) => ({ ...x, src: "pro" })), ...(shopU ?? []).map((x: any) => ({ ...x, src: "shop" }))].sort((a: any, b: any) => (a.created_at < b.created_at ? 1 : -1)), refund_reqs: rqU ?? [], promos, grants: grants ?? [], names, admin_id: ADMIN, gifts_in: gin ?? [], gifts_out: gout ?? [], friends: fu ?? [], feedback: fb ?? [],
     workouts: ws, workouts_total: ws.length, weights, meta, sessions: ses ?? [], frame, frames: [], creator: id === ADMIN,
     note: nt?.note ?? "", tags: nt?.tags ?? [] };
 }

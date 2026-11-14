@@ -241,6 +241,8 @@ section[id^=p]{animation:rise .42s var(--ease) both}
 #nav button[aria-selected=true] .lb{font-weight:700}
 #nav button.hasb:after{content:"";position:absolute;left:34px;top:3px;width:12px;height:12px;border-radius:50%;background:var(--bad);border:2px solid var(--tile)}
 .sfoot{margin-top:auto;display:grid;gap:4px}
+.wver{text-align:center;font-size:8px;letter-spacing:.08em;font-weight:400;opacity:.2;user-select:none;color:var(--mute);transition:opacity .35s ease;padding:4px 0 2px;cursor:pointer;white-space:nowrap}
+.wver:hover{opacity:.85}
 .who{display:flex;align-items:center;gap:10px;height:38px;padding-left:9px}
 .who i{width:30px;height:30px;border-radius:50%;flex:none;background:var(--tile3);display:grid;place-items:center;font:800 14px var(--disp);font-style:normal;margin-left:0}
 .who b{font-size:13px}.who i{overflow:hidden}.who i img{width:100%;height:100%;object-fit:cover;display:block}
@@ -945,6 +947,7 @@ textarea.field{resize:none;line-height:1.5;min-height:84px;padding:12px 15px;fon
     <div class="conn"><span class="cdot" id="cdot"></span><span class="lb">сервер на связи</span></div>
     <button class="fbtn" id="lockBtn" type="button" title="Выйти"><i data-ic="lock"></i><span class="lb">Выйти</span></button>
     <button class="fbtn" id="togBtn" type="button" title="Показать названия (Ctrl+B)"><i data-ic="chev"></i><span class="lb">Свернуть меню</span></button>
+    <span class="wver" id="wver" title="Версия WEB приложения · нажми, чтобы скопировать" hidden></span>
   </div>
 </aside>
 <main id="main">
@@ -1808,6 +1811,39 @@ function openUser(id,np){
       '<div class="facts">'+fc("ID",'<span class="mono">'+u.tg_id+"</span>")+fc("Ник",u.handle?"@"+esc(u.handle):"—")+fc("Telegram",'<a class="tgl" target="_blank" rel="noopener" href="'+(u.username?"https://t.me/"+encodeURIComponent(u.username):"tg://user?id="+u.tg_id)+'" title="'+(u.username?"Открыть профиль в Telegram":"Нет публичного ника: откроется по ID, если Telegram знает этого человека")+'">'+(u.username?"@"+esc(u.username):"по ID")+" ↗</a>")+fc("Регистрация",dt(u.created_at))+fc("Был",dt(u.last_seen))+fc("Тренировок",j.workouts_total)+fc("PRO",pro?"до "+dt(j.pro.until):"нет")+(u.blocked?fc("Блок",esc(u.block_reason||"без причины"),"dn"):"")+"</div>"+friendsH+"</div>";
     P.msg=tl("Сообщение",'<div class="stack"><textarea class="field" id="umsg" rows="3" maxlength="3500" placeholder="Текст, который придёт человеку в Telegram от имени VOOB"></textarea><div class="ufoot"><span class="hint" id="umc" style="margin:0">0 / 3500 · Ctrl+Enter — отправить</span><button class="btn pri sm" id="usend" type="button">Отправить</button></div></div>');
     var pLeft=pro?Math.max(0,Math.ceil((Date.parse(j.pro.until)-Date.now())/86400000)):0;
+    P.src=(function(){
+      var N=j.names||{},gn=function(x){var q=N[x];return q?esc(q.first_name||q.handle||x):"id "+x};
+      var gt=function(k){var g=(GT||[]).filter(function(x){return x.kind===k})[0];return g?g.emoji+" "+esc(g.title):esc(k)};
+      var KLb={frame:"Рамка",bg:"Фон",kit:"Набор"},ev=[],it=[],gf=[],used={};
+      j.payments.forEach(function(p){
+        var inc=+p.tg_id===+id,gift=!!p.payer_id&&+p.payer_id!==+p.tg_id;
+        if(p.src==="pro"){
+          var pl=p.plan==="month"?"месяц":p.plan==="year"?"год":esc(p.plan),dd="+"+p.days+(p.bonus_days?" и "+p.bonus_days+" бонусных":"")+" дн.";
+          ev.push(inc?{t:p.created_at,tag:gift?["подарок","vi"]:["покупка","gn"],txt:(gift?"Подарок от "+gn(p.payer_id):"Купил сам")+" · PRO "+pl+" · "+p.stars+" ⭐",sub:dd,ref:p.refunded_at}
+            :{t:p.created_at,tag:["оплатил другому",""],txt:"PRO для "+gn(p.tg_id)+" · "+pl+" · "+p.stars+" ⭐",sub:"не влияет на его PRO",ref:p.refunded_at});
+        }else{
+          var nmI=(KLb[p.kind]||p.kind)+" «"+esc(p.item)+"»";
+          it.push(inc?{t:p.created_at,tag:gift?["подарок","vi"]:["покупка","gn"],txt:nmI+(gift?" · от "+gn(p.payer_id):""),sub:p.stars+" ⭐",ref:p.refunded_at}
+            :{t:p.created_at,tag:["оплатил другому",""],txt:nmI+" для "+gn(p.tg_id),sub:p.stars+" ⭐",ref:p.refunded_at});
+        }
+      });
+      (j.promos||[]).forEach(function(x){
+        if(x.kind==="pro")ev.push({t:x.used_at,tag:["промокод","gd"],txt:"Промокод "+esc(x.code),sub:"+"+esc(x.value)+" дн."+(x.note?" · "+esc(x.note):"")});
+        else if(x.kind==="gift")used[x.code]=x;
+      });
+      (j.grants||[]).forEach(function(g){if(g.action==="pro"&&g.details&&g.details.days)ev.push({t:g.at,tag:["вручную",""],txt:"Выдал создатель в CORE",sub:(g.details.days>0?"+":"")+g.details.days+" дн."})});
+      (j.gifts_in||[]).forEach(function(g){
+        var pm=null;for(var c in used){var x=used[c];if(x.value===g.kind&&Math.abs(Date.parse(x.used_at)-Date.parse(g.created_at))<20000){pm=x;break}}
+        var tag=pm?["промокод","gd"]:+g.from_id===+id?["сам себе",""]:+g.from_id===+j.admin_id?["от создателя",""]:["от друга","vi"];
+        gf.push({t:g.created_at,tag:tag,txt:gt(g.kind)+(pm?" · "+esc(pm.code):+g.from_id!==+id&&+g.from_id!==+j.admin_id?" · от "+gn(g.from_id):"")});
+      });
+      var srt=function(a){return a.sort(function(x,y){return Date.parse(y.t)-Date.parse(x.t)})};
+      var row=function(e){return '<div class="item"><span class="chip '+e.tag[1]+'">'+e.tag[0]+'</span><div class="m"><div class="t">'+e.txt+'</div>'+(e.sub?'<div class="s">'+e.sub+"</div>":"")+'</div>'+(e.ref?'<span class="chip r">возврат</span>':"")+'<span class="s" style="flex:none;color:var(--mute);font-size:12.5px">'+dt(e.t)+"</span></div>"};
+      var lst=function(a,empty){a=srt(a);return a.length?'<div class="list">'+a.slice(0,12).map(row).join("")+"</div>"+(a.length>12?'<p class="hint">Показаны последние 12 из '+a.length+"</p>":""):'<p class="hint" style="margin:0">'+empty+"</p>"};
+      var PL2={month:"покупка (месяц)",year:"покупка (год)",promo:"промокод",gift:"подарок или выдача вручную"};
+      var cur=j.pro&&j.pro.until?'<p class="hint" style="margin:0 0 4px">Сейчас в подписке записан источник: <b style="color:var(--fg)">'+esc(PL2[j.pro.plan]||j.pro.plan||"—")+"</b></p>":"";
+      return tl("Откуда PRO и покупки",cur+sec("PRO",lst(ev,"Платежей, промокодов и ручных выдач PRO нет"))+sec("Рамки, фоны, наборы",lst(it,"Из магазина ничего не покупали и не дарили"))+sec("Подарки в коллекции",lst(gf,"Подарков не получал")));
+    })();
     P.pro=tl("PRO",'<div class="stack"><div class="ustat'+(pro?" on":"")+'"><i></i><span>'+(pro?"Активен до <b>"+dt(j.pro.until)+"</b> · осталось "+pLeft+" "+plural(pLeft,"день","дня","дней"):"Нет подписки")+'</span></div>'+
       '<div class="qchips" id="pq"><button type="button" data-d="7">+7 дн.</button><button type="button" data-d="30">+30 дн.</button><button type="button" data-d="90">+90 дн.</button><button type="button" data-d="365">+365 дн.</button><button type="button" data-d="-7" class="neg">−7 дн.</button></div>'+
       '<div class="inl"><input class="field" id="pdays" type="number" placeholder="Своё число дней (минус — забрать)"><button class="btn sm" id="pgo" type="button">Применить</button></div></div>');
@@ -1831,7 +1867,7 @@ function openUser(id,np){
     P.ses=tl("Сессии",'<p class="hint" style="margin:0 0 8px">'+(j.sessions.length?j.sessions.map(function(x){return esc(x.device||"?")+" · "+dt(x.last_seen)}).join("<br>"):"Нет активных")+"</p>"+(u.creator?"":'<button class="btn sm bad" id="ukick">Завершить все сессии</button>'));
     if(!u.creator)P.acc=tl("Доступ",u.blocked?'<button class="btn sm" id="ublk">Разблокировать</button>':'<button class="btn sm bad" id="ublk">Заблокировать</button>');
     var g2=function(){return '<div class="ug2">'+[].slice.call(arguments).join("")+"</div>"},ne=function(x){return x||""};
-    var PANES={act:g2(P.msg,P.pro)+P.gift+ne(P.state)+ne(P.acc),prof:g2(P.prof,P.frame),ach:P.ach,hist:g2(ne(P.wk),ne(P.wt),ne(P.pay),ne(P.fb),P.ses)};
+    var PANES={act:g2(P.msg,P.pro)+P.src+P.gift+ne(P.state)+ne(P.acc),prof:g2(P.prof,P.frame),ach:P.ach,hist:g2(ne(P.wk),ne(P.wt),ne(P.pay),ne(P.fb),P.ses)};
     var offN=((r[3]&&r[3].ach_off)||[]).length,hN=(j.payments.length+j.feedback.length)||0;
     var TL=[["act","Действия",""],["prof","Профиль",""],["ach","Достижения",offN?offN+" откл.":""],["hist","История",hN?String(hN):""]];
     if(!PANES[UTAB])UTAB="act";
@@ -2908,6 +2944,16 @@ if(token){
     else{setToken(null);show("login");stage(1);beginAuth()}
   });
 }else{show("login");stage(1);beginAuth()}
+})();
+
+/* версия WEB приложения: берём из app.voob.kz */
+(function(){var el=document.getElementById("wver");if(!el)return;
+  function show(v){if(!v)return;el.textContent="WEB "+v;el.hidden=false}
+  var c="";try{c=sessionStorage.getItem("voobcore.wv")||""}catch(e){}
+  show(c);
+  fetch("https://app.voob.kz/").then(function(r){return r.text()}).then(function(t){
+    var m=t.match(/const APP\s*=\s*'[^']*?(v\d[\d.]*)'/);if(m){show(m[1]);try{sessionStorage.setItem("voobcore.wv",m[1])}catch(e){}}}).catch(function(){});
+  el.addEventListener("click",function(){var t=el.textContent;if(navigator.clipboard)navigator.clipboard.writeText(t).then(function(){toast("Версия скопирована: "+t)},function(){})});
 })();
 </script>
 </body>
