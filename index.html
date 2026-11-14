@@ -612,6 +612,16 @@ section.pg{display:grid;gap:14px;align-content:start}
 @keyframes nuPulse{0%{transform:scale(.9);opacity:.9}100%{transform:scale(1.35);opacity:0}}
 @media (max-width:640px){#nu{right:16px;left:16px;width:auto;bottom:16px}}
 @media (prefers-reduced-motion:reduce){#nu .nua:after{animation:none}}
+.idsw{display:flex;gap:14px;align-items:center;cursor:pointer;margin-top:12px}
+.idsw input{position:absolute;opacity:0;pointer-events:none}
+.idsw i{flex:none;width:46px;height:28px;border-radius:999px;background:var(--tile3);border:1px solid var(--line2);position:relative;transition:background .25s,border-color .25s}
+.idsw i:after{content:"";position:absolute;left:3px;top:3px;width:20px;height:20px;border-radius:50%;background:var(--mute);transition:transform .3s cubic-bezier(.2,.9,.3,1.2),background .25s}
+.idsw input:checked+i{background:var(--accent);border-color:transparent}
+.idsw input:checked+i:after{transform:translateX(18px);background:var(--on-accent)}
+.idsw input:focus-visible+i{outline:2px solid var(--accent);outline-offset:2px}
+.idsw span b{display:block;font-weight:650}.idsw span small{display:block;color:var(--mute);font-size:12.5px;margin-top:2px}
+.idlab{font-size:12.5px;color:var(--mute);margin-bottom:8px}
+#idTime{transition:opacity .25s}#idTime.off{opacity:.38;pointer-events:none}
 .nul{display:grid;gap:8px;margin-top:14px;max-height:60vh;overflow:auto}
 .nul .item{cursor:pointer}.nul .item:hover{background:var(--tile2)}
 #toast i{width:24px;height:24px;border-radius:50%;display:grid;place-items:center;background:rgba(52,211,153,.16);color:var(--green);flex:none}
@@ -1360,7 +1370,13 @@ textarea.field{resize:none;line-height:1.5;min-height:84px;padding:12px 15px;fon
     </div>
     <div class="sgrid">
       <div class="scol">
-<div class="tile">
+<div class="tile" id="idleSet">
+        <h3>Автоматический выход</h3>
+        <label class="idsw"><input type="checkbox" id="idOn"><i></i><span><b id="idOnT">Выходить при бездействии</b><small id="idOnS"></small></span></label>
+        <div id="idTime" style="margin-top:16px"><div class="idlab">Через сколько минут без действий</div><div class="seg" id="idSeg"></div></div>
+        <p class="hint" style="margin:14px 0 0">Считается время без запросов к серверу. За 3 минуты до выхода появится окно «Остаться». Настройка хранится только в этом браузере.</p>
+      </div>
+      <div class="tile">
         <h3>Пароль для входа</h3>
         <dl class="kv"><dt>Сейчас</dt><dd id="pwNow">—</dd></dl>
         <p class="hint" style="margin:14px 0 0">Один из трёх способов входа вместе с адресом почты. Менять можно только с PIN из письма.</p>
@@ -1458,9 +1474,12 @@ $$("[data-logo]").forEach(function(h){
   h.appendChild(f);
 });
 
-var lastAct=Date.now(),IDLE=30*60000;
+var IDK="voobcore.idle",IDOPT=[5,10,15,30,60,120,240],ID={on:1,min:30};
+try{var _i=JSON.parse(localStorage.getItem(IDK)||"{}");if(_i&&typeof _i==="object"){if(_i.on===0||_i.on===false)ID.on=0;if(IDOPT.indexOf(+_i.min)>=0)ID.min=+_i.min}}catch(e){}
+var lastAct=Date.now(),IDLE=ID.min*60000;
+function idleSave(){IDLE=ID.min*60000;try{localStorage.setItem(IDK,JSON.stringify({on:ID.on?1:0,min:ID.min}))}catch(e){}}
 function idleTick(){
-  if(!token||$("#app").hidden){$("#idle").hidden=true;return}
+  if(!token||$("#app").hidden||!ID.on){$("#idle").hidden=true;return}
   var left=lastAct+IDLE-Date.now();
   if(left<=0){$("#idle").hidden=true;bye(true);return}
   $("#idle").hidden=left>3*60000;
@@ -2562,7 +2581,7 @@ function loadSessions(){
   });
 }
 $("#sessList").onclick=function(e){var b=e.target.closest("[data-e]");if(!b)return;api("sess_end",{id:b.dataset.e}).then(function(j){if(j.error)$("#eset").textContent=j.error;else loadSessions()})};
-function loadSet(){loadSessions();loadPwd();loadBk();
+function loadSet(){idleUI();setTimeout(function(){var g=$("#idSeg");if(g)segFix(g,false)},40);loadSessions();loadPwd();loadBk();
   call("whoami").then(function(j){
     if(j._http===401){bye(true);return}
     if(j.expires_at)$("#sExp").textContent=new Date(j.expires_at).toLocaleString("ru-RU");
@@ -3148,9 +3167,9 @@ function nuList(kind){
 function nuPoll(){
   if(!token||$("#app").hidden||NU.busy)return;
   if(!NU.base){NU.base=new Date().toISOString();return}
-  NU.busy=1;
+  NU.busy=1;var la=lastAct;
   call("events",{since:NU.base}).then(function(j){
-    NU.busy=0;if(!j||j.error)return;
+    lastAct=la;NU.busy=0;if(!j||j.error)return;
     var us=j.new_users||[],ps=(j.pro||[]).filter(function(p){return p.user});
     if(!us.length&&!ps.length)return;
     var mx=NU.base;us.concat(ps).forEach(function(x){if(x.created_at>mx)mx=x.created_at});NU.base=mx;
@@ -3158,6 +3177,17 @@ function nuPoll(){
     if(us.length)NU.q.push({kind:"user",list:us,total:Math.max(us.length,j.new_count||0)});
     nuNext()}).catch(function(){NU.busy=0})}
 setInterval(function(){if(!document.hidden)nuPoll()},45000);setTimeout(nuPoll,4000);
+/* автоматический выход: настройка */
+function idFmt(m){return m<60?m+" мин":m%60?Math.floor(m/60)+" ч "+m%60+" мин":m/60+" ч"}
+function idleUI(){
+  var sg=$("#idSeg");if(!sg)return;
+  if(!sg.children.length){sg.innerHTML=IDOPT.map(function(m){return '<button type="button" data-m="'+m+'" aria-pressed="false">'+idFmt(m)+'</button>'}).join("");
+    sg.onclick=function(e){var b=e.target.closest("button");if(!b)return;ID.min=+b.dataset.m;idleSave();lastAct=Date.now();idleUI();segFix(sg,true);toast("Выход через "+idFmt(ID.min)+" без действий")};
+    $("#idOn").onchange=function(){ID.on=this.checked?1:0;idleSave();lastAct=Date.now();idleUI();idleTick();toast(ID.on?"Автовыход включён: "+idFmt(ID.min):"Автовыход выключен")}}
+  $("#idOn").checked=!!ID.on;
+  $("#idOnS").textContent=ID.on?"Сессия закроется сама через "+idFmt(ID.min)+" без действий":"Сессия не закроется сама, пока не нажмёшь «Выйти»";
+  $("#idTime").classList.toggle("off",!ID.on);
+  $$("#idSeg button").forEach(function(b){b.setAttribute("aria-pressed",+b.dataset.m===ID.min)})}
 /* финал зажима: вспышка, кольцо-ударная волна и искры */
 function boom(h,lab,again){
   if(h.classList.contains("bx-boom"))return;
