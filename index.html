@@ -3069,6 +3069,22 @@ function annSend(){
     if(!j.error){if(aud!=="me"){$("#at").value=$("#ab").value=$("#ac").value="";axBtn=false;anSetImg(null)}loadAnn()}annRender()});
 }
 
+var bcImg="";
+function readImg(file,ok){
+  if(!/^image\/(jpeg|png|webp)$/.test(file.type)){toast("Нужен JPEG, PNG или WebP","err");return}
+  var fr=new FileReader();fr.onload=function(){var im=new Image();im.onload=function(){
+    var m=Math.min(1,1600/Math.max(im.width,im.height)),c=document.createElement("canvas");c.width=Math.round(im.width*m);c.height=Math.round(im.height*m);
+    var x=c.getContext("2d");x.fillStyle="#fff";x.fillRect(0,0,c.width,c.height);x.drawImage(im,0,0,c.width,c.height);
+    var d=c.toDataURL("image/jpeg",.86);ok(d,im.width+"×"+im.height+" · "+Math.round(d.length*.75/1024)+" КБ",im.width,im.height)};
+    im.onerror=function(){toast("Не получилось открыть картинку","err")};im.src=fr.result};fr.readAsDataURL(file);
+}
+function imgWarn(w,h,wide){
+  var r=w/h,m=[];
+  if(Math.max(w,h)<600)m.push("маловато пикселей — будет мыльно");
+  if(r>(wide?2.4:4)||r<(wide?.5:.25))m.push(wide?"сильно вытянутая — в окне обрежется":"слишком вытянутая — Telegram может не принять");
+  return m.join(", ");
+}
+
 var anImg="";
 function anSetImg(file){
   if(!file){anImg="";$("#athumb").hidden=true;$("#ahint").hidden=false;$("#afile").value="";annRender();return}
