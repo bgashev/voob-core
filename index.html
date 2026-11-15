@@ -1088,6 +1088,26 @@ textarea.field{resize:none;line-height:1.5;min-height:84px;padding:12px 15px;fon
 }
 @media(max-width:1099px){.bento .kpi.hero{grid-column:span 2}}
 
+/* ---- люди: широкий экран — сводка одной панелью, фильтры в одну строку ---- */
+#main:has(#t-us:not([hidden])){max-width:1680px}
+@media(min-width:1100px){
+ #ust{gap:0;background:var(--tile);border:1px solid var(--line);border-radius:22px;overflow:hidden;grid-template-columns:repeat(auto-fit,minmax(120px,1fr))}
+ #ust button{border:0;border-radius:0;border-left:1px solid var(--line);background:transparent;padding:16px 20px}
+ #ust button:first-child{border-left:0}
+ #ust button:hover{background:var(--tile2)}
+ #ust button.on{box-shadow:inset 0 -2px 0 var(--accent)}
+ #ust button.hot{box-shadow:inset 0 -2px 0 rgba(251,113,133,.55)}
+ .utool{display:flex;flex-wrap:wrap;align-items:center;gap:10px;padding:14px 16px}
+ .utool>.bar{display:contents}
+ .utool #uq{flex:1 1 300px;min-width:240px}
+ .utool .usel{flex:0 0 auto;width:196px;min-width:0}
+ .utool #usort{width:216px;max-width:none}
+ .utool .ufl{flex:1 1 100%;order:3;margin-top:0;padding-top:4px}
+ .utool .uviews{flex:0 0 auto;order:2;margin:0 0 0 auto;padding:0 0 0 14px;border:0;border-left:1px solid var(--line);flex-wrap:nowrap}
+ .utool .uviews .k{margin:0 2px 0 0;white-space:nowrap}
+}
+@media(min-width:1400px){.uhead,.urow{grid-template-columns:34px minmax(0,1.7fr) minmax(0,.9fr) minmax(212px,1fr) 70px 70px 90px minmax(0,.9fr) 34px}}
+
 /* ---- обзор и промокоды: без пустот ---- */
 .ovrow{display:grid;grid-template-columns:minmax(0,2fr) minmax(260px,1fr);gap:14px;align-items:stretch}
 .ovrow:has(#evbox[hidden]){grid-template-columns:minmax(0,1fr)}
