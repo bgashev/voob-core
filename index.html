@@ -704,6 +704,10 @@ section.pg{display:grid;gap:14px;align-content:start}
 .idsw span b{display:block;font-weight:650}.idsw span small{display:block;color:var(--mute);font-size:12.5px;margin-top:2px}
 .idlab{font-size:12.5px;color:var(--mute);margin-bottom:8px}
 #idTime{transition:opacity .25s}#idTime.off{opacity:.38;pointer-events:none}
+.gmh{display:flex;gap:18px;color:var(--mute);font-size:13px;margin-bottom:12px}.gmh b{color:var(--fg);font-size:16px}
+.gml{display:grid;gap:6px}.gmr{display:flex;align-items:center;gap:12px;padding:10px 14px;border-radius:14px;background:var(--tile2);border:1px solid var(--line)}
+.gmr .gn{flex:1;min-width:0;font-weight:650;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.gmr .gp{color:var(--mute);font-size:12.5px;white-space:nowrap}
+.gmr .gb{min-width:44px;text-align:right;font-size:17px;font-weight:800;font-variant-numeric:tabular-nums;color:#ffc94a}
 .nul{display:grid;gap:8px;margin-top:14px;max-height:60vh;overflow:auto}
 .nul .item{cursor:pointer}.nul .item:hover{background:var(--tile2)}
 #toast i{width:24px;height:24px;border-radius:50%;display:grid;place-items:center;background:rgba(52,211,153,.16);color:var(--green);flex:none}
@@ -1633,7 +1637,7 @@ textarea.field{resize:none;line-height:1.5;min-height:84px;padding:12px 15px;fon
 <script>
 (function(){
 "use strict";
-var API="https://nszndchtspjtlravojda.supabase.co/functions/v1/voob-core",API_X="https://nszndchtspjtlravojda.supabase.co/functions/v1/voob-extra",API_P="https://nszndchtspjtlravojda.supabase.co/functions/v1/voob-core-pwd",API_A="https://nszndchtspjtlravojda.supabase.co/functions/v1/voob-core-auth";
+var API="https://nszndchtspjtlravojda.supabase.co/functions/v1/voob-core",API_X="https://nszndchtspjtlravojda.supabase.co/functions/v1/voob-extra",API_G="https://nszndchtspjtlravojda.supabase.co/functions/v1/voob-games",API_P="https://nszndchtspjtlravojda.supabase.co/functions/v1/voob-core-pwd",API_A="https://nszndchtspjtlravojda.supabase.co/functions/v1/voob-core-auth";
 var $=function(s,r){return (r||document).querySelector(s)};
 var $$=function(s,r){return Array.prototype.slice.call((r||document).querySelectorAll(s))};
 var TK="voobcore.t";
@@ -1667,7 +1671,7 @@ setInterval(idleTick,1000);
 function setToken(t){token=t;try{t?sessionStorage.setItem(TK,t):sessionStorage.removeItem(TK)}catch(e){}}
 function call(action,extra,fn){
   var b=Object.assign({action:action},extra||{});if(token)b.token=token;
-  return fetch(fn==="x"?API_X:fn==="p"?API_P:fn==="a"?API_A:API,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(b)})
+  return fetch(fn==="x"?API_X:fn==="g"?API_G:fn==="p"?API_P:fn==="a"?API_A:API,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(b)})
     .then(function(r){setConn(true);if(r.status!==401)lastAct=Date.now();return r.json().catch(function(){return {error:"Сервер ответил не так, как ждали"}}).then(function(j){j._http=r.status;return j})})
     .catch(function(){setConn(false);return {error:"Нет связи с сервером",_http:0}});
 }
@@ -2324,7 +2328,7 @@ function openUser(id,np){
   if(!np&&location.pathname!=="/users/"+id)history.pushState(null,"","/users/"+id);
   var my=++uTok,soft=function(p){return p.catch(function(){return {}})};
   /* всё, что нужно странице, грузим одним заходом и рисуем один раз: без дорисовок и повторных анимаций */
-  Promise.all([api("user",{tg_id:id}),GT?Promise.resolve(GT):api("gift_types"),soft(api("bgs",{ids:[id]},"x")),soft(api("user_extra",{tg_id:id},"x"))]).then(function(r){
+  Promise.all([api("user",{tg_id:id}),GT?Promise.resolve(GT):api("gift_types"),soft(api("bgs",{ids:[id]},"x")),soft(api("user_extra",{tg_id:id},"x")),soft(api("user_games",{tg_id:id},"g"))]).then(function(r){
     if(my!==uTok)return;
     var j=r[0];if(j.error){toast(j.error,"err");return}
     if(!GT)GT=r[1].items||[];
@@ -2382,6 +2386,9 @@ function openUser(id,np){
       '<div class="swrow"><div><b>Скрыт из ленты</b><small>Его тренировки не попадают в ленту друзей</small></div><button type="button" class="swt'+(u.hide_feed?" on":"")+'" id="efeed" role="switch" aria-checked="'+(!!u.hide_feed)+'" aria-label="Скрыт из ленты"><i></i></button></div>'+
       '<div><button class="btn sm bad" id="esoc" type="button">Сбросить соцсети</button></div></div>');
     P.frame=tl("Рамка и значок",'<div class="stack"><input type="hidden" id="efr" value="'+esc(j.frame||"")+'"><div class="fpick" id="fpick">'+framePick(j.frame||"")+'</div><div class="bar"><button class="btn sm" id="efr_go">Сохранить рамку</button></div><div class="bar"><input class="field" id="ebd" placeholder="Значок, латиница 3–12, пусто = Печать" value="'+esc((meta.settings&&meta.settings.badge)||"")+'"><button class="btn sm" id="ebd_go">Сохранить значок</button></div></div>');
+    var GNM={flap:"Пролёт",stack:"Башня",wave:"Волна",tile:"2048-подход",slice:"Слайсер",memo:"Мемо-серия",aim:"Прицел",jump:"Скачок",dart:"Дротик",bike:"Байк",spk:"Отскок",zig:"Зигзаг",road:"Перебежка"};
+    var gl=((r[4]&&r[4].games)||[]).slice().sort(function(a,b){return (b.plays-a.plays)||(b.best-a.best)}),gtot=gl.reduce(function(a,x){return a+(x.plays||0)},0);
+    P.gm=tl("Игры",gl.length?'<div class="gmh"><span><b>'+gtot+'</b> партий</span><span><b>'+gl.length+'</b> '+(gl.length===1?"игра":gl.length<5?"игры":"игр")+"</span></div>"+'<div class="gml">'+gl.map(function(x){var d=x.last?new Date(x.last):null,ds=d&&!isNaN(d)?d.toLocaleDateString("ru-RU",{day:"numeric",month:"short"}):"";return '<div class="gmr"><span class="gn">'+esc(GNM[x.game]||x.game)+'</span><span class="gp">'+(x.plays?x.plays+" раз":"—")+(ds?" · "+ds:"")+'</span><b class="gb">'+(x.best?x.best:"—")+"</b></div>"}).join("")+"</div>":'<div class="hint" style="margin:0">Ещё не играл в игры</div>');
     P.ach=tl("Достижения",'<div class="achg cmp" id="achBox">'+achTiles(["first","ten","hundred","km50","marathon","km500","hours10","kcal10k","goat","long","streak7","norm","norm30","early","weigh10","wgoal","plan","friends3","friends5","str10","reps1k","tonne","pro","friends10"],(r[3]&&r[3].ach_off)||[],44)+'</div><p class="hint" style="margin:8px 0 0">Нажми на медаль, чтобы отозвать или вернуть. Отозванные затемнены.</p>');
     P.gift=tl("Подарок",'<div class="stack"><div class="gpk" id="gk"></div><div class="bar"><button class="btn sm" id="ggo">Подарить</button></div></div>'+
       (j.gifts_in.length?'<p class="hint" style="margin-top:14px">Получил: '+j.gifts_in.length+"</p>"+gShelf(j.gifts_in,GT):"")+
@@ -2396,7 +2403,7 @@ function openUser(id,np){
     P.ses=tl("Сессии",'<p class="hint" style="margin:0 0 8px">'+(j.sessions.length?j.sessions.map(function(x){return esc(x.device||"?")+" · "+dt(x.last_seen)}).join("<br>"):"Нет активных")+"</p>"+(u.creator?"":'<button class="btn sm bad" id="ukick">Завершить все сессии</button>'));
     if(!u.creator)P.acc=tl("Доступ",u.blocked?'<button class="btn sm" id="ublk">Разблокировать</button>':'<button class="btn sm bad" id="ublk">Заблокировать</button>');
     var g2=function(){return '<div class="ug2">'+[].slice.call(arguments).join("")+"</div>"},ne=function(x){return x||""};
-    var PANES={act:g2(P.msg,P.pro)+P.src+P.gift+ne(P.state)+ne(P.acc),prof:g2(P.prof,P.frame),ach:P.ach,hist:g2(ne(P.wk),ne(P.wt),ne(P.pay),ne(P.fb),P.ses)};
+    var PANES={act:g2(P.msg,P.pro)+P.src+P.gift+ne(P.state)+ne(P.acc),prof:g2(P.prof,P.frame),ach:P.ach+P.gm,hist:g2(ne(P.wk),ne(P.wt),ne(P.pay),ne(P.fb),P.ses)};
     var offN=((r[3]&&r[3].ach_off)||[]).length,hN=(j.payments.length+j.feedback.length)||0;
     var TL=[["act","Действия",""],["prof","Профиль",""],["ach","Достижения",offN?offN+" откл.":""],["hist","История",hN?String(hN):""]];
     if(!PANES[UTAB])UTAB="act";
