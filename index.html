@@ -681,6 +681,16 @@ section.pg{display:grid;gap:14px;align-content:start}
 .nu .nub{position:absolute;left:0;bottom:0;height:3px;width:100%;background:linear-gradient(90deg,#3b82f6,#8b5cf6,#c084fc);transform-origin:left;transform:scaleX(1)}
 .nu.on .nub{animation:nuBar 10s linear forwards}
 @keyframes nuBar{to{transform:scaleX(0)}}
+/* v: по таймеру плашка не пропадает, а сворачивается в капсулу и ждёт действия */
+.nu{transition-property:opacity,transform,width,padding,gap,border-radius;}
+.nu.mini{width:auto;align-self:center;padding:6px 8px 6px 6px;gap:8px;border-radius:999px;overflow:hidden;white-space:nowrap;animation:nuMiniIn .5s cubic-bezier(.2,.9,.3,1.1)}
+.nu.mini .nut b,.nu.mini .nut span,.nu.mini .nub{display:none}
+.nu.mini .nut{flex:none}.nu.mini .nut small{font-size:10.5px;margin:0;letter-spacing:.1em}
+.nu.mini .nua .av{width:26px;height:26px;font-size:11px}.nu.mini .nua:after{display:none}
+.nu.mini .nuc{width:22px;height:22px;border-radius:50%}
+.nu.mini{box-shadow:0 10px 30px -10px rgba(0,0,0,.7),0 0 0 1px rgba(168,85,247,.25),0 0 22px -6px rgba(168,85,247,.45)}
+@keyframes nuMiniIn{0%{box-shadow:0 0 0 0 rgba(168,85,247,.7)}100%{}}
+
 @keyframes nuPulse{0%{transform:scale(.9);opacity:.9}100%{transform:scale(1.35);opacity:0}}
 @media (max-width:640px){#nus{left:16px;right:16px;width:auto;transform:none}}
 @media (prefers-reduced-motion:reduce){.nu .nua:after{animation:none}}
@@ -3448,7 +3458,8 @@ function imgWarn(w,h,wide){
 
 /* уведомления: новый пользователь и новая подписка PRO. Опрос раз в 45 с, окошко живёт 10 с, по клику — список последних */
 var NU={base:"",t:0,busy:0,q:[],shown:0,MAX:3};
-function nuHide(e){if(!e||e._h)return;e._h=1;clearTimeout(e._t);e.classList.remove("on");e.classList.add("out");setTimeout(function(){e.remove();NU.shown--;nuNext()},320)}
+function nuHide(e){if(!e||e._h)return;e._h=1;clearTimeout(e._t);e.classList.remove("on");e.classList.add("out");setTimeout(function(){e.remove();if(!e._m)NU.shown--;nuNext()},320)}
+function nuMini(e){if(!e||e._h||e._m)return;e._m=1;clearTimeout(e._t);var w0=e.offsetWidth;e.style.width=w0+'px';e.classList.add('mini');var lab=e.querySelector('.nut small');if(lab&&!e._l){e._l=1}e.style.width='auto';var w1=e.offsetWidth;e.style.width=w0+'px';void e.offsetWidth;e.style.width=w1+'px';setTimeout(function(){if(!e._h)e.style.width=''},520);NU.shown--;nuNext()}
 function nuNext(){var i=0;while(NU.shown<NU.MAX&&NU.q.length){var it=NU.q.shift();NU.shown++;setTimeout(nuShow.bind(null,it),i++*260)}}
 function nuShow(it){
   var box=$("#nus");if(!box){box=document.createElement("div");box.id="nus";document.body.appendChild(box)}
@@ -3462,7 +3473,7 @@ function nuShow(it){
   box.appendChild(e);
   try{hydrate(e)}catch(x){}
   void e.offsetWidth;e.classList.add("on");
-  e._t=setTimeout(function(){nuHide(e)},10000)}
+  e._t=setTimeout(function(){nuMini(e)},10000)}
 function nuList(kind){
   var since=new Date(Date.now()-30*864e5).toISOString();
   call("events",{since:since}).then(function(j){
