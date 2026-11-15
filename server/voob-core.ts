@@ -685,6 +685,28 @@ const normUrl = (s: string) => {
   if (!/^[a-z][a-z0-9+.-]*:\/\//i.test(s)) s = "https://" + s.replace(/^\/+/, "");
   return s;
 };
+/* группы получателей по времени и активности (одинаково в рассылке и в объявлениях) */
+const SEG_NEW: Record<string, number> = { new1: DAY, new7: 7 * DAY, new30: 30 * DAY, new365: 365 * DAY };
+const SEG_ACT: Record<string, number> = { act1: DAY, act7: 7 * DAY };
+const SEG_KEYS = [...Object.keys(SEG_NEW), ...Object.keys(SEG_ACT), "often", "expired"];
+const OFTEN_DAYS = 14, OFTEN_MIN = 3;   // «частые гости»: записи в приложении минимум в 3 разных дня за последние 14
+async function segIds(aud: string): Promise<number[] | null> {
+  if (!SEG_KEYS.includes(aud)) return null;
+  const iso = (ms: number) => new Date(Date.now() - ms).toISOString();
+  const ids = (d: any[] | null) => (d ?? []).map((x: any) => Number(x.tg_id));
+  if (SEG_NEW[aud]) return ids((await db.from("users").select("tg_id").eq("blocked", false).gte("created_at", iso(SEG_NEW[aud])).limit(20000)).data);
+  if (SEG_ACT[aud]) return ids((await db.from("users").select("tg_id").eq("blocked", false).gte("last_seen", iso(SEG_ACT[aud])).limit(20000)).data);
+  const ok = new Set(ids((await db.from("users").select("tg_id").eq("blocked", false).limit(20000)).data));
+  if (aud === "expired") return ids((await db.from("pro_subs").select("tg_id").lte("until", new Date().toISOString()).limit(20000)).data).filter((i) => ok.has(i));
+  const since = Date.now() - OFTEN_DAYS * DAY, byUser = new Map<number, Set<number>>();
+  for (let from = 0; from < 100000; from += 5000) {
+    const { data } = await db.from("records").select("tg_id, updated").eq("deleted", false).gt("updated", since).order("rev").range(from, from + 4999);
+    for (const r of data ?? []) { const t = Number((r as any).tg_id); (byUser.get(t) ?? byUser.set(t, new Set()).get(t)!).add(Math.floor((Number((r as any).updated) + 5 * 3600e3) / DAY)); }
+    if ((data?.length ?? 0) < 5000) break;
+  }
+  return [...byUser].filter(([t, d]) => d.size >= OFTEN_MIN && ok.has(t)).map(([t]) => t);
+}
+
 async function broadcast(body: any) {
   const img = typeof body?.image === "string" && body.image.length ? body.image : "";
   const text = String(body?.text ?? "").trim().slice(0, img ? 1000 : 3500);
@@ -717,6 +739,7 @@ async function broadcast(body: any) {
     const { data } = await db.from("users").select("tg_id").eq("blocked", false).limit(5000);
     ids = (data ?? []).map((x: any) => Number(x.tg_id)).filter((i) => !pro.has(i) && i !== ADMIN);
   }
+  else if (SEG_KEYS.includes(target)) ids = (await segIds(target)) ?? [];
   else {
     let r = db.from("users").select("tg_id").eq("blocked", false);
     if (target === "active7") r = r.gte("last_seen", new Date(Date.now() - 7 * DAY).toISOString());

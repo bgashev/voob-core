@@ -220,9 +220,33 @@ async function resolveList(raw: unknown) {
   return { ids, ok, miss };
 }
 
+/* группы получателей по времени и активности (одинаково в рассылке и в объявлениях) */
+const SEG_NEW: Record<string, number> = { new1: DAY, new7: 7 * DAY, new30: 30 * DAY, new365: 365 * DAY };
+const SEG_ACT: Record<string, number> = { act1: DAY, act7: 7 * DAY };
+const SEG_KEYS = [...Object.keys(SEG_NEW), ...Object.keys(SEG_ACT), "often", "expired"];
+const OFTEN_DAYS = 14, OFTEN_MIN = 3;   // «частые гости»: записи в приложении минимум в 3 разных дня за последние 14
+async function segIds(aud: string): Promise<number[] | null> {
+  if (!SEG_KEYS.includes(aud)) return null;
+  const iso = (ms: number) => new Date(Date.now() - ms).toISOString();
+  const ids = (d: any[] | null) => (d ?? []).map((x: any) => Number(x.tg_id));
+  if (SEG_NEW[aud]) return ids((await db.from("users").select("tg_id").eq("blocked", false).gte("created_at", iso(SEG_NEW[aud])).limit(20000)).data);
+  if (SEG_ACT[aud]) return ids((await db.from("users").select("tg_id").eq("blocked", false).gte("last_seen", iso(SEG_ACT[aud])).limit(20000)).data);
+  const ok = new Set(ids((await db.from("users").select("tg_id").eq("blocked", false).limit(20000)).data));
+  if (aud === "expired") return ids((await db.from("pro_subs").select("tg_id").lte("until", new Date().toISOString()).limit(20000)).data).filter((i) => ok.has(i));
+  const since = Date.now() - OFTEN_DAYS * DAY, byUser = new Map<number, Set<number>>();
+  for (let from = 0; from < 100000; from += 5000) {
+    const { data } = await db.from("records").select("tg_id, updated").eq("deleted", false).gt("updated", since).order("rev").range(from, from + 4999);
+    for (const r of data ?? []) { const t = Number((r as any).tg_id); (byUser.get(t) ?? byUser.set(t, new Set()).get(t)!).add(Math.floor((Number((r as any).updated) + 5 * 3600e3) / DAY)); }
+    if ((data?.length ?? 0) < 5000) break;
+  }
+  return [...byUser].filter(([t, d]) => d.size >= OFTEN_MIN && ok.has(t)).map(([t]) => t);
+}
+
 async function audienceIds(aud: string, list?: unknown): Promise<number[]> {
   if (aud === "me") return [ADMIN];
   if (aud === "list") return (await resolveList(list)).ids;
+  const sg = await segIds(aud);
+  if (sg) return sg;
   const { data } = await db.from("users").select("tg_id").eq("blocked", false).limit(20000);
   const all = (data ?? []).map((x: any) => Number(x.tg_id));
   if (aud === "all") return all;
@@ -249,7 +273,7 @@ async function announce(b: any) {
   const kind = String(b?.kind ?? "");
   const aud = String(b?.audience ?? "all");
   if (!["gift", "notice", "promo", "poll"].includes(kind)) return { error: "Неизвестный тип" };
-  if (!["all", "pro", "free", "me", "list"].includes(aud)) return { error: "Неизвестная аудитория" };
+  if (![...["all", "pro", "free", "me", "list"], ...SEG_KEYS].includes(aud)) return { error: "Неизвестная аудитория" };
   const title = String(b?.title ?? "").trim().slice(0, 80);
   const body = String(b?.body ?? "").trim().slice(0, 600);
   if (title.length < 2) return { error: "Нужен заголовок" };
@@ -304,7 +328,9 @@ async function announces() {
 async function audienceCounts() {
   const [all, pro] = await Promise.all([audienceIds("all"), proIds()]);
   const p = all.filter((i) => pro.has(i) || i === ADMIN).length;
-  return { all: all.length, pro: p, free: all.length - p };
+  const seg: Record<string, number> = {};
+  await Promise.all(SEG_KEYS.map(async (k) => { try { seg[k] = ((await segIds(k)) ?? []).length; } catch { seg[k] = 0; } }));
+  return { all: all.length, pro: p, free: all.length - p, ...seg };
 }
 
 async function ach(id: number, key: string, on: boolean, notify: boolean) {
@@ -409,7 +435,7 @@ Deno.serve(async (req) => {
       await db.from("sessions").update({ last_seen: new Date().toISOString() }).eq("token_hash", th);
       const { data: okLogin } = await db.from("core_otp").select("id").eq("th", th).eq("purpose", "login").not("used_at", "is", null).limit(1);
       if (!okLogin?.length) return json({ error: "Подтверди вход кодом с почты", need_otp: true }, 401);
-      if (["announce", "promo_create", "promo_off", "ach"].includes(a)) {
+      if (["announce", "promo_create", "promo_off", "promo_delete", "ach"].includes(a)) {
         const { data: fresh } = await db.from("core_otp").select("id").eq("th", th).in("purpose", ["login", "step"]).gte("used_at", new Date(Date.now() - 5 * 60000).toISOString()).limit(1);
         if (!fresh?.length) {
           // объявление: себе — без кода; остальным — короткий код (его проверяет voob-core, отметка pin_ok в журнале на 5 минут)
@@ -432,6 +458,13 @@ Deno.serve(async (req) => {
       case "usage": return json(await usage(Number(body?.hours)));
       case "promo_create": return json(await promoCreate(body));
       case "promo_list": return json(await promoList());
+      case "promo_delete": {
+        const codes = (Array.isArray(body?.codes) ? body.codes : [body?.code]).map((x: unknown) => String(x ?? "")).filter(Boolean).slice(0, 200);
+        if (!codes.length) return json({ error: "Не выбран код" });
+        const { data: del, error } = await db.from("promo_codes").delete().in("code", codes).select("code, kind, value");
+        if (error) return json({ error: error.message });
+        await log("promo_delete", null, { codes: (del ?? []).map((x: any) => x.code) });
+        return json({ status: "ok", deleted: del?.length ?? 0 }); }
       case "promo_off": { await db.from("promo_codes").update({ active: body?.on === true }).in("code", (Array.isArray(body?.codes) ? body.codes : [body?.code]).map(String));
         await log("promo_off", null, { codes: body?.codes ?? body?.code, on: body?.on === true }); return json({ status: "ok" }); }
       case "ach": return json(await ach(id, String(body?.key ?? ""), body?.on === true, body?.notify !== false));
