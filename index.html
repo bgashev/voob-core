@@ -3462,7 +3462,12 @@ function nuPoll(){
     lastAct=la;NU.busy=0;if(!j||j.error)return;
     var us=j.new_users||[],ps=(j.pro||[]).filter(function(p){return p.user});
     if(!us.length&&!ps.length)return;
-    var mx=NU.base;us.concat(ps).forEach(function(x){if(x.created_at>mx)mx=x.created_at});NU.base=mx;
+    /* сервер режет since до миллисекунд, а created_at хранит микросекунды: «тот же» человек возвращался при каждом опросе. База сдвигается на +1 мс, и каждый показывается один раз */
+    var mx=Date.parse(NU.base)||0;us.concat(ps).forEach(function(x){var t=Date.parse(x.created_at)||0;if(t>mx)mx=t});NU.base=new Date(mx+1).toISOString();
+    NU.seen=NU.seen||{};
+    us=us.filter(function(u){var k="u"+u.tg_id;if(NU.seen[k])return false;NU.seen[k]=1;return true});
+    ps=ps.filter(function(p){var k="p"+p.tg_id+"_"+p.created_at;if(NU.seen[k])return false;NU.seen[k]=1;return true});
+    if(!us.length&&!ps.length)return;
     if(ps.length)NU.q.push({kind:"pro",list:ps,total:ps.length});
     if(us.length)NU.q.push({kind:"user",list:us,total:Math.max(us.length,j.new_count||0)});
     nuNext()}).catch(function(){NU.busy=0})}
