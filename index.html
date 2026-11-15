@@ -377,6 +377,14 @@ textarea.bx-txt::placeholder{color:#6f8296}
 .bx-res{font-size:12px;color:var(--dim);margin-top:6px;padding-left:4px;min-height:16px}
 .bx-res.bx-ok{color:var(--green)}.bx-res.bx-bad{color:var(--bad)}.bx-res code{font:500 12px ui-monospace,Menlo,monospace;color:var(--mute)}
 @keyframes bxpop{from{opacity:0;transform:translateY(6px) scale(.98)}}
+.sch{margin:0 0 10px}.sch-t{display:inline-flex;align-items:center;gap:8px;height:34px;padding:0 14px;border-radius:17px;border:1px solid var(--line);background:var(--tile);color:var(--mute);font:inherit;font-size:13px;font-weight:600;cursor:pointer;transition:border-color .15s,color .15s}
+.sch-t:hover,.sch-t.open{color:var(--fg);border-color:var(--mute)}.sch.on .sch-t{color:var(--gold);border-color:color-mix(in srgb,var(--gold) 55%,var(--line));background:color-mix(in srgb,var(--gold) 9%,var(--tile))}
+.sch-p{margin-top:8px;padding:12px;border-radius:18px;border:1px solid var(--line);background:var(--tile)}.sch-c{display:flex;gap:6px;flex-wrap:wrap}
+.sch-c button,.sch-x{height:30px;padding:0 12px;border-radius:15px;border:1px solid var(--line);background:transparent;color:var(--mute);font:inherit;font-size:12.5px;cursor:pointer}.sch-c button:hover,.sch-x:hover{color:var(--fg)}.sch-c button.on{background:var(--fg);color:var(--bg);border-color:var(--fg)}
+.sch-r{display:flex;gap:8px;align-items:center;margin-top:10px}.sch-i{flex:1;min-width:0;height:36px;padding:0 12px;border-radius:12px;border:1px solid var(--line);background:var(--bg);color:var(--fg);font:inherit;font-size:13px;color-scheme:dark}
+.sch-l{display:grid;gap:6px;margin-top:8px}.sch-l:empty{display:none}.sch-it{display:flex;align-items:center;gap:8px;padding:8px 10px 8px 12px;border-radius:14px;background:var(--tile);border:1px solid var(--line);font-size:12.5px;color:var(--mute)}
+.sch-it svg{flex:none}.sch-it b{flex:1;min-width:0;color:var(--fg);font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.sch-it.done{opacity:.7}.sch-s{flex:none;color:var(--gold)}.sch-s.ok{color:#5fc98a}.sch-s.dn{color:#ef6b73}
+.sch-cx{flex:none;width:24px;height:24px;border-radius:8px;border:0;background:transparent;color:var(--mute);font-size:18px;line-height:1;cursor:pointer}.sch-cx:hover{color:var(--fg);background:var(--line)}
 .bx-sendbar{display:flex;align-items:center;gap:16px;flex-wrap:wrap;background:var(--tile);border:1px solid var(--line);border-radius:22px;padding:14px 16px 14px 22px}
 .bx-sendbar .bx-info{flex:1;min-width:220px;font-size:13.5px;color:var(--mute)}
 .bx-sendbar .bx-info b{color:var(--fg)}
@@ -3248,17 +3256,55 @@ function annRender(){
   $("#axcnt").innerHTML="заголовок "+title.length+" / 80 · текст "+body.length+" / 600"+(long?' · <span class="dn">длиннее лимита</span>':"");
   var bad=annBad(),who=aud==="me"?"Увидишь только ты (проверка)":aud==="list"?"Получат люди из списка":aud==="all"?"Получат все: "+fmt(AUD.all):aud==="pro"?"Получат PRO: "+fmt(AUD.pro):"Получат без PRO: "+fmt(AUD.free);
   $("#axinfo").innerHTML=bad?'<b style="color:var(--gold)">'+bad+'</b><small>'+who+'</small>':'<b>'+who+'</b><small>'+(cta?(cta==="pro"?"Кнопка «Оформить PRO»":"Кнопка «Открыть» → "+esc(normUrl(cta))):"Без кнопки")+(anImg?" · с картинкой":"")+'</small>';
-  var h=$("#ago");h.disabled=!!bad;if(!h.classList.contains("bx-go")&&!h.classList.contains("bx-boom"))$("#axhl").textContent=aud==="me"?"Отправить себе":"Зажми, чтобы отправить";
+  var h=$("#ago");h.disabled=!!bad;if(!h.classList.contains("bx-go")&&!h.classList.contains("bx-boom"))$("#axhl").textContent=SCH.an?(aud==="me"?"Запланировать себе":"Зажми, чтобы запланировать"):aud==="me"?"Отправить себе":"Зажми, чтобы отправить";
 }
 function annSend(){
   var aud=$("#aa").value,kind=$("#ak").value,cv=$("#ac").value.trim(),b={kind:kind,audience:aud,title:$("#at").value.trim(),body:$("#ab").value.trim(),cta:(cv==="pro"?cv:normUrl(cv))||null,notify:$("#an").checked,image:anImg||undefined};
   if(kind==="gift")b.gift_kind=$("#agk").value;if(aud==="list")b.targets=$("#alist").value;
   $("#eab").textContent="";if(annBad()){annRender();return}
-  $("#ago").disabled=true;api("announce",b,"x").then(function(j){$("#ago").disabled=false;
-    $("#eab").innerHTML=j.error?esc(j.error):'<span class="ok">Отправлено: '+j.total+", в Telegram дошло "+j.sent+"</span>";
+  if(SCH.an)b.send_at=new Date(SCH.an).toISOString();$("#ago").disabled=true;api("announce",b,"x").then(function(j){$("#ago").disabled=false;
+    $("#eab").innerHTML=j.error?esc(j.error):j.status==="scheduled"?'<span class="ok">Запланировано на '+schHuman(Date.parse(j.at))+"</span>":'<span class="ok">Отправлено: '+j.total+", в Telegram дошло "+j.sent+"</span>";
+    if(!j.error&&j.status==="scheduled"){SCH.an=0;schList()}
     if(!j.error){if(aud!=="me"){$("#at").value=$("#ab").value=$("#ac").value="";axBtn=false;anSetImg(null)}loadAnn()}annRender()});
 }
 
+/* ---------- отложенная отправка: «Отправить позже» для рассылки и объявления ---------- */
+var SCH={bc:0,an:0};
+(function(){
+  var ICON='<svg viewBox="0 0 18 18" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><circle cx="9" cy="9" r="7"/><path d="M9 5v4l2.8 1.7"/></svg>';
+  function pad(n){return n<10?"0"+n:""+n}
+  function loc(ms){var d=new Date(ms);return d.getFullYear()+"-"+pad(d.getMonth()+1)+"-"+pad(d.getDate())+"T"+pad(d.getHours())+":"+pad(d.getMinutes())}
+  function human(ms){var d=new Date(ms),t0=new Date();t0.setHours(0,0,0,0);var dd=Math.round((new Date(d).setHours(0,0,0,0)-t0.getTime())/864e5),hm=pad(d.getHours())+":"+pad(d.getMinutes());return(dd===0?"сегодня":dd===1?"завтра":d.toLocaleDateString("ru-RU",{day:"numeric",month:"long"}))+" в "+hm}
+  function at(h,m,plus){var d=new Date();d.setDate(d.getDate()+plus);d.setHours(h,m,0,0);return d.getTime()}
+  var W={};
+  function mount(p,bar,fn,refresh){
+    var w=document.createElement("div");w.className="sch";
+    w.innerHTML='<button type="button" class="sch-t">'+ICON+'<span>Отправить позже</span></button>'+
+      '<div class="sch-p" hidden><div class="sch-c"></div><div class="sch-r"><input type="datetime-local" class="sch-i"><button type="button" class="sch-x">Сбросить</button></div></div><div class="sch-l"></div>';
+    bar.parentNode.insertBefore(w,bar);W[p]={w:w,fn:fn,refresh:refresh};
+    var t=w.querySelector(".sch-t"),pn=w.querySelector(".sch-p"),inp=w.querySelector(".sch-i"),ch=w.querySelector(".sch-c");
+    function set(ms){SCH[p]=ms||0;paint();refresh&&refresh()}
+    function paint(){
+      var on=!!SCH[p];w.classList.toggle("on",on);t.querySelector("span").textContent=on?"Отправка: "+human(SCH[p]):"Отправить позже";
+      inp.min=loc(Date.now()+120000);inp.value=on?loc(SCH[p]):"";
+      var now=Date.now(),opts=[["Через час",now+36e5],["Сегодня 18:00",at(18,0,0)],["Завтра 10:00",at(10,0,1)],["Завтра 18:00",at(18,0,1)]].filter(function(o){return o[1]>now+120000});
+      ch.innerHTML=opts.map(function(o,i){return '<button type="button" data-i="'+i+'" class="'+(SCH[p]&&Math.abs(SCH[p]-o[1])<6e4?"on":"")+'">'+o[0]+"</button>"}).join("");
+      ch._o=opts}
+    t.addEventListener("click",function(){pn.hidden=!pn.hidden;t.classList.toggle("open",!pn.hidden);if(!pn.hidden)paint()});
+    ch.addEventListener("click",function(e){var b=e.target.closest("button");if(b)set(ch._o[+b.dataset.i][1])});
+    inp.addEventListener("change",function(){var ms=inp.value?new Date(inp.value).getTime():0;if(ms&&ms<Date.now()+60000){inp.value="";return}set(ms)});
+    w.querySelector(".sch-x").addEventListener("click",function(){set(0)});
+    w.querySelector(".sch-l").addEventListener("click",function(e){var b=e.target.closest("[data-cx]");if(!b)return;b.disabled=true;api("sched_cancel",{id:+b.dataset.cx}).then(function(){list()})});
+    paint();
+  }
+  function list(){
+    api("sched_list",{}).then(function(j){if(!j||j.error)return;
+      Object.keys(W).forEach(function(p){var w=W[p],it=(j.items||[]).filter(function(x){return x.fn===w.fn}).sort(function(a,b){return a.run_at<b.run_at?-1:1}),el=w.w.querySelector(".sch-l");
+        el.innerHTML=it.map(function(x){var ms=Date.parse(x.run_at),pend=x.status==="pending"||x.status==="running",tx=esc(x.summary||"без текста");
+          var st=pend?'<span class="sch-s">'+human(ms)+"</span>":x.status==="sent"?'<span class="sch-s ok">отправлено</span>':x.status==="failed"?'<span class="sch-s dn">не ушло</span>':'<span class="sch-s">отменено</span>';
+          return '<div class="sch-it'+(pend?"":" done")+'">'+ICON+'<b>'+tx+"</b>"+st+(x.status==="pending"?'<button type="button" class="sch-cx" data-cx="'+x.id+'" aria-label="Отменить">×</button>':"")+"</div>"}).join("")})})}
+  window.schMount=mount;window.schList=list;window.schHuman=human;
+})();
 var bcImg="";
 function readImg(file,ok){
   if(!/^image\/(jpeg|png|webp)$/.test(file.type)){toast("Нужен JPEG, PNG или WebP","err");return}
@@ -3445,7 +3491,7 @@ function render(){N.pro=AUD.pro||0;N.free=AUD.free||0;N.all=AUD.all||0;$("#bxc-p
   if(S.btn){var res=$("#bxres");if(st.bad&&/ссылк|название/i.test(st.bad)&&S.url.trim()&&!/https:\/\/\S+$/i.test(norm(S.url))){res.className="bx-res bx-bad";res.textContent=st.bad}else if(S.url.trim()){res.className="bx-res bx-ok";res.innerHTML='Откроется <code>'+norm(S.url).replace(/</g,"&lt;")+'</code> прямо в Telegram'}else{res.className="bx-res";res.textContent=""}}
   /* панель отправки */
   var n=N[S.aud];$("#bxinfo").innerHTML=st.bad?'<b style="color:var(--gold)">'+st.bad+'</b><small>Получат '+AN[S.aud]+'</small>':'<b>Получат '+AN[S.aud]+': '+fmt(n)+'</b><small>'+(S.btn?'Кнопка «'+S.label.replace(/</g,"&lt;")+'» вместо «Открыть VOOB»':'Под сообщением кнопка «Открыть VOOB»')+(S.img?' · с картинкой':'')+'</small>';
-  var h=$("#bgo");h.disabled=!!st.bad;if(!h.classList.contains("bx-boom"))$("#bxholdl").textContent=S.aud==="me"?"Отправить себе":"Зажми, чтобы отправить";
+  var h=$("#bgo");h.disabled=!!st.bad;if(!h.classList.contains("bx-boom"))$("#bxholdl").textContent=SCH.bc?(S.aud==="me"?"Запланировать себе":"Зажми, чтобы запланировать"):S.aud==="me"?"Отправить себе":"Зажми, чтобы отправить";
   h.classList.remove("bx-go")}
 /* зажать, чтобы отправить */
 (function(){var h=$("#bgo"),tm=0;
@@ -3461,8 +3507,9 @@ function bcSend(){
   var st=state(),t=st.t,tg=S.aud,bb=S.btn?S.label.trim():"",bu=S.btn?normUrl(S.url):"";$("#ebc").textContent="";
   if(st.bad){$("#ebc").textContent=st.bad;return}
   if(bu)S.url=bu;
-  $("#bgo").disabled=true;api("broadcast",{text:t,target:tg,image:bcImg||undefined,btn_text:bb||undefined,btn_url:bu||undefined}).then(function(j){$("#bgo").disabled=false;
-    $("#ebc").innerHTML=j.error?esc(j.error):'<span class="ok">Доставлено '+j.sent+" из "+j.total+(j.failed?", не дошло "+j.failed:"")+"</span>";
+  $("#bgo").disabled=true;var sat=SCH.bc?new Date(SCH.bc).toISOString():undefined;api("broadcast",{text:t,target:tg,image:bcImg||undefined,btn_text:bb||undefined,btn_url:bu||undefined,send_at:sat}).then(function(j){$("#bgo").disabled=false;
+    $("#ebc").innerHTML=j.error?esc(j.error):j.status==="scheduled"?'<span class="ok">Запланировано на '+schHuman(Date.parse(j.at))+"</span>":'<span class="ok">Доставлено '+j.sent+" из "+j.total+(j.failed?", не дошло "+j.failed:"")+"</span>";
+    if(!j.error&&j.status==="scheduled"){SCH.bc=0;schList()}
     if(!j.error&&tg!=="me"){$("#btext").value="";S.btn=false;S.label="";S.url="";setImg(null);renderKb();render()}else render()})}
 function bcRender(){render()}
 dropZone($("#bxroot"),setImg);
@@ -3472,6 +3519,9 @@ renderKb();setLay("a");
 
 window.bcRender=bcRender;window.bcSetImg=setImg;
 })();
+schMount("bc",$("#bxsendbar"),"broadcast",function(){window.bcRender&&window.bcRender()});
+schMount("an",$(".ax-send"),"announce",function(){typeof annRender==="function"&&annRender()});
+schList();setInterval(schList,60000);
 function audRefresh(){api("audience",{},"x").then(function(j){if(j&&j.all!=null){AUD=j;annRender();bcRender()}})}
 
 /* ---------- промокоды: конструктор ---------- */

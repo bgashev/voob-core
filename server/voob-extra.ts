@@ -231,6 +231,7 @@ async function announce(b: any) {
   if (cta && cta !== "pro" && !/^https:\/\/\S+$/.test(cta)) return { error: "Кнопка: «pro» или ссылка (например t.me/boost/voobkz)" };
   const ids = await audienceIds(aud, b?.targets);
   if (!ids.length) return { error: aud === "list" ? "В списке никого не нашли — проверь ники и ID" : "В этой аудитории никого нет" };
+  if (b?.dry) return { status: "ok", total: ids.length };
   const up = await uploadImage(b?.image);
   if (up.error) return { error: up.error };
   const { data: a, error } = await db.from("announcements").insert({ kind, audience: aud, title, body, gift_kind: gk, cta, image_url: up.url ?? null, recipients: ids.length }).select("id").single();
@@ -317,11 +318,39 @@ async function usage(hours: number) {
   };
 }
 
+/* ---------- отложенная отправка объявлений ---------- */
+const CRON_SECRET = Deno.env.get("CRON_SECRET") ?? "";
+const safeEq = (a: string, b: string) => { if (a.length !== b.length) return false; let d = 0; for (let i = 0; i < a.length; i++) d |= a.charCodeAt(i) ^ b.charCodeAt(i); return d === 0; };
+async function schedAddAnn(b: any) {
+  const at = Date.parse(String(b?.send_at ?? ""));
+  if (!isFinite(at) || at < Date.now() + 60_000) return { error: "Время отправки должно быть хотя бы через минуту" };
+  if (at > Date.now() + 60 * DAY) return { error: "Дальше чем на 60 дней планировать нельзя" };
+  const v: any = await announce({ ...b, dry: true }); if (v?.error) return v;
+  const payload = { ...b }; delete payload.send_at; delete payload.token; delete payload.action; delete payload.client;
+  const summary = String(b?.title ?? "").trim().slice(0, 100);
+  const { data, error } = await db.from("scheduled_sends").insert({ fn: "announce", payload, run_at: new Date(at).toISOString(), summary }).select("id").single();
+  if (error || !data) return { error: "Не удалось запланировать: " + (error?.message ?? "") };
+  await log("sched_add", null, { id: data.id, fn: "announce", at: new Date(at).toISOString(), summary: summary.slice(0, 80) });
+  return { status: "scheduled", id: data.id, at: new Date(at).toISOString() };
+}
+async function schedRunAnn() {
+  const { data: due } = await db.from("scheduled_sends").update({ status: "running" }).eq("fn", "announce").eq("status", "pending").lte("run_at", new Date().toISOString()).select("id, payload, summary");
+  let n = 0;
+  for (const r of due ?? []) {
+    let res: any; try { res = await announce(r.payload); } catch (x) { res = { error: String((x as Error)?.message ?? x) }; }
+    await db.from("scheduled_sends").update({ status: res?.error ? "failed" : "sent", result: res, done_at: new Date().toISOString() }).eq("id", r.id);
+    await say(ADMIN, res?.error ? `⚠️ Отложенное объявление не ушло: ${res.error}\n«${r.summary ?? ""}»` : `✅ Отложенное объявление отправлено: ${res.total} получателей\n«${r.summary ?? ""}»`);
+    n++;
+  }
+  return { status: "ok", ran: n };
+}
+
 Deno.serve(async (req) => {
   if (req.method === "OPTIONS") return new Response("ok", { headers: CORS });
   if (req.method !== "POST") return json({ app: "VOOB extra", version: "1.607", ok: true });
   try {
     const body = await req.json().catch(() => ({}));
+    if (body?.action === "sched_run") { if (!CRON_SECRET || !safeEq(req.headers.get("x-cron-secret") ?? "", CRON_SECRET)) return json({ error: "Нет доступа" }, 403); return json(await schedRunAnn()); }
     const tok = body?.token;
     if (typeof tok !== "string" || tok.length < 20) return json({ error: "Нет сессии" }, 401);
     const th = await sha256(tok);
@@ -361,7 +390,7 @@ Deno.serve(async (req) => {
     } else if (!(await verified(th))) return json({ error: "Подтверди вход кодом из Telegram", need_otp: true }, 401);
     const id = Number(body?.tg_id ?? 0);
     switch (a) {
-      case "announce": return json(await announce(body));
+      case "announce": return json(body?.send_at ? await schedAddAnn(body) : await announce(body));
       case "announces": return json(await announces());
       case "audience": return json(await audienceCounts());
       case "resolve": return json(await resolveList(body?.targets));

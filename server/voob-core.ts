@@ -723,6 +723,7 @@ async function broadcast(body: any) {
     const { data } = await r.limit(5000);
     ids = (data ?? []).map((x: any) => x.tg_id);
   }
+  if (body?.dry) return { status: "ok", total: ids.length };
   let fileId = "";
   const sendImg = async (to: number): Promise<boolean> => {
     if (fileId) { const r = await tg("sendPhoto", { chat_id: to, photo: fileId, caption: text || undefined, reply_markup: markup }); return !!r?.ok; }
@@ -746,6 +747,40 @@ async function broadcast(body: any) {
   return { status: "ok", sent, failed, total: ids.length };
 }
 
+/* ---------- отложенная отправка ---------- */
+const CRON_SECRET = Deno.env.get("CRON_SECRET") ?? "";
+async function schedAdd(fn: "broadcast" | "announce", body: any, summary: string) {
+  const at = Date.parse(String(body?.send_at ?? ""));
+  if (!isFinite(at) || at < Date.now() + 60_000) return { error: "Время отправки должно быть хотя бы через минуту" };
+  if (at > Date.now() + 60 * DAY) return { error: "Дальше чем на 60 дней планировать нельзя" };
+  const payload = { ...body }; delete payload.send_at; delete payload.token; delete payload.action; delete payload.client;
+  const { data, error } = await db.from("scheduled_sends").insert({ fn, payload, run_at: new Date(at).toISOString(), summary: summary.slice(0, 160) }).select("id").single();
+  if (error || !data) return { error: "Не удалось запланировать: " + (error?.message ?? "") };
+  await log("sched_add", null, { id: data.id, fn, at: new Date(at).toISOString(), summary: summary.slice(0, 80) });
+  return { status: "scheduled", id: data.id, at: new Date(at).toISOString() };
+}
+async function schedList() {
+  const { data } = await db.from("scheduled_sends").select("id, fn, run_at, status, summary, result, done_at").order("run_at", { ascending: false }).limit(30);
+  return { status: "ok", items: (data ?? []).filter((x: any) => x.status === "pending" || x.status === "running" || (x.done_at && Date.now() - Date.parse(x.done_at) < 3 * DAY)) };
+}
+async function schedCancel(id: number) {
+  const { data } = await db.from("scheduled_sends").update({ status: "cancelled", done_at: new Date().toISOString() }).eq("id", id).eq("status", "pending").select("id");
+  if (!data?.length) return { error: "Уже отправлено или отменено" };
+  await log("sched_cancel", null, { id }); return { status: "ok" };
+}
+/* вызывается по расписанию (pg_cron → POST с x-cron-secret): берёт созревшие рассылки и отправляет */
+async function schedRun() {
+  const { data: due } = await db.from("scheduled_sends").update({ status: "running" }).eq("fn", "broadcast").eq("status", "pending").lte("run_at", new Date().toISOString()).select("id, payload, summary");
+  let n = 0;
+  for (const r of due ?? []) {
+    let res: any; try { res = await broadcast(r.payload); } catch (e) { res = { error: String((e as Error)?.message ?? e) }; }
+    await db.from("scheduled_sends").update({ status: res?.error ? "failed" : "sent", result: res, done_at: new Date().toISOString() }).eq("id", r.id);
+    await say(ADMIN, res?.error ? `⚠️ Отложенная рассылка не ушла: ${res.error}\n«${r.summary ?? ""}»` : `✅ Отложенная рассылка отправлена: ${res.sent} из ${res.total}\n«${r.summary ?? ""}»`);
+    n++;
+  }
+  return { status: "ok", ran: n };
+}
+
 Deno.serve(async (req) => {
   const CORS = corsFor(req);
   const json = (b: unknown, s = 200) => new Response(JSON.stringify(b), { status: s, headers: { ...CORS, "Content-Type": "application/json; charset=utf-8" } });
@@ -754,6 +789,7 @@ Deno.serve(async (req) => {
   try {
     const body = await req.json().catch(() => ({}));
     const a = String(body?.action ?? "");
+    if (a === "sched_run") { if (!CRON_SECRET || !safeEqual(req.headers.get("x-cron-secret") ?? "", CRON_SECRET)) return json({ error: "Нет доступа" }, 403); return json(await schedRun()); }
     // вход в WEB: без сессии, только QR через Telegram
     if (a === "core_login_start") return json(await coreLoginStart());
     if (a === "core_login_poll") return json(await coreLoginPoll(body));
@@ -844,7 +880,9 @@ Deno.serve(async (req) => {
       case "payments": return json(await payments(body));
       case "refund": return json(await refund(body));
       case "refund_reject": return json(await refundReject(body));
-      case "broadcast": return json(await broadcast(body));
+      case "broadcast": return json(body?.send_at ? await (async () => { const v: any = await broadcast({ ...body, dry: true }); if (v?.error) return v; return await schedAdd("broadcast", body, String(body?.text ?? "").trim().slice(0, 100) || "картинка"); })() : await broadcast(body));
+      case "sched_list": return json(await schedList());
+      case "sched_cancel": return json(await schedCancel(Number(body?.id)));
       case "log": { const { data } = await db.from("admin_log").select("id, at, action, target, details").order("id", { ascending: false }).limit(300); return json({ items: (data ?? []).map((x: any) => x.action === "login" ? { ...x, details: {} } : x) }); }
       case "gift_types": { const { data } = await db.from("gift_types").select("kind, emoji, title").order("sort"); return json({ items: data ?? [] }); }
     }
