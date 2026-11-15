@@ -64,9 +64,26 @@ async function inbox(me: number) {
   return { status: "ok", notices, ach_off: (u as any)?.ach_off ?? [], pro, pro_until: sub?.until ?? null, creator: me === ADMIN };
 }
 
-async function seen(me: number, id: number) {
-  await db.from("announce_inbox").update({ seen_at: new Date().toISOString() }).eq("tg_id", me).eq("ann_id", id);
+async function seen(me: number, id: number, act?: string) {
+  const now = new Date().toISOString();
+  await db.from("announce_inbox").update({ seen_at: now }).eq("tg_id", me).eq("ann_id", id).is("seen_at", null);   // первый просмотр не затираем
+  if (act === "click" || act === "dismiss" || act === "ack") await db.from("announce_inbox").update({ action: act, acted_at: now }).eq("tg_id", me).eq("ann_id", id).is("action", null);
   return { status: "ok" };
+}
+/* статистика одного объявления: воронка и список людей */
+async function annStats(id: number) {
+  if (!(id > 0)) return { error: "Нет такого объявления" };
+  const { data: rows } = await db.from("announce_inbox").select("tg_id, seen_at, action, acted_at").eq("ann_id", id).limit(5000);
+  const all = rows ?? [];
+  const count = (f: (r: any) => boolean) => all.filter(f).length;
+  const shown = all.filter((r: any) => r.seen_at).sort((a: any, b: any) => (a.seen_at < b.seen_at ? 1 : -1)).slice(0, 300);
+  const ids = shown.map((r: any) => Number(r.tg_id));
+  const { data: us } = ids.length ? await db.from("users").select("tg_id, first_name, handle").in("tg_id", ids) : { data: [] };
+  const um = new Map((us ?? []).map((u: any) => [Number(u.tg_id), u]));
+  return {
+    status: "ok", total: all.length, seen: count((r) => !!r.seen_at), click: count((r) => r.action === "click"), dismiss: count((r) => r.action === "dismiss"), ack: count((r) => r.action === "ack"),
+    people: shown.map((r: any) => ({ tg_id: Number(r.tg_id), first_name: (um.get(Number(r.tg_id)) as any)?.first_name ?? null, handle: (um.get(Number(r.tg_id)) as any)?.handle ?? null, seen_at: r.seen_at, action: r.action ?? null, acted_at: r.acted_at ?? null })),
+  };
 }
 
 // фон карточки профиля: виден только у PRO (и у создателя)
@@ -360,7 +377,7 @@ Deno.serve(async (req) => {
     if (body?.client === "web" && (s as any).device === "desktop") await db.from("sessions").update({ device: "web" }).eq("token_hash", th);
     const me = Number(s.tg_id), a = String(body?.action ?? "");
     if (a === "inbox") return json(await inbox(me));
-    if (a === "seen") return json(await seen(me, Number(body?.id)));
+    if (a === "seen") return json(await seen(me, Number(body?.id), String(body?.act ?? "")));
     if (a === "bgs") return json(await bgs(Array.isArray(body?.ids) ? body.ids : []));
     if (a === "promo") return json(await redeem(me, body?.code));
     // дальше — только создатель с подтверждённым входом
@@ -392,6 +409,7 @@ Deno.serve(async (req) => {
     switch (a) {
       case "announce": return json(body?.send_at ? await schedAddAnn(body) : await announce(body));
       case "announces": return json(await announces());
+      case "ann_stats": return json(await annStats(Number(body?.id)));
       case "audience": return json(await audienceCounts());
       case "resolve": return json(await resolveList(body?.targets));
       case "usage": return json(await usage(Number(body?.hours)));
