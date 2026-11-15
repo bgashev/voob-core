@@ -284,6 +284,7 @@ textarea.pvaw.ax-in{font-size:13px;color:#c4c4cc;line-height:1.5;max-height:none
 .ax-rm{position:absolute;top:8px;right:8px;width:28px;height:28px;border-radius:50%;border:0;background:rgba(11,11,13,.62);backdrop-filter:blur(8px);color:#fff;cursor:pointer;display:grid;place-items:center;font-size:12px}
 .ax-own{border:0;background:none;color:#8a8a94;font:600 11px var(--sans);cursor:pointer;padding:2px 6px;border-radius:8px}.ax-own:hover{color:#a9d4f7;background:rgba(255,255,255,.06)}
 .ax-warn{font-size:10.5px;color:var(--gold)}
+.ax-ans{width:100%;display:grid;gap:8px;margin:2px 0 4px}.ax-ansf{border:1px dashed var(--line2);border-radius:12px;padding:12px 14px;min-height:64px;text-align:left;color:var(--mute);font:500 13px var(--sans)}.ax-ansb{border-radius:12px;padding:11px;background:var(--accent);color:var(--on-accent);font:700 13px var(--sans);text-align:center}
 .ax-ctaw{width:100%;display:grid;grid-template-columns:minmax(0,1fr);justify-items:center}
 .ax-ctaw>div{width:100%;display:grid;grid-template-columns:minmax(0,1fr);gap:7px}
 .ax-add{border:1px dashed rgba(255,255,255,.22);background:none;color:#8a8a94;border-radius:999px;padding:8px 18px;font:650 12px var(--sans);cursor:pointer;transition:color .2s,border-color .2s}
@@ -439,7 +440,7 @@ textarea.bx-txt::placeholder{color:#6f8296}
 .ah{display:flex;align-items:center;gap:14px;width:100%;text-align:left;padding:14px 16px;border-radius:20px;background:var(--tile2);border:1px solid var(--line);color:var(--fg);font:inherit;cursor:pointer;transition:border-color .15s,transform .12s,background .15s}
 .ah:hover{border-color:var(--mute);background:var(--tile3,var(--tile2))}.ah:active{transform:scale(.995)}
 .ah-k{width:42px;height:42px;border-radius:14px;display:grid;place-items:center;flex:none;color:var(--blue);background:color-mix(in srgb,var(--blue) 14%,transparent)}.ah-k svg{width:21px;height:21px}
-.ah-gift .ah-k,.ah-k.ah-gift{color:var(--violet);background:color-mix(in srgb,var(--violet) 15%,transparent)}.ah-promo .ah-k,.ah-k.ah-promo{color:var(--gold);background:color-mix(in srgb,var(--gold) 14%,transparent)}
+.ah-gift .ah-k,.ah-k.ah-gift{color:var(--violet);background:color-mix(in srgb,var(--violet) 15%,transparent)}.ah-poll .ah-k,.ah-k.ah-poll{color:var(--green);background:color-mix(in srgb,var(--green) 15%,transparent)}.ah-promo .ah-k,.ah-k.ah-promo{color:var(--gold);background:color-mix(in srgb,var(--gold) 14%,transparent)}
 .ah-m{flex:1;min-width:0;display:grid;gap:5px}.ah-t{font-weight:700;font-size:14.5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .ah-s{display:flex;gap:6px;align-items:center;flex-wrap:wrap;font-size:12px;color:var(--dim)}.ah-s em{font-style:normal;padding:2px 9px;border-radius:10px;background:var(--line);color:var(--mute)}
 .ah-b{height:5px;border-radius:3px;background:var(--line);overflow:hidden}.ah-b i{display:block;height:100%;width:var(--w);border-radius:3px;background:linear-gradient(90deg,#3b82f6,#a855f7)}
@@ -459,7 +460,7 @@ textarea.bx-txt::placeholder{color:#6f8296}
 .ahs-r b{color:var(--fg);text-align:right;font-variant-numeric:tabular-nums}.ahs-r small{color:var(--dim);margin-left:5px;font-weight:400}
 .ahs-t{display:flex;gap:6px;flex-wrap:wrap}.ahs-t button{height:30px;padding:0 12px;border-radius:15px;border:1px solid var(--line);background:transparent;color:var(--mute);font:inherit;font-size:12.5px;cursor:pointer}.ahs-t button em{font-style:normal;color:var(--dim);margin-left:3px}.ahs-t button.on{background:var(--fg);color:var(--bg);border-color:var(--fg)}.ahs-t button.on em{color:var(--bg);opacity:.6}
 .ahs-l{display:grid;gap:6px;max-height:260px;overflow:auto}.ahs-p{cursor:pointer;padding:9px 12px}.ahs-p:hover{background:var(--tile3)}
-.ahs-c{flex:none;font-size:11.5px;padding:3px 10px;border-radius:11px;background:var(--line);color:var(--mute)}.ahs-c.go{color:var(--green);background:color-mix(in srgb,var(--green) 14%,transparent)}.ahs-c.no{color:var(--bad);background:color-mix(in srgb,var(--bad) 13%,transparent)}.ahs-c.ok{color:var(--blue);background:color-mix(in srgb,var(--blue) 14%,transparent)}
+.ahs-c{flex:none;font-size:11.5px;padding:3px 10px;border-radius:11px;background:var(--line);color:var(--mute)}.ahs-c.an{color:var(--green);background:color-mix(in srgb,var(--green) 14%,transparent)}.ahs-c.go{color:var(--green);background:color-mix(in srgb,var(--green) 14%,transparent)}.ahs-c.no{color:var(--bad);background:color-mix(in srgb,var(--bad) 13%,transparent)}.ahs-c.ok{color:var(--blue);background:color-mix(in srgb,var(--blue) 14%,transparent)}
 .bx-done{font-size:13px;color:var(--green);min-height:18px;padding-left:6px}
 
 /* ===== вариант Б: телефон ===== */
@@ -1419,8 +1420,8 @@ textarea.field{resize:none;line-height:1.5;min-height:84px;padding:12px 15px;fon
   </section>
   <section id="t-an" class="stack" hidden>
     <div class="bx-head"><div><h3>Объявление в приложении</h3><p class="hint">Появится окном при следующем входе в VOOB. Правь прямо в окне: заголовок, текст, картинка и кнопка. Подарок сразу попадёт в коллекцию.</p></div>
-      <div class="bx-seg" id="axk"><i class="bx-th"></i><button class="bx-on" data-k="notice" type="button">Уведомление</button><button data-k="gift" type="button">Подарок</button><button data-k="promo" type="button">Акция</button></div></div>
-    <select id="ak" data-dd="1" hidden><option value="notice">Уведомление</option><option value="gift">Подарок</option><option value="promo">Акция</option></select>
+      <div class="bx-seg" id="axk"><i class="bx-th"></i><button class="bx-on" data-k="notice" type="button">Уведомление</button><button data-k="gift" type="button">Подарок</button><button data-k="promo" type="button">Акция</button><button data-k="poll" type="button">Опрос</button></div></div>
+    <select id="ak" data-dd="1" hidden><option value="notice">Уведомление</option><option value="gift">Подарок</option><option value="promo">Акция</option><option value="poll">Опрос</option></select>
     <select id="aa" data-dd="1" hidden><option value="me">Только мне (проверка)</option><option value="all">Всем</option><option value="pro">Только PRO</option><option value="free">Только без PRO</option><option value="list">Списком</option></select>
     <div hidden><input type="file" id="afile" accept="image/jpeg,image/png,image/webp"><button id="apick" type="button"></button><span id="ahint"></span><div id="athumb" hidden><img id="athumbi" alt=""><b id="athumbn"></b><small id="athumbs"></small></div><button id="arm" type="button"></button></div>
     <div class="ax-root" id="axroot">
@@ -1432,7 +1433,8 @@ textarea.field{resize:none;line-height:1.5;min-height:84px;padding:12px 15px;fon
             <input class="pvat ax-in" id="at" maxlength="80" placeholder="Заголовок" autocomplete="off">
             <textarea class="pvaw ax-in" id="ab" maxlength="600" rows="2" placeholder="Текст объявления"></textarea>
             <div class="pvas" id="axgs" hidden></div>
-            <div class="ax-ctaw">
+            <div class="ax-ans" id="axans" hidden><div class="ax-ansf">Ответ напишет человек</div><div class="ax-ansb">Отправить ответ</div></div>
+            <div class="ax-ctaw" id="axctaw">
               <button class="ax-add" id="axadd" type="button">+ Кнопка</button>
               <div id="axcb" hidden><div class="pvac" id="axbtnp">Открыть</div>
                 <div class="ax-url"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 14a4 4 0 0 0 5.7 0l3-3a4 4 0 0 0-5.7-5.7l-1 1"/><path d="M14 10a4 4 0 0 0-5.7 0l-3 3a4 4 0 0 0 5.7 5.7l1-1"/></svg><input id="ac" placeholder="t.me/… или pro" autocomplete="off"><button class="ax-chip" id="axpro" type="button" title="Кнопка «Оформить PRO»">PRO</button><button class="ax-x" id="axcx" type="button" title="Убрать кнопку">✕</button></div></div>
@@ -2434,12 +2436,12 @@ document.addEventListener("keydown",function(e){if(e.key==="Escape"&&$("#lbx"))c
 /* ---------- обращения ---------- */
 var fs="new";
 seg($("#ff"),function(b){fs=b.dataset.s;loadFb()});
-var TYPES={idea:"идея",bug:"баг",complaint:"жалоба",other:"другое"};
+var TYPES={idea:"идея",bug:"баг",complaint:"жалоба",other:"другое",poll:"ответ на опрос"};
 function loadFb(){
   api("feedback",{status:fs}).then(function(j){
     if(j.error){$("#efb").textContent=j.error;return}$("#efb").textContent="";
     $("#flist").innerHTML=j.items.length?j.items.map(function(x){
-      return '<div class="item" style="align-items:flex-start">'+av(x.from)+'<div class="m"><div class="t" style="white-space:normal">'+esc(x.text)+'</div><div class="s wrap">'+nm(x.from)+" · "+dt(x.created_at)+(x.target?" · на "+nm(x.target):"")+(x.reply?"<br>Ответ: "+esc(x.reply):"")+'</div>'+
+      return '<div class="item" style="align-items:flex-start">'+av(x.from)+'<div class="m">'+(x.type==="poll"&&x.app?'<div class="s wrap" style="margin-bottom:3px">'+esc(x.app)+'</div>':"")+'<div class="t" style="white-space:normal">'+esc(x.text)+'</div><div class="s wrap">'+nm(x.from)+" · "+dt(x.created_at)+(x.target?" · на "+nm(x.target):"")+(x.reply?"<br>Ответ: "+esc(x.reply):"")+'</div>'+
         '<div class="row"><span class="chip">'+esc(TYPES[x.type]||x.type)+'</span>'+(x.status==="new"?'<button class="btn sm" data-r="'+x.id+'">Ответить</button><button class="btn sm" data-d="'+x.id+'">Закрыть</button>':"")+"</div></div></div>"}).join(""):'<p class="hint">Пусто</p>';hydrate($("#flist"));
   });
 }
@@ -2726,8 +2728,8 @@ $("#achk").onclick=function(){
 };
 /* ---------- история объявлений: карточки с превью ---------- */
 var ANL=[];
-var AH_IC={gift:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3.5" y="9" width="17" height="11.5" rx="2.5"/><path d="M12 9v11.5M3.5 13.5h17M12 9C12 6 9.5 4 8 5.5S8.5 9 12 9zM12 9c0-3 2.5-5 4-3.5S15.5 9 12 9z"/></svg>',notice:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6 16.5V11a6 6 0 0 1 12 0v5.5l1.5 2h-15zM10 20.5a2 2 0 0 0 4 0"/></svg>',promo:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3.5l1.9 5.1 5.1 1.9-5.1 1.9L12 17.5l-1.9-5.1L5 10.5l5.1-1.9zM18.5 16.5l.7 1.8 1.8.7-1.8.7-.7 1.8-.7-1.8-1.8-.7 1.8-.7z"/></svg>'};
-var AH_K={gift:"Подарок",notice:"Уведомление",promo:"Акция"},AH_A={all:"всем",pro:"PRO",free:"без PRO",me:"мне",list:"список"};
+var AH_IC={poll:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M5 20V11M12 20V4M19 20v-6"/></svg>',gift:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3.5" y="9" width="17" height="11.5" rx="2.5"/><path d="M12 9v11.5M3.5 13.5h17M12 9C12 6 9.5 4 8 5.5S8.5 9 12 9zM12 9c0-3 2.5-5 4-3.5S15.5 9 12 9z"/></svg>',notice:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6 16.5V11a6 6 0 0 1 12 0v5.5l1.5 2h-15zM10 20.5a2 2 0 0 0 4 0"/></svg>',promo:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3.5l1.9 5.1 5.1 1.9-5.1 1.9L12 17.5l-1.9-5.1L5 10.5l5.1-1.9zM18.5 16.5l.7 1.8 1.8.7-1.8.7-.7 1.8-.7-1.8-1.8-.7 1.8-.7z"/></svg>'};
+var AH_K={gift:"Подарок",notice:"Уведомление",promo:"Акция",poll:"Опрос"},AH_A={all:"всем",pro:"PRO",free:"без PRO",me:"мне",list:"список"};
 function annHist(){
   var el=$("#alog");if(!el)return;
   if(!ANL.length){el.innerHTML='<div class="ah-empty">'+AH_IC.notice+'<b>Пока ничего</b><small>Отправленные объявления появятся здесь — с превью и статистикой.</small></div>';return}
@@ -2739,15 +2741,15 @@ function annHist(){
       (x.image_url?'<img class="ah-img" src="'+esc(x.image_url)+'" alt="" loading="lazy">':"")+
       '<span class="ah-go"><svg viewBox="0 0 18 18" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M7 4l5 5-5 5"/></svg></span></button>'}).join("");
 }
-var AHS_A={click:["Нажал кнопку","go"],dismiss:["Скрыл","no"],ack:["Прочитал","ok"]};
+var AHS_A={click:["Нажал кнопку","go"],dismiss:["Скрыл","no"],ack:["Прочитал","ok"],answer:["Ответил","an"]};
 function annStatsLoad(x){
   api("ann_stats",{id:x.id},"x").then(function(j){
     var el=$("#ahs");if(!el)return;
     if(!j||j.error){el.innerHTML='<div class="ahs-ld">'+esc(j&&j.error||"Не получилось загрузить")+"</div>";return}
     var n=j.total||0,pc=function(v){return n?Math.round(v*100/n):0};
-    var fn=[["Получили",n,100,""],["Открыли",j.seen,pc(j.seen),""],["Нажали кнопку",j.click,pc(j.click),"go"],["Скрыли",j.dismiss,pc(j.dismiss),"no"],["Прочитали",j.ack,pc(j.ack),"ok"]].filter(function(f,i){return i<2||f[1]>0});
+    var fn=[["Получили",n,100,""],["Открыли",j.seen,pc(j.seen),""],["Нажали кнопку",j.click,pc(j.click),"go"],["Скрыли",j.dismiss,pc(j.dismiss),"no"],["Прочитали",j.ack,pc(j.ack),"ok"],["Ответили",j.answer||0,pc(j.answer||0),"ok"]].filter(function(f,i){return i<2||f[1]>0});
     var h='<div class="ahs-f">'+fn.map(function(f){return '<div class="ahs-r"><span>'+f[0]+'</span><div class="ahs-b '+f[3]+'"><i style="--w:'+f[2]+'%"></i></div><b>'+f[1]+'<small>'+f[2]+'%</small></b></div>'}).join("")+"</div>";
-    var tabs=[["all","Все",j.people.length],["go","Нажали",j.click],["no","Скрыли",j.dismiss],["ok","Прочитали",j.ack]].filter(function(t,i){return i===0||t[2]>0});
+    var tabs=[["all","Все",j.people.length],["go","Нажали",j.click],["no","Скрыли",j.dismiss],["ok","Прочитали",j.ack],["an","Ответили",j.answer||0]].filter(function(t,i){return i===0||t[2]>0});
     h+='<div class="ahs-t">'+tabs.map(function(t,i){return '<button type="button" data-f="'+t[0]+'" class="'+(i?"":"on")+'">'+t[1]+" <em>"+t[2]+"</em></button>"}).join("")+"</div><div class='ahs-l' id='ahsl'></div>";
     el.innerHTML=h;
     function draw(f){
@@ -2764,7 +2766,7 @@ function annStatsLoad(x){
 function gapTxt(a,b){var s=Math.max(0,Math.round((Date.parse(b)-Date.parse(a))/1000));return s<60?s+" с":s<3600?Math.round(s/60)+" мин":s<86400?Math.round(s/3600)+" ч":Math.round(s/86400)+" дн"}
 function annPreview(i){
   var x=ANL[i];if(!x)return;
-  var head=x.kind==="gift"?"🎁 ":x.kind==="promo"?"✨ ":"📣 ",n=x.recipients||0,pc=n?Math.round((x.seen||0)*100/n):0,cta=x.cta;
+  var head=x.kind==="gift"?"🎁 ":x.kind==="promo"?"✨ ":x.kind==="poll"?"📊 ":"📣 ",n=x.recipients||0,pc=n?Math.round((x.seen||0)*100/n):0,cta=x.cta;
   var btn=cta?'<span>'+(cta==="pro"?"Оформить PRO":"Открыть")+"</span>":"";
   dlg('<div class="ahd"><div class="ahd-h"><span class="ah-k ah-'+esc(x.kind)+'">'+(AH_IC[x.kind]||AH_IC.notice)+'</span><div><h3>'+esc(x.title)+'</h3><div class="sub">'+esc(AH_K[x.kind]||x.kind)+' · '+esc(AH_A[x.audience]||x.audience)+' · '+dt(x.created_at)+'</div></div></div>'+
     '<div class="ahd-st"><div><b>'+n+'</b><small>получателей</small></div><div><b>'+(x.seen||0)+'</b><small>открыли</small></div><div><b>'+pc+'%</b><small>охват</small></div></div>'+
@@ -2934,6 +2936,7 @@ $("#chgCancel").onclick=function(){api("chg_cancel").then(function(j){$("#eset")
 var IC={
  notice:'<path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.9 1.9 0 0 0 3.4 0"/>',
  gift:'<rect x="3" y="8" width="18" height="4" rx="1"/><path d="M12 8v13"/><path d="M19 12v7a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2v-7"/><path d="M7.5 8a2.5 2.5 0 0 1 0-5C11 3 12 8 12 8s1-5 4.5-5a2.5 2.5 0 0 1 0 5"/>',
+ poll:'<path d="M5 20V11M12 20V4M19 20v-6"/>',
  promo:'<path d="M12 3l1.9 5.1L19 10l-5.1 1.9L12 17l-1.9-5.1L5 10l5.1-1.9z"/><path d="M19 15l.8 2.2L22 18l-2.2.8L19 21l-.8-2.2L16 18l2.2-.8z"/>',
  clip:'<path d="M20 11.5l-7.6 7.6a5 5 0 0 1-7.1-7.1l8-8a3.4 3.4 0 0 1 4.8 4.8l-8 8a1.8 1.8 0 0 1-2.5-2.5l7.3-7.3"/>',
  image:'<rect x="3" y="4" width="18" height="16" rx="3"/><circle cx="9" cy="10" r="1.8"/><path d="M21 16l-5-5-9 9"/>',
@@ -3313,7 +3316,7 @@ function plural(n,a,b,c){n=Math.abs(n)%100;var m=n%10;return n>10&&n<20?c:m>1&&m
 
 /* ---------- визуализатор объявлений и рассылки ---------- */
 var AUD={all:0,pro:0,free:0};
-var AK={notice:["notice","Новости"],gift:["gift","Подарок"],promo:["promo","Акция"]};
+var AK={notice:["notice","Новости"],gift:["gift","Подарок"],promo:["promo","Акция"],poll:["poll","Опрос"]};
 function buildSplit(secId,formSel,html){
   var f=$(formSel);if(!f||f.closest(".split"))return null;
   var sp=document.createElement("div");sp.className="split";f.parentNode.insertBefore(sp,f);sp.appendChild(f);
@@ -3352,18 +3355,19 @@ function annRender(){
   var wn=$("#athumbs").className==="warn"?$("#athumbs").textContent:"";var ww=$("#axwarn");
   if(anImg&&wn){if(!ww){ww=document.createElement("div");ww.id="axwarn";ww.className="ax-warn";$("#axmedia").appendChild(ww)}ww.textContent=wn}else if(ww)ww.remove();
   $("#axgs").hidden=kind!=="gift";if(kind==="gift")$("#axgs").textContent=g?g.title+" · уже в коллекции":"Подарок уже в коллекции";
+  var isP=kind==="poll";$("#axans").hidden=!isP;$("#axctaw").hidden=isP;$("#at").placeholder=isP?"Вопрос, например: как вам новая функция?":"Заголовок";$("#ab").placeholder=isP?"Пояснение (можно пусто)":"Текст объявления";
   $("#axadd").hidden=axBtn;$("#axcb").hidden=!axBtn;$("#axbtnp").textContent=cta==="pro"?"Оформить PRO":"Открыть";
   var ab=$("#ab");ab.style.height="auto";ab.style.height=Math.max(40,ab.scrollHeight)+"px";
-  var head=kind==="gift"?"🎁 ":kind==="promo"?"✨ ":"📣 ";
-  $("#axTg").innerHTML=tgBubble(esc2(head+(title||"Заголовок"))+"<br><br>"+esc2(body||"Текст объявления")+"<br><br>— команда VOOB",'<span>'+(cta&&cta!=="pro"?"Открыть":"Открыть VOOB")+'</span>',!notify,anImg)+(notify?"":'<p class="hint" style="text-align:center;margin:0">Галочка выключена: сообщение в Telegram не уйдёт.</p>');
+  var head=kind==="gift"?"🎁 ":kind==="promo"?"✨ ":kind==="poll"?"📊 ":"📣 ";
+  $("#axTg").innerHTML=tgBubble(esc2(head+(title||"Заголовок"))+"<br><br>"+esc2(body||"Текст объявления")+"<br><br>"+(isP?"Ответь в приложении, мы читаем каждый ответ":"— команда VOOB"),'<span>'+(cta&&cta!=="pro"?"Открыть":"Открыть VOOB")+'</span>',!notify,anImg)+(notify?"":'<p class="hint" style="text-align:center;margin:0">Галочка выключена: сообщение в Telegram не уйдёт.</p>');
   var long=title.length>80||body.length>600;
   $("#axcnt").innerHTML="заголовок "+title.length+" / 80 · текст "+body.length+" / 600"+(long?' · <span class="dn">длиннее лимита</span>':"");
-  var bad=annBad(),who=aud==="me"?"Увидишь только ты (проверка)":aud==="list"?"Получат люди из списка":aud==="all"?"Получат все: "+fmt(AUD.all):aud==="pro"?"Получат PRO: "+fmt(AUD.pro):"Получат без PRO: "+fmt(AUD.free);
-  $("#axinfo").innerHTML=bad?'<b style="color:var(--gold)">'+bad+'</b><small>'+who+'</small>':'<b>'+who+'</b><small>'+(cta?(cta==="pro"?"Кнопка «Оформить PRO»":"Кнопка «Открыть» → "+esc(normUrl(cta))):"Без кнопки")+(anImg?" · с картинкой":"")+'</small>';
+  if(isP)cta="";var bad=annBad(),who=aud==="me"?"Увидишь только ты (проверка)":aud==="list"?"Получат люди из списка":aud==="all"?"Получат все: "+fmt(AUD.all):aud==="pro"?"Получат PRO: "+fmt(AUD.pro):"Получат без PRO: "+fmt(AUD.free);
+  $("#axinfo").innerHTML=bad?'<b style="color:var(--gold)">'+bad+'</b><small>'+who+'</small>':'<b>'+who+'</b><small>'+(isP?"Ответы придут в «Жалобы и идеи»":cta?(cta==="pro"?"Кнопка «Оформить PRO»":"Кнопка «Открыть» → "+esc(normUrl(cta))):"Без кнопки")+(anImg?" · с картинкой":"")+'</small>';
   var h=$("#ago");h.disabled=!!bad;if(!h.classList.contains("bx-go")&&!h.classList.contains("bx-boom"))$("#axhl").textContent=SCH.an?(aud==="me"?"Запланировать себе":"Зажми, чтобы запланировать"):aud==="me"?"Отправить себе":"Зажми, чтобы отправить";
 }
 function annSend(){
-  var aud=$("#aa").value,kind=$("#ak").value,cv=$("#ac").value.trim(),b={kind:kind,audience:aud,title:$("#at").value.trim(),body:$("#ab").value.trim(),cta:(cv==="pro"?cv:normUrl(cv))||null,notify:$("#an").checked,image:anImg||undefined};
+  var aud=$("#aa").value,kind=$("#ak").value,cv=$("#ac").value.trim(),b={kind:kind,audience:aud,title:$("#at").value.trim(),body:$("#ab").value.trim(),cta:kind==="poll"?null:(cv==="pro"?cv:normUrl(cv))||null,notify:$("#an").checked,image:anImg||undefined};
   if(kind==="gift")b.gift_kind=$("#agk").value;if(aud==="list")b.targets=$("#alist").value;
   $("#eab").textContent="";if(annBad()){annRender();return}
   if(SCH.an)b.send_at=new Date(SCH.an).toISOString();$("#ago").disabled=true;api("announce",b,"x").then(function(j){$("#ago").disabled=false;

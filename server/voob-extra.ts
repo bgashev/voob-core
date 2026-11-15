@@ -64,6 +64,23 @@ async function inbox(me: number) {
   return { status: "ok", notices, ach_off: (u as any)?.ach_off ?? [], pro, pro_until: sub?.until ?? null, creator: me === ADMIN };
 }
 
+/* ответ на опрос: текст уходит в «Жалобы и идеи» (feedback, type = poll); один ответ на человека */
+async function pollAnswer(me: number, id: number, textRaw: string) {
+  const text = String(textRaw ?? "").trim().slice(0, 1000);
+  if (text.length < 2) return { status: "short" };
+  const { data: a } = await db.from("announcements").select("kind, title").eq("id", id).maybeSingle();
+  if (!a || (a as any).kind !== "poll") return { error: "Это не опрос" };
+  const now = new Date().toISOString();
+  const { data: ok } = await db.from("announce_inbox").update({ seen_at: now, action: "answer", acted_at: now }).eq("tg_id", me).eq("ann_id", id).is("action", null).select("ann_id");
+  if (!ok?.length) return { status: "done" };
+  const q = String((a as any).title ?? "");
+  const { error } = await db.from("feedback").insert({ from_id: me, type: "poll", target_id: null, text, app: ("Опрос: " + q).slice(0, 120) });
+  if (error) { await db.from("announce_inbox").update({ action: null, acted_at: null }).eq("tg_id", me).eq("ann_id", id); return { error: "Не получилось сохранить" }; }
+  const { data: u } = await db.from("users").select("first_name, handle").eq("tg_id", me).maybeSingle();
+  say(ADMIN, `📊 Ответ на опрос «${q}»\nОт: ${(u as any)?.first_name ?? "?"}${(u as any)?.handle ? " @" + (u as any).handle : ""} (id ${me})\n\n${text}`).catch(() => {});
+  return { status: "ok" };
+}
+
 async function seen(me: number, id: number, act?: string) {
   const now = new Date().toISOString();
   await db.from("announce_inbox").update({ seen_at: now }).eq("tg_id", me).eq("ann_id", id).is("seen_at", null);   // первый просмотр не затираем
@@ -81,7 +98,7 @@ async function annStats(id: number) {
   const { data: us } = ids.length ? await db.from("users").select("tg_id, first_name, handle").in("tg_id", ids) : { data: [] };
   const um = new Map((us ?? []).map((u: any) => [Number(u.tg_id), u]));
   return {
-    status: "ok", total: all.length, seen: count((r) => !!r.seen_at), click: count((r) => r.action === "click"), dismiss: count((r) => r.action === "dismiss"), ack: count((r) => r.action === "ack"),
+    status: "ok", total: all.length, seen: count((r) => !!r.seen_at), click: count((r) => r.action === "click"), dismiss: count((r) => r.action === "dismiss"), ack: count((r) => r.action === "ack"), answer: count((r) => r.action === "answer"),
     people: shown.map((r: any) => ({ tg_id: Number(r.tg_id), first_name: (um.get(Number(r.tg_id)) as any)?.first_name ?? null, handle: (um.get(Number(r.tg_id)) as any)?.handle ?? null, seen_at: r.seen_at, action: r.action ?? null, acted_at: r.acted_at ?? null })),
   };
 }
@@ -231,7 +248,7 @@ async function uploadImage(raw: unknown): Promise<{ url?: string; error?: string
 async function announce(b: any) {
   const kind = String(b?.kind ?? "");
   const aud = String(b?.audience ?? "all");
-  if (!["gift", "notice", "promo"].includes(kind)) return { error: "Неизвестный тип" };
+  if (!["gift", "notice", "promo", "poll"].includes(kind)) return { error: "Неизвестный тип" };
   if (!["all", "pro", "free", "me", "list"].includes(aud)) return { error: "Неизвестная аудитория" };
   const title = String(b?.title ?? "").trim().slice(0, 80);
   const body = String(b?.body ?? "").trim().slice(0, 600);
@@ -242,7 +259,7 @@ async function announce(b: any) {
     const { data: gt } = await db.from("gift_types").select("kind").eq("kind", gk).maybeSingle();
     if (!gt || gk === "pro") return { error: "Выбери подарок" };
   }
-  const cta0 = b?.cta ? String(b.cta).trim().slice(0, 300) : "";
+  const cta0 = b?.cta && kind !== "poll" ? String(b.cta).trim().slice(0, 300) : "";
   // ссылку можно писать без https://: t.me/..., @ник, example.kz/...
   const cta = !cta0 ? null : cta0 === "pro" ? cta0 : /^@\w{4,}$/.test(cta0) ? "https://t.me/" + cta0.slice(1) : /^[a-z][a-z0-9+.-]*:\/\//i.test(cta0) ? cta0 : "https://" + cta0.replace(/^\/+/, "");
   if (cta && cta !== "pro" && !/^https:\/\/\S+$/.test(cta)) return { error: "Кнопка: «pro» или ссылка (например t.me/boost/voobkz)" };
@@ -267,8 +284,8 @@ async function announce(b: any) {
   }
   let sent = 0;
   if (b?.notify) {
-    const head = kind === "gift" ? "🎁 " : kind === "promo" ? "✨ " : "📣 ";
-    const text = `${head}${title}\n\n${body}\n\n— команда VOOB`;
+    const head = kind === "gift" ? "🎁 " : kind === "promo" ? "✨ " : kind === "poll" ? "📊 " : "📣 ";
+    const text = kind === "poll" ? `${head}${title}${body ? "\n\n" + body : ""}\n\nОтветь в приложении — мы читаем каждый ответ.\n\n— команда VOOB` : `${head}${title}\n\n${body}\n\n— команда VOOB`;
     for (const t of ids) { if (up.url ? await sayPhoto(t, up.url, text) : await say(t, text)) sent++; await new Promise((r) => setTimeout(r, 40)); }
   }
   await log("announce", null, { id: a.id, kind, audience: aud, title, gift: gk, n: ids.length, sent, image: !!up.url });
@@ -377,7 +394,7 @@ Deno.serve(async (req) => {
     if (body?.client === "web" && (s as any).device === "desktop") await db.from("sessions").update({ device: "web" }).eq("token_hash", th);
     const me = Number(s.tg_id), a = String(body?.action ?? "");
     if (a === "inbox") return json(await inbox(me));
-    if (a === "seen") return json(await seen(me, Number(body?.id), String(body?.act ?? "")));
+    if (a === "seen") return json(body?.act === "answer" ? await pollAnswer(me, Number(body?.id), String(body?.text ?? "")) : await seen(me, Number(body?.id), String(body?.act ?? "")));
     if (a === "bgs") return json(await bgs(Array.isArray(body?.ids) ? body.ids : []));
     if (a === "promo") return json(await redeem(me, body?.code));
     // дальше — только создатель с подтверждённым входом
