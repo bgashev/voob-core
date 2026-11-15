@@ -936,7 +936,7 @@ textarea.field{resize:none;line-height:1.5;min-height:84px;padding:12px 15px;fon
 @media(max-width:1100px){.pan{grid-template-columns:1fr}.rqg{grid-template-columns:1fr}}
 @media(max-width:760px){.pyh{display:none}.prow{grid-template-columns:40px minmax(0,1fr) auto}.prow .pw,.prow .pd,.prow .ps,.prow .qa{display:none}.prow .mo{display:block}.pbars .r{grid-template-columns:1fr 2fr 80px}}
 .utable{display:grid;gap:8px}
-.uhead,.urow{display:grid;grid-template-columns:34px minmax(0,2.4fr) minmax(0,1fr) minmax(212px,1.1fr) 62px 62px 82px minmax(0,1fr) 34px;gap:12px;align-items:center}
+.uhead,.urow{display:grid;grid-template-columns:34px minmax(0,2.2fr) minmax(0,1fr) minmax(150px,1fr) 66px 62px 62px 82px minmax(0,1fr) 34px;gap:12px;align-items:center}
 .uhead{padding:0 16px;font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--mute)}
 .uhead .uhh{display:flex;gap:16px;min-width:0;white-space:nowrap}
 .uhead [data-s]{cursor:pointer;user-select:none;display:inline-flex;gap:5px;align-items:center;transition:color .16s}.uhead [data-s]:hover{color:var(--fg)}
@@ -965,7 +965,7 @@ textarea.field{resize:none;line-height:1.5;min-height:84px;padding:12px 15px;fon
 .ubp{height:6px;border-radius:6px;background:var(--tile3);overflow:hidden;margin:16px 0 8px}.ubp i{display:block;height:100%;width:0;background:var(--accent);transition:width .25s var(--ease)}
 .dchips{display:flex;gap:6px;flex-wrap:wrap}.dchips button{all:unset;cursor:pointer;height:30px;padding:0 14px;border-radius:999px;background:var(--tile3);font-size:12.5px;font-weight:650;display:inline-flex;align-items:center}.dchips button:hover{background:var(--line2)}.dchips button.on{background:var(--accent);color:var(--on-accent)}
 .dnote{font-size:12.5px;color:var(--mute);display:flex;gap:8px;align-items:center;cursor:pointer}
-@media(max-width:900px){.uhead{display:none}.urow{grid-template-columns:30px minmax(0,1fr) auto;gap:10px}.urow .c.reg,.urow .c.w,.urow .c.fr,.urow .c.st,.urow .qa{display:none}.urow .c.seen{grid-column:2}.urow .c.pro{grid-column:3;grid-row:1;text-align:right}.urow .c.seen{grid-row:2}}
+@media(max-width:900px){.uhead{display:none}.urow{grid-template-columns:30px minmax(0,1fr) auto;gap:10px}.urow .c.reg,.urow .c.vis,.urow .c.w,.urow .c.fr,.urow .c.st,.urow .qa{display:none}.urow .c.seen{grid-column:2}.urow .c.pro{grid-column:3;grid-row:1;text-align:right}.urow .c.seen{grid-row:2}}
 @media(max-width:600px){.ubulk{bottom:12px;border-radius:24px;padding:10px 12px}}
 @media(max-width:1100px){#main{padding:26px 22px 60px}}
 @media(max-width:860px){
@@ -1106,7 +1106,7 @@ textarea.field{resize:none;line-height:1.5;min-height:84px;padding:12px 15px;fon
  .utool .uviews{flex:0 0 auto;order:2;margin:0 0 0 auto;padding:0 0 0 14px;border:0;border-left:1px solid var(--line);flex-wrap:nowrap}
  .utool .uviews .k{margin:0 2px 0 0;white-space:nowrap}
 }
-@media(min-width:1400px){.uhead,.urow{grid-template-columns:34px minmax(0,1.7fr) minmax(0,.9fr) minmax(212px,1fr) 70px 70px 90px minmax(0,.9fr) 34px}}
+@media(min-width:1400px){.uhead,.urow{grid-template-columns:34px minmax(0,1.7fr) minmax(0,.9fr) minmax(150px,1fr) 72px 70px 70px 90px minmax(0,.9fr) 34px}}
 
 /* ---- обзор и промокоды: без пустот ---- */
 .ovrow{display:grid;grid-template-columns:minmax(0,2fr) minmax(260px,1fr);gap:14px;align-items:stretch}
@@ -1963,7 +1963,7 @@ function uChips(){
   $("#ufl").innerHTML=h;
 }
 function uHead(){
-  var C=[["Пользователь","name"],["Регистрация","reg"],["Был онлайн","seen","Заходы","visits"],["Тренир.","w"],["Друзья","friends"],["Потрачено","stars"],["PRO до","pro"]];
+  var C=[["Пользователь","name"],["Регистрация","reg"],["Был онлайн","seen"],["Заходы","visits"],["Тренир.","w"],["Друзья","friends"],["Потрачено","stars"],["PRO до","pro"]];
   var sp=function(t,k){return '<span data-s="'+k+'" class="'+(US.sort===k?"on":"")+'">'+t+" <em>"+(US.dir>0?"↑":"↓")+"</em></span>"};
   $("#uhead").innerHTML='<label class="ucb" title="Выбрать всех по фильтру"><input type="checkbox" id="uall"><i></i></label>'+C.map(function(c){return c[2]?'<span class="uhh">'+sp(c[0],c[1])+sp(c[2],c[3])+"</span>":sp(c[0],c[1])}).join("")+"<span></span>";
 }
@@ -1987,7 +1987,8 @@ function uRender(){
       '<label class="ucb"><input type="checkbox" data-sel="'+u.tg_id+'"'+(usel[u.tg_id]?" checked":"")+"><i></i></label>"+
       '<div class="uu">'+av(u)+'<div class="m"><div class="t">'+nm(u)+(u.creator?'<span class="chip">создатель</span>':"")+(u.blocked?'<span class="chip r">блок</span>':"")+(u.private?'<span class="chip">приват</span>':"")+(u.delete_at?'<span class="chip r" title="Удаление аккаунта">удалится '+dshort(u.delete_at)+"</span>":"")+'</div><div class="s">'+(u.handle?"@"+esc(u.handle)+" · ":"")+u.tg_id+((u.platforms||[]).length?" · "+u.platforms.map(function(x){return PLAT[x]||x}).join(", "):"")+'</div>'+((u.tags&&u.tags.length)||u.note?'<div class="s utg" title="'+esc(u.note||"")+'">'+(u.tags||[]).map(function(t){return "#"+esc(t)}).join(" ")+(u.note?(u.tags&&u.tags.length?" · ":"")+esc(u.note):"")+"</div>":"")+"</div></div>"+
       '<div class="c reg" title="'+dt(u.created_at)+'">'+dshort(u.created_at)+"<small>"+ago(u.created_at)+"</small></div>"+
-      '<div class="c seen" title="'+dt(u.last_seen)+'"><span class="dot '+seenCls(u.last_seen)+'"></span>'+ago(u.last_seen)+"<small>"+(u.visits||1)+" "+plural(u.visits||1,"заход","захода","заходов")+"</small></div>"+
+      '<div class="c seen" title="'+dt(u.last_seen)+'"><span class="dot '+seenCls(u.last_seen)+'"></span>'+ago(u.last_seen)+"<small>"+dt(u.last_seen)+"</small></div>"+
+      '<div class="c n vis" title="Заходов в VOOB">'+fmt(u.visits||1)+'</div>'+
       '<div class="c n w" title="'+(u.last_workout?"Последняя: "+dt(u.last_workout):"Тренировок не было")+'">'+fmt(u.workouts)+'</div><div class="c n fr" title="Подарков: получено '+(u.gifts_in||0)+", отправлено "+(u.gifts_out||0)+'">'+fmt(u.friends||0)+'</div><div class="c n st">'+(u.stars?fmt(u.stars)+" ⭐":'<span style="color:var(--dim);font-weight:400">—</span>')+'</div><div class="c pro">'+pro+"</div>"+
       (u.handle?'<button class="qa" type="button" data-cp="'+esc(u.handle)+'" title="Скопировать ссылку на профиль"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="12" height="12" rx="3"/><path d="M5 15V6a3 3 0 0 1 3-3h9"/></svg></button>':"<span></span>")+"</div>"}).join(""):'<p class="hint" style="padding:18px 4px">'+(uall.length?"Под такие условия никто не подходит":"Пока никого нет")+"</p>";
   uanim=false;hydrate($("#ulist"));
