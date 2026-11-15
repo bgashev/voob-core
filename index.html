@@ -394,11 +394,11 @@ textarea.bx-txt::placeholder{color:#6f8296}
 .sch-l{display:grid;gap:6px;margin-top:8px}.sch-l:empty{display:none}.sch-it{display:flex;align-items:center;gap:8px;padding:8px 10px 8px 12px;border-radius:14px;background:var(--tile);border:1px solid var(--line);font-size:12.5px;color:var(--mute)}
 .sch-it svg{flex:none}.sch-it b{flex:1;min-width:0;color:var(--fg);font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.sch-it.done{opacity:.7}.sch-s{flex:none;color:var(--gold)}.sch-s.ok{color:#5fc98a}.sch-s.dn{color:#ef6b73}
 .sch-cx{flex:none;width:24px;height:24px;border-radius:8px;border:0;background:transparent;color:var(--mute);font-size:18px;line-height:1;cursor:pointer}.sch-cx:hover{color:var(--fg);background:var(--line)}
-.bx-sendbar{display:flex;align-items:center;gap:16px;flex-wrap:wrap;background:var(--tile);border:1px solid var(--line);border-radius:22px;padding:14px 16px 14px 22px}
-.bx-sendbar .bx-info{flex:1;min-width:220px;font-size:13.5px;color:var(--mute)}
+.bx-sendbar{display:flex;align-items:center;gap:16px;flex-wrap:wrap;background:var(--tile);border:1px solid var(--line);border-radius:22px;padding:12px 12px 12px 20px;width:fit-content;max-width:100%}
+.bx-sendbar .bx-info{flex:0 1 auto;min-width:0;font-size:13.5px;color:var(--mute)}
 .bx-sendbar .bx-info b{color:var(--fg)}
 .bx-sendbar .bx-info small{display:block;color:var(--dim);font-size:12px;margin-top:2px}
-.bx-hold{position:relative;height:46px;min-width:230px;border-radius:999px;border:0;background:var(--accent);color:var(--on-accent);font:700 14px var(--sans);cursor:pointer;overflow:hidden;padding:0 26px;user-select:none;-webkit-user-select:none;touch-action:none}
+.bx-hold{position:relative;height:46px;min-width:200px;border-radius:999px;border:0;background:var(--accent);color:var(--on-accent);font:700 14px var(--sans);cursor:pointer;overflow:hidden;padding:0 26px;user-select:none;-webkit-user-select:none;touch-action:none}
 .bx-hold:disabled{opacity:.35;cursor:not-allowed}
 .bx-hold{transition:transform .25s var(--ease),box-shadow .35s}
 .bx-hold.bx-go{transform:scale(.97);box-shadow:0 0 0 3px rgba(139,92,246,.22),0 14px 44px -10px rgba(139,92,246,.75)}
@@ -491,7 +491,7 @@ textarea.bx-txt::placeholder{color:#6f8296}
 .bx-root.bx-b .bx-aud .bx-th{display:none}
 .bx-root.bx-b .bx-aud button{border-radius:16px;text-align:left;padding:13px 16px;display:flex;justify-content:space-between;align-items:center}
 .bx-root.bx-b .bx-aud button.bx-on{background:var(--accent)}
-.bx-root.bx-b .bx-sendbar{display:grid;border-radius:26px;padding:20px}
+.bx-root.bx-b .bx-sendbar{display:grid;border-radius:26px;padding:20px;width:auto}
 .bx-root.bx-b .bx-sendbar .bx-info{min-width:0}
 .bx-root.bx-b .bx-hold{width:100%}
 .bx-root.bx-b .bx-bside{display:grid;gap:16px;grid-column:2;align-self:start}
