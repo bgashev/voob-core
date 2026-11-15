@@ -478,6 +478,9 @@ textarea.bx-txt::placeholder{color:#6f8296}
 .psub{color:var(--mute);font-size:13px;margin-top:3px;min-height:20px}
 section.pg{display:grid;gap:14px;align-content:start}
 .enter>*{animation:rise .42s var(--ease) both;animation-delay:calc(var(--i,0)*26ms)}
+/* контейнеры, чьё содержимое анимируется само, не анимируем второй раз — иначе «двойная» дёрганая загрузка */
+#t-ov.enter>#stats,#t-us.enter>#ust,#t-us.enter>.utable{animation:none}
+#t-ov.noa .kpi,#t-ov.noa .srow{animation:none}#t-ov.noa .kpi svg.sp{animation:none;clip-path:none}
 @keyframes rise{from{opacity:0;transform:translateY(10px)}}
 #lo{position:fixed;z-index:80;width:236px;padding:16px;border-radius:20px;background:var(--tile2);border:1px solid var(--line2);box-shadow:0 18px 50px rgba(0,0,0,.55);transform-origin:left bottom;animation:lopop .32s var(--ease)}
 #lo[hidden]{display:none}
@@ -3033,6 +3036,7 @@ var rzT=0;
 window.addEventListener("resize",function(){clearTimeout(rzT);rzT=setTimeout(function(){if(CUR!=="ov")return;for(var id in CHS){var c=CHS[id];chart(id,c[0],c[1],c[2],c[3],true)}},180)});
 if(window.ResizeObserver){var rw=0,ro=new ResizeObserver(function(es){var w=es[0].contentRect.width;if(Math.abs(w-rw)<4)return;rw=w;clearTimeout(rzT);rzT=setTimeout(function(){if(CUR!=="ov")return;for(var id in CHS){var c=CHS[id];chart(id,c[0],c[1],c[2],c[3],true)}},120)});var c1=$("#ch1");if(c1)ro.observe(c1)}
 
+var OVA=false;
 function loadOv(){
   loadEvents();loadPlat();perSync();
   $("#sub-ov").textContent="Обновляю…";
@@ -3042,6 +3046,7 @@ function loadOv(){
     var c=j.cur||{},p=j.prev||{},bk=bucket(j.series,daysSel),tail=(j.series||[]).slice(-14);
     function sp(k){var a=tail.map(function(x){return +x[k]||0});return a.some(Boolean)?a:null}
     var pn=periodName(daysSel);
+    $("#t-ov").classList.toggle("noa",OVA);OVA=true;
     var h=kpi(0,"users","Пользователи","accent","us",j.users,"+"+fmt(c.new)+" за "+pn,sp("new"),pct(c.new,p.new),{hero:1})+
      kpi(1,"today","Сегодня","green","bolt",j.active_today,"заходили или тренировались",null,pct(j.active_today,j.active_yesterday))+
      kpi(2,"active","Активны · "+pn,"blue","pulse",c.active,"уникальных",sp("active"),pct(c.active,p.active))+
