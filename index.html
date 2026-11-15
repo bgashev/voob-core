@@ -962,14 +962,26 @@ textarea.field{resize:none;line-height:1.5;min-height:84px;padding:12px 15px;fon
 .urow .qa{all:unset;cursor:pointer;width:30px;height:30px;border-radius:50%;display:grid;place-items:center;color:var(--mute);opacity:0;transition:opacity .16s,background .16s,color .16s}
 .urow:hover .qa,.urow .qa:focus-visible{opacity:1}.urow .qa:hover{background:var(--tile3);color:var(--fg)}
 .urow .av{width:38px;height:38px;font-size:14px}
-.ubulk{position:fixed;left:50%;bottom:22px;transform:translate(-50%,0);z-index:60;display:flex;gap:6px;align-items:center;flex-wrap:wrap;justify-content:center;max-width:calc(100vw - 28px);padding:8px 10px 8px 18px;border-radius:999px;background:rgba(29,29,33,.86);backdrop-filter:blur(22px);-webkit-backdrop-filter:blur(22px);border:1px solid var(--line2);box-shadow:0 18px 50px rgba(0,0,0,.5);animation:ubin .34s var(--ease) both}
+.ubulk{position:fixed;left:50%;bottom:22px;transform:translate(-50%,0);z-index:60;display:flex;align-items:center;gap:4px;max-width:calc(100vw - 28px);padding:6px;border-radius:22px;background:var(--tile2);border:1px solid var(--line2);box-shadow:0 14px 40px rgba(0,0,0,.45);animation:ubin .34s var(--ease) both}
+.ubulk .ubc{display:flex;align-items:center;gap:10px;padding:0 6px 0 12px;white-space:nowrap}
+.ubulk .ubc b{font-size:13.5px;margin:0;display:flex;align-items:center;gap:8px}
+.ubulk .ubc b i{font-style:normal;min-width:24px;height:24px;padding:0 7px;border-radius:99px;background:var(--accent);color:var(--on-accent);display:inline-grid;place-items:center;font-size:12.5px;font-weight:750}
+.ubulk .ubc a{all:unset;cursor:pointer;font-size:12.5px;color:var(--mute);text-decoration:underline;text-underline-offset:3px}.ubulk .ubc a:hover{color:var(--fg)}
+.ubulk .ubg{display:flex;align-items:center;gap:2px;padding-left:6px;margin-left:4px;border-left:1px solid var(--line2)}
+.ubulk .ubg button{all:unset;cursor:pointer;height:34px;padding:0 13px;border-radius:14px;font-size:13px;font-weight:600;color:var(--fg);display:inline-flex;align-items:center;gap:7px;white-space:nowrap;transition:background .15s}
+.ubulk .ubg button:hover{background:var(--tile3)}
+.ubulk .ubg button svg{width:15px;height:15px;stroke:currentColor;fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;color:var(--mute)}
+.ubulk .ubg button:hover svg{color:var(--fg)}
+.ubulk .ubg button.dg{color:#ff8b8b}.ubulk .ubg button.dg svg{color:#ff8b8b}.ubulk .ubg button.dg:hover{background:rgba(255,107,107,.14)}
+.ubulk .ubg button.ic{padding:0;width:34px;justify-content:center}
+.ubulk .ubx{all:unset;cursor:pointer;width:34px;height:34px;border-radius:14px;display:grid;place-items:center;color:var(--mute);margin-left:4px;background:var(--tile3)}.ubulk .ubx:hover{color:var(--fg);background:var(--line2)}.ubulk .ubx svg{width:15px;height:15px;stroke:currentColor;stroke-width:2;stroke-linecap:round;fill:none}
 @keyframes ubin{from{opacity:0;transform:translate(-50%,16px)}}
-#t-us{padding-bottom:90px}.ubulk b{font-size:13px;margin-right:6px;white-space:nowrap}.ubulk .btn{height:32px}
+#t-us{padding-bottom:90px}
 .ubp{height:6px;border-radius:6px;background:var(--tile3);overflow:hidden;margin:16px 0 8px}.ubp i{display:block;height:100%;width:0;background:var(--accent);transition:width .25s var(--ease)}
 .dchips{display:flex;gap:6px;flex-wrap:wrap}.dchips button{all:unset;cursor:pointer;height:30px;padding:0 14px;border-radius:999px;background:var(--tile3);font-size:12.5px;font-weight:650;display:inline-flex;align-items:center}.dchips button:hover{background:var(--line2)}.dchips button.on{background:var(--accent);color:var(--on-accent)}
 .dnote{font-size:12.5px;color:var(--mute);display:flex;gap:8px;align-items:center;cursor:pointer}
 @media(max-width:900px){.uhead{display:none}.urow{grid-template-columns:30px minmax(0,1fr) auto;gap:10px}.urow .c.reg,.urow .c.vis,.urow .c.w,.urow .c.fr,.urow .c.st,.urow .qa{display:none}.urow .c.seen{grid-column:2}.urow .c.pro{grid-column:3;grid-row:1;text-align:right}.urow .c.seen{grid-row:2}}
-@media(max-width:600px){.ubulk{bottom:12px;border-radius:24px;padding:10px 12px}}
+@media(max-width:1100px){.ubulk{flex-wrap:wrap;justify-content:center;border-radius:24px}.ubulk .ubg{border-left:0;margin-left:0;padding-left:0}}@media(max-width:600px){.ubulk{bottom:12px}}
 @media(max-width:1100px){#main{padding:26px 22px 60px}}
 @media(max-width:860px){
  #app{display:block}
@@ -1054,6 +1066,17 @@ textarea.field{resize:none;line-height:1.5;min-height:84px;padding:12px 15px;fon
 #main:has(#t-ov:not([hidden])){max-width:1860px}
 .ovg{display:grid;grid-template-columns:minmax(0,1fr);gap:14px;align-items:start}
 .ova,.ovb{display:grid;gap:14px;min-width:0;align-content:start}
+.fnl{display:grid;gap:10px}
+.fnl .fr{display:grid;grid-template-columns:1fr auto;gap:2px 10px;align-items:center}
+.fnl .fr>span{font-size:13px;color:var(--mute,#9aa0ad)}
+.fnl .fr>b{font-size:15px;font-variant-numeric:tabular-nums}
+.fnl .fr>b em{font-style:normal;font-weight:500;font-size:12px;color:var(--mute,#9aa0ad);margin-left:6px}
+.fnl .fb{grid-column:1/-1;height:8px;border-radius:99px;background:var(--tile2,#1c1f27);overflow:hidden}
+.fnl .fb i{display:block;height:100%;border-radius:99px;background:var(--accent);min-width:3px;transition:width .6s cubic-bezier(.2,.8,.2,1)}
+.fnl .fr.worst .fb i{background:var(--red,#ff6b6b)}
+.fnl .fr.worst>span{color:var(--red,#ff6b6b)}
+.fnl .fn{font-size:12.5px;line-height:1.45;color:var(--mute,#9aa0ad);padding-top:4px;border-top:1px solid var(--line)}
+.fnl .fn b{color:inherit;font-weight:600}
 .ovst{display:grid;gap:0;padding:6px 20px}
 .srow{display:flex;align-items:center;gap:14px;padding:14px 0;border-top:1px solid var(--line);animation:rise .5s var(--ease) both;animation-delay:calc(var(--i,0)*60ms)}
 .srow:first-child{border-top:0}
@@ -1277,6 +1300,7 @@ textarea.field{resize:none;line-height:1.5;min-height:84px;padding:12px 15px;fon
       <div class="ovb">
         <div class="tile ovst" id="st"></div>
         <div class="tile" id="plat" hidden><div class="chartT"><h3>Платформы за 7 дней</h3></div><div id="platG"></div></div>
+        <div class="tile" id="fun" hidden><div class="chartT"><h3>Воронка новичков<span class="sub" id="funS"></span></h3></div><div id="funG"></div></div>
       </div>
       <div class="tile ovc" id="evbox" hidden><h3>Нового с прошлого визита</h3><div class="list" id="evlist"></div></div>
     </div>
@@ -1814,6 +1838,29 @@ function loadEvents(){
     try{localStorage.setItem(SK,new Date().toISOString())}catch(e){}
   });
 }
+var funT=0;
+function loadFun(){
+  function draw(list){
+    var now=Date.now(),days=daysSel>0?daysSel:30,co=list.filter(function(u){var t=Date.parse(u.created_at)||0;return now-t<=days*864e5});
+    if(!co.length){$("#fun").hidden=true;return}
+    var N=co.length,
+      S=[["Пришли",N],
+         ["Зашли повторно",co.filter(function(u){return (u.visits||1)>=2}).length],
+         ["Записали 1-ю тренировку",co.filter(function(u){return (u.workouts||0)>=1}).length],
+         ["3+ тренировки",co.filter(function(u){return (u.workouts||0)>=3}).length],
+         ["Добавили друга",co.filter(function(u){return (u.friends||0)>=1}).length]];
+    var worst=-1,wl=0;
+    for(var i=1;i<3;i++){var lost=S[i-1][1]?(S[i-1][1]-S[i][1])/S[i-1][1]:0;if(lost>wl){wl=lost;worst=i}}
+    $("#funS").textContent=" · за "+periodName(daysSel);
+    $("#funG").innerHTML='<div class="fnl">'+S.map(function(x,i){
+      var pc=N?Math.round(x[1]/N*100):0,w=N?x[1]/N*100:0;
+      return '<div class="fr'+(i===worst?" worst":"")+'"><span>'+x[0]+'</span><b>'+fmt(x[1])+'<em>'+pc+'%</em></b><div class="fb"><i style="width:'+w+'%"></i></div></div>'}).join("")+
+      (worst>0&&wl>0?'<div class="fn">Больше всего теряем на шаге «<b>'+S[worst][0]+'</b>»: отваливается '+Math.round(wl*100)+'% от предыдущего шага.</div>':"")+"</div>";
+    $("#fun").hidden=false;
+  }
+  if(uall&&uall.length&&Date.now()-funT<60000){draw(uall);return}
+  api("users",{q:"",filter:"all"},"x").then(function(j){if(j.error||!j.users)return;uall=j.users;lastUsers=uall;funT=Date.now();draw(uall)});
+}
 function loadPlat(){
   api("usage",{hours:168},"x").then(function(j){
     if(j.error||!j.platforms)return;
@@ -2070,8 +2117,11 @@ function uBulk(srt){
   var ids=uSelIds(),b=$("#ubulk");
   if(!ids.length){b.hidden=true;b.innerHTML="";return}
   b.hidden=false;
-  b.innerHTML='<b>Выбрано '+ids.length+"</b>"+(srt&&srt.length>ids.length?'<button class="btn sm" data-b="all">Все '+srt.length+" по фильтру</button>":"")+
-    '<button class="btn sm" data-b="gift">Подарок</button><button class="btn sm" data-b="pro">PRO</button><button class="btn sm" data-b="msg">Сообщение</button><button class="btn sm" data-b="tag">Теги и заметка</button><button class="btn sm" data-b="blk">Блок</button><button class="btn sm" data-b="unb" title="Разблокировать">Разблок.</button><button class="btn sm" data-b="ids" title="Скопировать ID выбранных">ID</button><button class="btn sm" data-b="csv">CSV</button><button class="btn sm" data-b="x" title="Снять выбор (Esc)">✕</button>';
+  b.innerHTML='<div class="ubc"><b><i>'+ids.length+'</i>выбрано</b>'+(srt&&srt.length>ids.length?'<a data-b="all">выбрать все '+srt.length+'</a>':"")+'</div>'+
+    '<div class="ubg"><button type="button" data-b="gift"><svg viewBox="0 0 24 24"><rect x="3" y="8" width="18" height="4" rx="1"/><path d="M12 8v13M5 12v8a1 1 0 001 1h12a1 1 0 001-1v-8M7.5 8a2.5 2.5 0 010-5C10 3 12 8 12 8s2-5 4.5-5a2.5 2.5 0 010 5"/></svg>Подарок</button><button type="button" data-b="pro"><svg viewBox="0 0 24 24"><path d="M3 8l4 4 5-7 5 7 4-4-2 11H5z"/></svg>PRO</button><button type="button" data-b="msg"><svg viewBox="0 0 24 24"><path d="M4 5h16v11H9l-5 4z"/></svg>Сообщение</button><button type="button" data-b="tag" title="Теги и заметка"><svg viewBox="0 0 24 24"><path d="M3 12V4h8l10 10-8 8z"/><circle cx="7.5" cy="8.5" r="1"/></svg>Теги</button></div>'+
+    '<div class="ubg"><button type="button" data-b="blk" class="dg"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M5.6 5.6l12.8 12.8"/></svg>Блок</button><button type="button" data-b="unb" title="Разблокировать"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M8 12.5l3 3 5-6"/></svg>Разблок.</button></div>'+
+    '<div class="ubg"><button type="button" data-b="ids" class="ic" title="Скопировать ID выбранных"><svg viewBox="0 0 24 24"><rect x="8" y="8" width="12" height="12" rx="2"/><path d="M16 8V6a2 2 0 00-2-2H6a2 2 0 00-2 2v8a2 2 0 002 2h2"/></svg></button><button type="button" data-b="csv" class="ic" title="Выгрузить CSV"><svg viewBox="0 0 24 24"><path d="M12 4v11M7 11l5 5 5-5M5 20h14"/></svg></button></div>'+
+    '<button type="button" class="ubx" data-b="x" title="Снять выбор (Esc)"><svg viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18"/></svg></button>';
 }
 $("#ubulk").onclick=function(e){
   var k=(e.target.closest("[data-b]")||{dataset:{}}).dataset.b;if(!k)return;var ids=uSelIds();
@@ -3038,7 +3088,7 @@ if(window.ResizeObserver){var rw=0,ro=new ResizeObserver(function(es){var w=es[0
 
 var OVA=false;
 function loadOv(){
-  loadEvents();loadPlat();perSync();
+  loadEvents();loadPlat();loadFun();perSync();
   $("#sub-ov").textContent="Обновляю…";
   api("overview",{days:daysSel}).then(function(j){
     if(j.error){$("#eov").textContent=j.error;$("#sub-ov").textContent="";return}
