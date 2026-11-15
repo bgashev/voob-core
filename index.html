@@ -1046,6 +1046,48 @@ textarea.field{resize:none;line-height:1.5;min-height:84px;padding:12px 15px;fon
 #t-set .tile>.row:last-child,#t-set .tile>.hint:last-child{margin-bottom:0}
 @media(max-width:900px){.sgrid{grid-template-columns:1fr}.sstat{grid-template-columns:repeat(2,minmax(0,1fr))}}
 
+
+/* ---- обзор: широкий экран 16:9 — панель показателей + 2–3 колонки ---- */
+#main:has(#t-ov:not([hidden])){max-width:1860px}
+.ovg{display:grid;grid-template-columns:minmax(0,1fr);gap:14px;align-items:start}
+.ova,.ovb{display:grid;gap:14px;min-width:0;align-content:start}
+.ovst{display:grid;gap:0;padding:6px 20px}
+.srow{display:flex;align-items:center;gap:14px;padding:14px 0;border-top:1px solid var(--line);animation:rise .5s var(--ease) both;animation-delay:calc(var(--i,0)*60ms)}
+.srow:first-child{border-top:0}
+.srow .ib{width:34px;height:34px;border-radius:11px;display:grid;place-items:center;flex:none;color:var(--c);background:color-mix(in srgb,var(--c) 14%,transparent)}
+.srow .ib svg{width:17px;height:17px}
+.srow .sm{flex:1;min-width:0}
+.srow .tt{font:700 10.5px var(--sans);letter-spacing:.1em;text-transform:uppercase;color:var(--mute);white-space:nowrap}
+.srow .sb{font-size:12.5px;color:var(--mute);margin-top:3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.srow .dl{font:700 11px var(--sans);padding:2px 7px;border-radius:7px;color:var(--c2);background:color-mix(in srgb,var(--c2) 13%,transparent);flex:none}
+.srow .v{font:800 30px/1 var(--disp);letter-spacing:-.03em;font-variant-numeric:tabular-nums;min-width:34px;text-align:right}
+.srow.zero .v{color:var(--mute)}
+#plat .chartT{margin-bottom:14px}
+.pbar{display:flex;gap:3px;height:12px;margin-bottom:16px}.pbar i{display:block;height:12px;border-radius:6px;min-width:6px;background:var(--c);transition:flex .6s var(--ease)}
+.plr{display:flex;align-items:center;gap:10px;padding:8px 0;font-size:14px}.plr+.plr{border-top:1px solid var(--line)}
+.plr i{width:9px;height:9px;border-radius:3px;background:var(--c);flex:none}.plr span{flex:1;color:var(--mute)}.plr b{font-weight:700;font-variant-numeric:tabular-nums}.plr em{font-style:normal;width:44px;text-align:right;color:var(--mute);font-size:12.5px;font-variant-numeric:tabular-nums}
+.plr.tot{margin-top:2px;border-top:1px solid var(--line)}.plr.tot b{font-size:15px}
+@media(min-width:1100px){
+ .bento{grid-template-columns:repeat(5,minmax(0,1fr));gap:0;background:var(--tile);border:1px solid var(--line);border-radius:24px;overflow:hidden}
+ .bento .kpi{height:136px;border-radius:0;border:0;border-left:1px solid var(--line);background:transparent;padding:20px 22px}
+ .bento .kpi:first-child{border-left:0}
+ .bento .kpi:hover{background:var(--tile2)}
+ .bento .kpi.hero{background:var(--accent)}.bento .kpi.hero:hover{background:color-mix(in srgb,var(--accent) 92%,#fff)}
+ .bento .kpi .v{font-size:42px;margin-top:10px}
+ .bento .kpi .sb{left:22px;bottom:18px}.bento .kpi svg.sp{right:22px;bottom:18px}
+}
+@media(min-width:1180px){
+ .ovg{grid-template-columns:minmax(0,2fr) minmax(300px,1fr);grid-template-areas:"a b" "a c"}
+ .ova{grid-area:a}.ovb{grid-area:b}.ovc{grid-area:c}
+ .ovg:has(#evbox[hidden]) .ovc{display:none}
+}
+@media(min-width:1700px){
+ .ovg{grid-template-columns:minmax(0,1.9fr) minmax(300px,1fr) minmax(300px,1fr);grid-template-areas:"a b c"}
+ .ovg:has(#evbox[hidden]){grid-template-columns:minmax(0,2fr) minmax(320px,1fr);grid-template-areas:"a b"}
+ #evbox .list{max-height:560px}
+}
+@media(max-width:1099px){.bento .kpi.hero{grid-column:span 2}}
+
 /* ---- обзор и промокоды: без пустот ---- */
 .ovrow{display:grid;grid-template-columns:minmax(0,2fr) minmax(260px,1fr);gap:14px;align-items:stretch}
 .ovrow:has(#evbox[hidden]){grid-template-columns:minmax(0,1fr)}
@@ -1204,12 +1246,17 @@ textarea.field{resize:none;line-height:1.5;min-height:84px;padding:12px 15px;fon
   <section id="t-ov" class="stack">
     <div class="tile tool"><div class="seg" id="perSeg"><button data-d="7" aria-pressed="false">7 дней</button><button data-d="30" aria-pressed="true">30 дней</button><button data-d="90" aria-pressed="false">90 дней</button><button data-d="180" aria-pressed="false">6 месяцев</button><button data-d="365" aria-pressed="false">Год</button><button data-d="c" aria-pressed="false">Свой</button></div><span class="mt" id="perCust"></span><span class="sp1"></span><span class="dm" id="perCmp"></span></div>
     <div class="bento" id="stats"></div>
-    <div class="tile" id="plat" hidden><h3>Платформы за 7 дней</h3><div class="grid" id="platG" style="margin-top:12px"></div></div>
-    <div class="ovrow">
-      <div class="tile"><div class="chartT"><h3>Активность и новые люди<span class="sub" id="gran"></span></h3><div class="legend" id="lg1"></div></div><div id="ch1"></div></div>
-      <div class="tile" id="evbox" hidden><h3>Нового с прошлого визита</h3><div class="list" id="evlist"></div></div>
+    <div class="ovg">
+      <div class="ova">
+        <div class="tile"><div class="chartT"><h3>Активность и новые люди<span class="sub" id="gran"></span></h3><div class="legend" id="lg1"></div></div><div id="ch1"></div></div>
+        <div class="two"><div class="tile"><div class="chartT"><h3>Тренировки</h3></div><div id="ch2"></div></div><div class="tile"><div class="chartT"><h3>Выручка</h3></div><div id="ch3"></div></div></div>
+      </div>
+      <div class="ovb">
+        <div class="tile ovst" id="st"></div>
+        <div class="tile" id="plat" hidden><div class="chartT"><h3>Платформы за 7 дней</h3></div><div id="platG"></div></div>
+      </div>
+      <div class="tile ovc" id="evbox" hidden><h3>Нового с прошлого визита</h3><div class="list" id="evlist"></div></div>
     </div>
-    <div class="two"><div class="tile"><div class="chartT"><h3>Тренировки</h3></div><div id="ch2"></div></div><div class="tile"><div class="chartT"><h3>Выручка</h3></div><div id="ch3"></div></div></div>
     <p class="err" id="eov"></p>
   </section>
 
@@ -1747,8 +1794,11 @@ function loadEvents(){
 function loadPlat(){
   api("usage",{hours:168},"x").then(function(j){
     if(j.error||!j.platforms)return;
-    var P=j.platforms,t=function(k,v){return '<div class="item"><div class="m"><div class="s">'+k+'</div><div class="t" style="font-size:22px">'+fmt(v)+"</div></div></div>"};
-    $("#platG").innerHTML=t("Mini App",P.miniapp.users)+t("WEB",P.web.users)+t("Windows",P.desktop.users)+t("Входов",j.logins);$("#plat").hidden=false;
+    var P=j.platforms,L=[["Mini App",P.miniapp.users,"blue"],["WEB",P.web.users,"violet"],["Windows",P.desktop.users,"cyan"]],tot=L.reduce(function(a,x){return a+(+x[1]||0)},0)||1;
+    $("#platG").innerHTML='<div class="pbar">'+L.map(function(x){return '<i style="flex:'+(+x[1]||0)+' 1 0;--c:var(--'+x[2]+');'+(+x[1]?"":"display:none")+'"></i>'}).join("")+"</div>"+
+      L.map(function(x){return '<div class="plr" style="--c:var(--'+x[2]+')"><i></i><span>'+x[0]+"</span><b>"+fmt(x[1])+"</b><em>"+Math.round((+x[1]||0)/tot*100)+"%</em></div>"}).join("")+
+      '<div class="plr tot"><span>Входов</span><b>'+fmt(j.logins)+"</b></div>";
+    $("#plat").hidden=false;
   });
 }
 var TABS=["ov","us","fb","pay","bc","an","pr","lg","set"],loaded={};
@@ -2904,6 +2954,11 @@ function kpi(i,key,title,c,icn,val,sub,sp,d,o){
   return '<div class="kpi'+(o.hero?" hero":"")+(o.s2?" s2":"")+(sp?" hasp":"")+'" style="--c:var(--'+c+');--c2:'+(o.hero?"var(--on-accent)":dc)+';--i:'+i+'"><div class="kh"><span class="ib">'+ic(icn,2)+'</span><span class="tt">'+title+"</span>"+(d==null?"":'<span class="dl">'+(d>0?"+":"")+d+"%</span>")+'</div><div class="v" data-k="'+key+'" data-n="'+(+val||0)+'">'+(KV[key]===val?fmt(val):"0")+'</div><div class="sb">'+sub+"</div>"+spark(sp,110,34)+"</div>";
 }
 
+function srow(i,key,title,c,icn,val,sub,d){
+  var dc=d>0?"var(--green)":d<0?"var(--bad)":"var(--mute)";
+  return '<div class="srow'+(+val?"":" zero")+'" style="--c:var(--'+c+');--c2:'+dc+';--i:'+i+'"><span class="ib">'+ic(icn,2)+'</span><div class="sm"><div class="tt">'+title+'</div><div class="sb">'+sub+"</div></div>"+(d?'<span class="dl">'+(d>0?"+":"")+d+"%</span>":"")+'<div class="v" data-k="'+key+'" data-n="'+(+val||0)+'">'+(KV[key]===val?fmt(val):"0")+"</div></div>";
+}
+
 // графики
 var CHS={};
 function bucket(s,days){
@@ -2968,14 +3023,14 @@ function loadOv(){
     var pn=periodName(daysSel);
     var h=kpi(0,"users","Пользователи","accent","us",j.users,"+"+fmt(c.new)+" за "+pn,sp("new"),pct(c.new,p.new),{hero:1})+
      kpi(1,"today","Сегодня","green","bolt",j.active_today,"заходили или тренировались",null,pct(j.active_today,j.active_yesterday))+
-     kpi(2,"active","Активны · "+pn,"blue","pulse",c.active,"уникальных",sp("active"),pct(c.active,p.active),{s2:1})+
+     kpi(2,"active","Активны · "+pn,"blue","pulse",c.active,"уникальных",sp("active"),pct(c.active,p.active))+
      kpi(3,"new","Новые · "+pn,"violet","user",c.new,"регистраций",sp("new"),pct(c.new,p.new))+
-     kpi(4,"workouts","Тренировки","cyan","dumbbell",c.workouts,"записано за "+pn,sp("workouts"),pct(c.workouts,p.workouts))+
-     kpi(5,"pro","PRO сейчас","gold","crown",j.pro,"активных подписок",null,null,{s2:1})+
-     kpi(6,"stars","Звёзды · "+pn,"gold","star",c.stars,"без возвратов",sp("stars"),pct(c.stars,p.stars),{s2:1})+
-     kpi(7,"fb_new","Ждут ответа","red","fb",j.fb_new,"ограничены: "+fmt(j.blocked),null,null,{s2:1});
+     kpi(4,"workouts","Тренировки","cyan","dumbbell",c.workouts,"записано за "+pn,sp("workouts"),pct(c.workouts,p.workouts));
+    $("#st").innerHTML=srow(5,"pro","PRO сейчас","gold","crown",j.pro,"активных подписок",null)+
+     srow(6,"stars","Звёзды · "+pn,"gold","star",c.stars,"без возвратов",pct(c.stars,p.stars))+
+     srow(7,"fb_new","Ждут ответа","red","fb",j.fb_new,"ограничены: "+fmt(j.blocked),null);
     $("#stats").innerHTML=h;
-    $$("#stats .v").forEach(function(e,i){var k=e.dataset.k,v=+e.dataset.n;if(KV[k]===v){e.textContent=fmt(v)}else{setTimeout(function(){countUp(e,v,1200)},i*60)}KV[k]=v});
+    $$("#stats .v,#st .v").forEach(function(e,i){var k=e.dataset.k,v=+e.dataset.n;if(KV[k]===v){e.textContent=fmt(v)}else{setTimeout(function(){countUp(e,v,1200)},i*60)}KV[k]=v});
     var an=!!CHS.ch1&&!!CHS._seen;CHS._seen=1;
     chart("ch1",bk.rows,[["active","Активны"+(daysSel>45?" (в ср. за день)":""),"green"],["new","Новые","violet"]],"line",250);
     $("#lg1").innerHTML='<span><i style="background:var(--green)"></i>Активны</span><span><i style="background:var(--violet)"></i>Новые</span>';
