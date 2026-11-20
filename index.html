@@ -1689,7 +1689,11 @@ function askPin(){
 }
 // запрос с автоподтверждением: если нужен свежий код с почты, спрашиваем его в окне и повторяем
 function api(action,extra,fn){
+  /* без токена на сервер не ходим; ответ на запрос со старым токеном (до входа) не должен выкидывать новую сессию */
+  if(!token)return Promise.resolve({error:"Нет сессии",_http:0});
+  var sent=token;
   return call(action,extra,fn).then(function(j){
+    if(sent!==token)return j;
     if(j.need_pin)return askPin().then(function(ok){return ok?call(action,extra,fn):j});
     if(j.expired||(j._http===401&&!j.need_otp&&!j.need_step)){bye(true);return j}
     if(j.need_otp){bye(false);return j}
