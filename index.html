@@ -1221,7 +1221,7 @@ textarea.field{resize:none;line-height:1.5;min-height:84px;padding:12px 15px;fon
 .srow .v{font:800 30px/1 var(--disp);letter-spacing:-.03em;font-variant-numeric:tabular-nums;min-width:34px;text-align:right}
 .srow.zero .v{color:var(--mute)}
 #plat .chartT{margin-bottom:14px}
-.pbar{display:flex;gap:3px;height:12px;margin-bottom:16px}.pbar i{display:block;height:12px;border-radius:6px;min-width:6px;background:var(--c);transition:flex .6s var(--ease)}
+.plbar{display:flex;gap:3px;height:12px;margin-bottom:16px}.plbar i{display:block;height:12px;border-radius:6px;min-width:6px;background:var(--c);transition:flex .6s var(--ease)}
 .plr{display:flex;align-items:center;gap:10px;padding:8px 0;font-size:14px}.plr+.plr{border-top:1px solid var(--line)}
 .plr i{width:9px;height:9px;border-radius:3px;background:var(--c);flex:none}.plr span{flex:1;color:var(--mute)}.plr b{font-weight:700;font-variant-numeric:tabular-nums}.plr em{font-style:normal;width:44px;text-align:right;color:var(--mute);font-size:12.5px;font-variant-numeric:tabular-nums}
 .plr.tot{margin-top:2px;border-top:1px solid var(--line)}.plr.tot b{font-size:15px}
@@ -2005,7 +2005,7 @@ function loadPlat(){
   api("usage",{hours:168},"x").then(function(j){
     if(j.error||!j.platforms)return;
     var P=j.platforms,L=[["Mini App",P.miniapp.users,"blue"],["WEB",P.web.users,"violet"],["Windows",P.desktop.users,"cyan"]],tot=L.reduce(function(a,x){return a+(+x[1]||0)},0)||1;
-    $("#platG").innerHTML='<div class="pbar">'+L.map(function(x){return '<i style="flex:'+(+x[1]||0)+' 1 0;--c:var(--'+x[2]+');'+(+x[1]?"":"display:none")+'"></i>'}).join("")+"</div>"+
+    $("#platG").innerHTML='<div class="plbar">'+L.map(function(x){return '<i style="flex:'+(+x[1]||0)+' 1 0;--c:var(--'+x[2]+');'+(+x[1]?"":"display:none")+'"></i>'}).join("")+"</div>"+
       L.map(function(x){return '<div class="plr" style="--c:var(--'+x[2]+')"><i></i><span>'+x[0]+"</span><b>"+fmt(x[1])+"</b><em>"+Math.round((+x[1]||0)/tot*100)+"%</em></div>"}).join("")+
       '<div class="plr tot"><span>Входов</span><b>'+fmt(j.logins)+"</b></div>";
     $("#plat").hidden=false;
