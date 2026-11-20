@@ -1695,7 +1695,7 @@ function api(action,extra,fn){
   return call(action,extra,fn).then(function(j){
     if(sent!==token)return j;
     if(j.need_pin)return askPin().then(function(ok){return ok?call(action,extra,fn):j});
-    if(j.expired||(j._http===401&&!j.need_otp&&!j.need_step)){bye(true);return j}
+    if(j.expired===true||(j._http===401&&!j.need_otp&&!j.need_step)){bye(true);return j}
     if(j.need_otp){bye(false);return j}
     if(j.need_step)return askStep().then(function(ok){return ok?call(action,extra,fn):j});
     return j;
