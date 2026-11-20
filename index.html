@@ -396,6 +396,7 @@ textarea.bx-txt::placeholder{color:#6f8296}
 .bx-root.hx{grid-template-columns:minmax(0,1fr) 360px;align-items:start;gap:16px;max-width:1180px}
 .hx-main{display:grid;gap:14px;min-width:0}
 .hx-card{background:var(--tile);border:1px solid var(--line);border-radius:22px;padding:18px;min-width:0}
+.hx-card.hx-free{background:none;border:0;border-radius:0;padding:4px 0}
 .hx-h{display:flex;align-items:center;gap:9px;margin:0 0 12px;font:800 11px var(--sans);letter-spacing:.14em;color:var(--dim);text-transform:uppercase}
 .hx-n{width:20px;height:20px;border-radius:50%;background:var(--tile3);display:grid;place-items:center;font:800 11px var(--sans);letter-spacing:0;color:var(--fg)}
 .hx-card .bx-device{padding:6px 0 0;background:none;border:0;border-radius:0;overflow:visible}
@@ -3761,7 +3762,7 @@ function hxCard(n,t){var e=document.createElement("div");e.className="hx-card";e
 function hxBuild(){if(hxDone)return;hxDone=1;var root=$("#bxroot"),side=$("#bxbside"),main=document.createElement("div");main.className="hx-main";
   var c1=hxCard(1,"Кому"),c2=hxCard(2,"Сообщение, картинка и кнопка"),c3=hxCard(3,"Когда"),rd=hxCard("✓","Готовность");
   c1.body.style.display="grid";c1.body.style.gap="12px";c1.body.appendChild($("#bxaud"));c1.body.appendChild($("#bxsg"));
-  c2.body.appendChild($(".bx-device"));
+  c2.el.classList.add("hx-free");c2.body.appendChild($(".bx-device"));
   var host=document.createElement("div");host.id="bxschhost";c3.body.appendChild(host);
   main.appendChild(c1.el);main.appendChild(c2.el);main.appendChild(c3.el);
   rd.body.innerHTML='<ul class="hx-chk" id="hxchk"></ul><div id="hxrows"></div>';side.insertBefore(rd.el,side.firstChild);
