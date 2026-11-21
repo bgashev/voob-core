@@ -690,10 +690,13 @@ const SEG_NEW: Record<string, number> = { new1: DAY, new7: 7 * DAY, new30: 30 * 
 const SEG_ACT: Record<string, number> = { act1: DAY, act7: 7 * DAY };
 const SEG_KEYS = [...Object.keys(SEG_NEW), ...Object.keys(SEG_ACT), "often", "expired"];
 const OFTEN_DAYS = 14, OFTEN_MIN = 3;   // «частые гости»: записи в приложении минимум в 3 разных дня за последние 14
+const SEG_TOKEN = /^(new1|new7|new30|new365|act1|act7|often|expired|nd:\d{1,3}|ad:\d{1,3})$/;
 async function segIds(aud: string): Promise<number[] | null> {
-  if (!SEG_KEYS.includes(aud)) return null;
   const iso = (ms: number) => new Date(Date.now() - ms).toISOString();
   const ids = (d: any[] | null) => (d ?? []).map((x: any) => Number(x.tg_id));
+  const cu = aud.match(/^(nd|ad):(\d{1,3})$/);   // свой период: зарегистрировались / заходили за N дней
+  if (cu) { const n = Math.min(365, Math.max(1, Number(cu[2]))) * DAY; return ids((await db.from("users").select("tg_id").eq("blocked", false).gte(cu[1] === "nd" ? "created_at" : "last_seen", iso(n)).limit(20000)).data); }
+  if (!SEG_KEYS.includes(aud)) return null;
   if (SEG_NEW[aud]) return ids((await db.from("users").select("tg_id").eq("blocked", false).gte("created_at", iso(SEG_NEW[aud])).limit(20000)).data);
   if (SEG_ACT[aud]) return ids((await db.from("users").select("tg_id").eq("blocked", false).gte("last_seen", iso(SEG_ACT[aud])).limit(20000)).data);
   const ok = new Set(ids((await db.from("users").select("tg_id").eq("blocked", false).limit(20000)).data));
@@ -706,6 +709,48 @@ async function segIds(aud: string): Promise<number[] | null> {
   }
   return [...byUser].filter(([t, d]) => d.size >= OFTEN_MIN && ok.has(t)).map(([t]) => t);
 }
+
+/* составной сегмент: {inc:[...], exc:[...]}; внутри группы (регистрация / заходы / особые) плитки складываются («или»), группы между собой «и», исключённые вычитаются */
+const segGroup = (t: string) => /^(new|nd)/.test(t) ? "reg" : /^(act|ad)/.test(t) ? "act" : "sp";
+function cleanRule(r: any): { inc: string[]; exc: string[] } | null {
+  const pick = (a: any) => (Array.isArray(a) ? a : []).map(String).filter((t: string) => SEG_TOKEN.test(t)).slice(0, 15);
+  const inc = [...new Set(pick(r?.inc))], exc = [...new Set(pick(r?.exc))].filter((t) => !inc.includes(t));
+  return inc.length + exc.length > 40 ? null : { inc, exc };
+}
+async function ruleIds(r: { inc: string[]; exc: string[] }): Promise<number[]> {
+  const all = (await db.from("users").select("tg_id").eq("blocked", false).limit(20000)).data?.map((x: any) => Number(x.tg_id)) ?? [];
+  const cache = new Map<string, Set<number>>();
+  const get = async (t: string) => { if (!cache.has(t)) cache.set(t, new Set((await segIds(t)) ?? [])); return cache.get(t)!; };
+  let cur = new Set(all);
+  for (const g of ["reg", "act", "sp"]) {
+    const inc = r.inc.filter((t) => segGroup(t) === g), exc = r.exc.filter((t) => segGroup(t) === g);
+    if (inc.length) { const u = new Set<number>(); for (const t of inc) for (const i of await get(t)) u.add(i); cur = new Set([...cur].filter((i) => u.has(i))); }
+    for (const t of exc) { const x = await get(t); cur = new Set([...cur].filter((i) => !x.has(i))); }
+  }
+  return [...cur];
+}
+/* данные для плиток: у каждого неблокированного пользователя дни с регистрации и с последнего захода, «частый гость», «PRO истёк», «сейчас PRO» */
+async function segBase() {
+  const now = Date.now(), nowIso = new Date(now).toISOString();
+  const { data } = await db.from("users").select("tg_id, created_at, last_seen").eq("blocked", false).limit(20000);
+  const { data: pr } = await db.from("pro_subs").select("tg_id").gt("until", nowIso);
+  const pro = new Set((pr ?? []).map((x: any) => Number(x.tg_id)));
+  const often = new Set((await segIds("often")) ?? []), exp = new Set((await segIds("expired")) ?? []);
+  const d = (v: any) => (v ? Math.round(((now - Date.parse(v)) / DAY) * 100) / 100 : 9999);
+  return { rows: (data ?? []).map((u: any) => { const t = Number(u.tg_id); return [d(u.created_at), d(u.last_seen), often.has(t) ? 1 : 0, exp.has(t) ? 1 : 0, pro.has(t) ? 1 : 0]; }) };
+}
+async function segList() { const { data } = await db.from("core_segments").select("id, name, rule").order("id").limit(60); return { items: data ?? [] }; }
+async function segSave(b: any) {
+  const name = String(b?.name ?? "").trim().slice(0, 24), rule = cleanRule(b?.rule);
+  if (!name) return { error: "Нужно название сегмента" };
+  if (!rule || rule.inc.length + rule.exc.length === 0) return { error: "Сначала выбери плитки" };
+  const { count } = await db.from("core_segments").select("id", { count: "exact", head: true });
+  if ((count ?? 0) >= 30) return { error: "Сохранить можно не больше 30 сегментов" };
+  const { data, error } = await db.from("core_segments").insert({ name, rule }).select("id, name, rule").single();
+  if (error) return { error: "Не удалось сохранить" };
+  await log("seg_save", null, { name }); return { status: "ok", item: data };
+}
+async function segDel(id: number) { await db.from("core_segments").delete().eq("id", id); await log("seg_del", null, { id }); return { status: "ok" }; }
 
 async function broadcast(body: any) {
   const img = typeof body?.image === "string" && body.image.length ? body.image : "";
@@ -740,6 +785,11 @@ async function broadcast(body: any) {
     ids = (data ?? []).map((x: any) => Number(x.tg_id)).filter((i) => !pro.has(i) && i !== ADMIN);
   }
   else if (SEG_KEYS.includes(target)) ids = (await segIds(target)) ?? [];
+  else if (target.startsWith("q:")) {
+    let rj: any = null; try { rj = JSON.parse(target.slice(2)); } catch { /* ниже ошибка */ }
+    const rule = cleanRule(rj); if (!rule) return { error: "Сегмент собран неверно" };
+    ids = await ruleIds(rule);
+  }
   else {
     let r = db.from("users").select("tg_id").eq("blocked", false);
     if (target === "active7") r = r.gte("last_seen", new Date(Date.now() - 7 * DAY).toISOString());
@@ -904,6 +954,10 @@ Deno.serve(async (req) => {
       case "refund": return json(await refund(body));
       case "refund_reject": return json(await refundReject(body));
       case "broadcast": return json(body?.send_at ? await (async () => { const v: any = await broadcast({ ...body, dry: true }); if (v?.error) return v; return await schedAdd("broadcast", body, String(body?.text ?? "").trim().slice(0, 100) || "картинка"); })() : await broadcast(body));
+      case "seg_base": return json(await segBase());
+      case "seg_list": return json(await segList());
+      case "seg_save": return json(await segSave(body));
+      case "seg_del": return json(await segDel(Number(body?.id)));
       case "sched_list": return json(await schedList());
       case "sched_cancel": return json(await schedCancel(Number(body?.id)));
       case "log": { const { data } = await db.from("admin_log").select("id, at, action, target, details").order("id", { ascending: false }).limit(300); return json({ items: (data ?? []).map((x: any) => x.action === "login" ? { ...x, details: {} } : x) }); }
