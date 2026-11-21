@@ -754,9 +754,23 @@ async function segDel(id: number) { await db.from("core_segments").delete().eq("
 
 async function broadcast(body: any) {
   const img = typeof body?.image === "string" && body.image.length ? body.image : "";
-  const text = String(body?.text ?? "").trim().slice(0, img ? 1000 : 3500);
-  if (text.length < 2 && !img) return { error: "Пустое сообщение" };
+  // картинка по ссылке: только с нашего сайта voob.kz (https), забираем один раз на рассылку
+  const imgUrl = typeof body?.image_url === "string" ? body.image_url.trim() : "";
+  const text = String(body?.text ?? "").trim().slice(0, img || imgUrl ? 1000 : 3500);
+  if (text.length < 2 && !img && !imgUrl) return { error: "Пустое сообщение" };
   let bytes: Uint8Array | null = null;
+  if (imgUrl && !img) {
+    let iu: URL;
+    try { iu = new URL(imgUrl); } catch { return { error: "Ссылка на картинку не похожа на ссылку" }; }
+    if (iu.protocol !== "https:" || !["voob.kz", "www.voob.kz"].includes(iu.hostname)) return { error: "Картинка по ссылке разрешена только с voob.kz" };
+    try {
+      const r = await fetch(iu.toString());
+      const ct = r.headers.get("content-type") ?? "";
+      if (!r.ok || !/^image\/(jpeg|png|webp)/.test(ct)) return { error: "По ссылке нет JPEG, PNG или WebP" };
+      bytes = new Uint8Array(await r.arrayBuffer());
+    } catch { return { error: "Не удалось скачать картинку по ссылке" }; }
+    if (bytes.length > 5_000_000) return { error: "Картинка больше 5 МБ" };
+  }
   if (img) {
     const m = img.match(/^data:image\/(jpeg|png|webp);base64,([A-Za-z0-9+/=]+)$/);
     if (!m || img.length > 7_000_000) return { error: "Картинка не подошла: нужен JPEG, PNG или WebP до 5 МБ" };
