@@ -1035,10 +1035,10 @@ textarea.field{resize:none;line-height:1.5;min-height:84px;padding:12px 15px;fon
 @keyframes ddPl{0%{transform:scale(.85);opacity:.9}100%{transform:scale(1.3);opacity:0}}
 .ddc{display:inline-flex;background:var(--tile2);border:1px solid var(--line2);border-radius:999px;padding:4px 12px;font-size:13px;font-weight:700;letter-spacing:.04em}
 .ddtwo{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:16px}
-.ddb{border-radius:16px;padding:12px 14px;border:1px solid var(--line);background:var(--tile2);font-size:12.5px;color:var(--mute);line-height:1.45}
-.ddb h6{margin:0 0 4px;font:750 10.5px var(--sans);letter-spacing:.12em;text-transform:uppercase;display:flex;align-items:center;gap:7px}
-.ddb h6 i{width:7px;height:7px;border-radius:50%;display:block}.ddb b{color:var(--fg);font-weight:650}
-.ddb.r h6{color:var(--bad)}.ddb.r h6 i{background:var(--bad)}.ddb.g h6{color:var(--green)}.ddb.g h6 i{background:var(--green)}
+.ddk{border-radius:16px;padding:12px 14px;border:1px solid var(--line);background:var(--tile2);font-size:12.5px;color:var(--mute);line-height:1.45}
+.ddk h6{margin:0 0 4px;font:750 10.5px var(--sans);letter-spacing:.12em;text-transform:uppercase;display:flex;align-items:center;gap:7px}
+.ddk h6 i{width:7px;height:7px;border-radius:50%;display:block}.ddk b{color:var(--fg);font-weight:650}
+.ddk.r h6{color:var(--bad)}.ddk.r h6 i{background:var(--bad)}.ddk.g h6{color:var(--green)}.ddk.g h6 i{background:var(--green)}
 @media(max-width:520px){.ddtwo{grid-template-columns:1fr}}
 @media(prefers-reduced-motion:reduce){.ddi:after{animation:none}}
 /* промокод: «голограмма» (только билет в форме создания) */
@@ -4065,7 +4065,7 @@ function plDraw(){
 }
 $("#plst").addEventListener("click",function(e){var b=e.target.closest("[data-cp]");if(b)copyText(b.dataset.cp,"Код скопирован")});
 $("#plst").addEventListener("click",function(e){var b=e.target.closest("[data-del]");if(!b)return;var c=b.dataset.del,x=PL.filter(function(y){return y.code===c})[0]||{};
-  dlg('<div class="ddh"><div class="ddi"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h16M10 11v6M14 11v6M6 7l1 12a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2l1-12M9 7V4h6v3"/></svg></div><div><h3>Удалить код?</h3><div style="margin-top:6px"><span class="ddc mono">'+esc(c)+'</span></div></div></div><div class="ddtwo"><div class="ddb r"><h6><i></i>Исчезнет</h6><b>код</b>'+(x.used?' и история активаций ('+x.used+')':'')+' исчезнут из списка</div><div class="ddb g"><h6><i></i>Останется у людей</h6><b>PRO и подарки</b>, которые уже выданы</div></div><div class="row" style="margin:16px 0 0"><button class="btn bad sm" id="pdy" type="button">Удалить</button>'+(x.active?'<button class="btn sm" id="pdo" type="button">Выключить вместо этого</button>':"")+'<button class="btn sm" data-close type="button" style="margin-left:auto">Отмена</button></div><p class="err" id="epd"></p>');
+  dlg('<div class="ddh"><div class="ddi"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h16M10 11v6M14 11v6M6 7l1 12a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2l1-12M9 7V4h6v3"/></svg></div><div><h3>Удалить код?</h3><div style="margin-top:6px"><span class="ddc mono">'+esc(c)+'</span></div></div></div><div class="ddtwo"><div class="ddk r"><h6><i></i>Исчезнет</h6><b>код</b>'+(x.used?' и история активаций ('+x.used+')':'')+' исчезнут из списка</div><div class="ddk g"><h6><i></i>Останется у людей</h6><b>PRO и подарки</b>, которые уже выданы</div></div><div class="row" style="margin:16px 0 0"><button class="btn bad sm" id="pdy" type="button">Удалить</button>'+(x.active?'<button class="btn sm" id="pdo" type="button">Выключить вместо этого</button>':"")+'<button class="btn sm" data-close type="button" style="margin-left:auto">Отмена</button></div><p class="err" id="epd"></p>');
   $("#pdy").onclick=function(){var t=this;t.disabled=true;api("promo_delete",{code:c},"x").then(function(j){t.disabled=false;if(j&&j.error){$("#epd").textContent=j.error;return}closeDlg();toast("Код удалён");loadPromo()})};
   if($("#pdo"))$("#pdo").onclick=function(){var t=this;t.disabled=true;api("promo_off",{code:c,on:false},"x").then(function(j){t.disabled=false;if(j&&j.error){$("#epd").textContent=j.error;return}closeDlg();toast("Код выключен");loadPromo()})}});
 
