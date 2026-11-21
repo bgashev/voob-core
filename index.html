@@ -322,7 +322,7 @@ textarea.pvaw.ax-in{font-size:13px;color:#c4c4cc;line-height:1.5;max-height:none
 .qb .qt.hid{opacity:.35}.qb .qt.sp{min-width:170px}
 .qb .qn{display:block;font:800 24px/1.1 var(--disp);letter-spacing:-.01em}
 .qb .ql{display:block;font-size:12.5px;font-weight:650;color:var(--mute);margin-top:2px}.qb .qt.on .ql{color:#4a4a52}
-.qb .qd{display:block;font-size:11px;color:var(--dim);margin-top:2px}.qb .qt.on .qd{color:#6b6b74}
+.qb .qdd{display:block;font-size:11px;line-height:1.3;color:var(--dim);margin-top:2px}.qb .qt.on .qdd{color:#6b6b74}
 .qb .qbar{height:3px;background:var(--line2);border-radius:2px;margin-top:9px;overflow:hidden}.qb .qbar i{display:block;height:100%;background:var(--mute);border-radius:2px;transition:width .5s var(--ease)}
 .qb .qt.on .qbar{background:rgba(11,11,13,.15)}.qb .qt.on .qbar i{background:var(--on-accent)}
 .qb .qy{position:absolute;top:9px;right:11px;font:700 11px var(--sans);font-style:normal;color:var(--blue)}.qb .qy.bad{color:var(--bad)}
@@ -3813,7 +3813,7 @@ function qRender(){var b=$("#bxsg");if(!b)return;b.classList.add("qb");var any=q
   ["reg","act","sp"].forEach(function(g){h+='<div class="qg"><h5>'+QG[g]+'</h5><div class="sgr">';
     tl.filter(function(t){return t.g===g&&(QB.edit||!QB.hid[t.id])}).forEach(function(t){var s=S.aud==="q"||!qHas()?QB.st[t.id]||0:0,n=qCnt((function(){var o={};o[t.id]=1;return o})()),hy="";
       if(!s&&any&&!QB.edit){var o=Object.assign({},QB.st);o[t.id]=1;hy='<em class="qy">→ '+qCnt(o)+"</em>"}else if(s===-1)hy='<em class="qy bad">кроме</em>';
-      h+='<button type="button" class="qt'+(g==="sp"?" sp":"")+(s===1?" on":"")+(s===-1?" no":"")+(QB.edit&&QB.hid[t.id]?" hid":"")+'" data-qt="'+t.id+'">'+hy+(g==="sp"?QIC[t.id]||"":"")+(QB.edit?'<span class="qx"'+(t.cus?' data-qdel="'+t.id+'"':"")+'>'+(t.cus?"×":QB.hid[t.id]?"+":"−")+"</span>":"")+'<span class="qn">'+n+'</span><span class="ql">'+t.l+"</span>"+(t.d?'<span class="qd">'+t.d+"</span>":"")+'<div class="qbar"><i style="width:'+(QB.rows.length?n/QB.rows.length*100:0)+'%"></i></div></button>'});
+      h+='<button type="button" class="qt'+(g==="sp"?" sp":"")+(s===1?" on":"")+(s===-1?" no":"")+(QB.edit&&QB.hid[t.id]?" hid":"")+'" data-qt="'+t.id+'">'+hy+(g==="sp"?QIC[t.id]||"":"")+(QB.edit?'<span class="qx"'+(t.cus?' data-qdel="'+t.id+'"':"")+'>'+(t.cus?"×":QB.hid[t.id]?"+":"−")+"</span>":"")+'<span class="qn">'+n+'</span><span class="ql">'+t.l+"</span>"+(t.d?'<span class="qdd">'+t.d+"</span>":"")+'<div class="qbar"><i style="width:'+(QB.rows.length?n/QB.rows.length*100:0)+'%"></i></div></button>'});
     if(g!=="sp"){if(QB.ed===g)h+='<div class="qt cust"><span class="ql" style="margin:0 0 6px">за сколько дней</span><div class="qin"><input id="qcn" type="number" min="1" max="365" value="3"><button type="button" data-qok="'+g+'">Добавить</button></div></div>';else h+='<button type="button" class="qt ghost" data-qcust="'+g+'">+ Свой период</button>'}
     h+="</div></div>"});
   h+='<div class="qg"><h5>Мои сегменты</h5><div class="sgr">';
