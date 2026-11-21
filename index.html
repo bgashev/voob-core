@@ -3539,7 +3539,7 @@ function annSend(){
 var LH_APP="https://t.me/voobkz_bot/VOOB?startapp=";
 var LH_GAMES=[["flap","Пролёт"],["stack","Башня"],["wave","Волна"],["tile","2048-подход"],["slice","Слайсер"],["memo","Мемо-серия"],["aim","Прицел"],["jump","Скачок"],["dart","Дротик"],["spk","Отскок"],["zig","Зигзаг"],["road","Перебежка"],["snake","Змейка"],["dunk","Данк"],["hit","Баскет"]];
 var LH_DATA=[
-  ["Разделы приложения",[["Главная","home"],["Статистика","stats"],["Приложения","apps"],["Друзья","friends"],["Профиль","me"],["Настройки","settings"]].map(function(x){return{t:x[0],u:LH_APP+x[1],l:"Открыть: "+x[0]}})],
+  ["Разделы приложения",[["Главная","home"],["Статистика","stats"],["Приложения","apps"],["Вода","water"],["Привычки","habits"],["Калории","calories"],["Друзья","friends"],["Профиль","me"],["Настройки","settings"]].map(function(x){return{t:x[0],u:LH_APP+x[1],l:"Открыть: "+x[0]}})],
   ["Игры",[{t:"Все игры",u:LH_APP+"games",l:"Играть в VOOB"}].concat(LH_GAMES.map(function(g){return{t:g[1],u:LH_APP+"g_"+g[0],l:"Играть: "+g[1]}}))],
   ["VOOB в сети",[["Бот @voobkz_bot","https://t.me/voobkz_bot","Открыть бота"],["Telegram-канал","https://t.me/voobkz","Наш канал"],["Буст канала","https://t.me/boost/voobkz","Забустить VOOB"],["Сайт voob.kz","https://voob.kz","Сайт VOOB"],["Веб-версия","https://app.voob.kz","VOOB в браузере"],["Instagram","https://instagram.com/voob.kz","Мы в Instagram"],["YouTube","https://youtube.com/@voobkz","Мы на YouTube"],["TikTok","https://tiktok.com/@voobkz","Мы в TikTok"],["Threads","https://threads.com/@voob.kz","Мы в Threads"]].map(function(x){return{t:x[0],u:x[1],l:x[2]}})]
 ];
@@ -3549,7 +3549,7 @@ function lhAttach(inp,onpick){
   function build(){
     var raw=inp.value.trim(),q=norm0(raw),exact=LH_DATA.some(function(g){return g[1].some(function(i){return norm0(i.u)===q})}),res=[],f=exact||!q?"":q;
     var m=/^@?([A-Za-z][A-Za-z0-9_]{2,19})$/.exec(raw);
-    if(m&&!f.match(/^(home|stats|apps|friends|me|settings)$/))res.push(["Профиль человека",[{t:"Профиль @"+m[1],u:LH_APP+"u_"+m[1],l:"Профиль @"+m[1]}]]);
+    if(m&&!f.match(/^(home|stats|apps|water|habits|calories|friends|me|settings)$/))res.push(["Профиль человека",[{t:"Профиль @"+m[1],u:LH_APP+"u_"+m[1],l:"Профиль @"+m[1]}]]);
     LH_DATA.forEach(function(g){var it=g[1].filter(function(i){return !f||(i.t+" "+i.u).toLowerCase().indexOf(f)>=0});if(it.length)res.push([g[0],it])});
     return res}
   function close(){if(box){box.remove();box=null}ix=-1}
