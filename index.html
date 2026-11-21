@@ -473,6 +473,8 @@ textarea.bx-txt::placeholder{color:#6f8296}
 .lh .lh-e{padding:12px;font-size:12.5px;color:var(--dim)}
 
 .sch-l{display:grid;gap:6px;margin-top:8px}.sch-l:empty{display:none}.sch-it{display:flex;align-items:center;gap:8px;padding:8px 10px 8px 12px;border-radius:14px;background:var(--tile);border:1px solid var(--line);font-size:12.5px;color:var(--mute)}
+.sch-it.ed{cursor:pointer;transition:border-color .15s,background .15s}.sch-it.ed:hover{border-color:color-mix(in srgb,var(--blue) 45%,var(--line))}.sch-it.cur{border-color:var(--gold);background:color-mix(in srgb,var(--gold) 8%,var(--tile))}.sch-pen{flex:none;display:inline-flex;opacity:.45}.sch-it.ed:hover .sch-pen,.sch-it.cur .sch-pen{opacity:1}
+.sch-ed{display:flex;align-items:center;gap:8px 10px;flex-wrap:wrap;padding:10px 14px;margin:0 0 12px;border-radius:14px;border:1px solid color-mix(in srgb,var(--gold) 55%,var(--line));background:color-mix(in srgb,var(--gold) 9%,var(--tile))}.sch-ed>div{flex:1;min-width:200px}.sch-ed b{display:block;font-size:13px;color:var(--fg)}.sch-ed small{display:block;color:var(--mute);font-size:12px;margin-top:2px}.sch-ed .dn{color:var(--dn,#f87171)}
 .sch-it svg{flex:none}.sch-it b{flex:1;min-width:0;color:var(--fg);font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.sch-it.done{opacity:.7}.sch-s{flex:none;color:var(--gold)}.sch-s.ok{color:#5fc98a}.sch-s.dn{color:#ef6b73}
 .sch-cx{flex:none;width:24px;height:24px;border-radius:8px;border:0;background:transparent;color:var(--mute);font-size:18px;line-height:1;cursor:pointer}.sch-cx:hover{color:var(--fg);background:var(--line)}
 .bx-sendbar{display:flex;align-items:center;gap:16px;flex-wrap:wrap;background:var(--tile);border:1px solid var(--line);border-radius:22px;padding:12px 12px 12px 20px;width:fit-content;max-width:100%}
@@ -3506,16 +3508,29 @@ function annRender(){
   $("#axcnt").innerHTML="заголовок "+title.length+" / 80 · текст "+body.length+" / 600"+(long?' · <span class="dn">длиннее лимита</span>':"");
   if(isP)cta="";var bad=annBad(),who=aud==="me"?"Увидишь только ты (проверка)":aud==="list"?"Получат люди из списка":SEGN[aud]?"Получат "+SEGN[aud]+": "+fmt(AUD[aud]||0):aud==="all"?"Получат все: "+fmt(AUD.all):aud==="pro"?"Получат PRO: "+fmt(AUD.pro):"Получат без PRO: "+fmt(AUD.free);
   $("#axinfo").innerHTML=bad?'<b style="color:var(--gold)">'+bad+'</b><small>'+who+'</small>':'<b>'+who+'</b><small>'+(isP?"Ответы придут в «Жалобы и идеи»":cta?(cta==="pro"?"Кнопка «Оформить PRO»":"Кнопка «Открыть» → "+esc(normUrl(cta))):"Без кнопки")+(anImg?" · с картинкой":"")+'</small>';
-  var h=$("#ago");h.disabled=!!bad;if(!h.classList.contains("bx-go")&&!h.classList.contains("bx-boom"))$("#axhl").textContent=SCH.an?(aud==="me"?"Запланировать себе":"Зажми, чтобы запланировать"):aud==="me"?"Отправить себе":"Зажми, чтобы отправить";
+  var h=$("#ago");h.disabled=!!bad;if(!h.classList.contains("bx-go")&&!h.classList.contains("bx-boom"))$("#axhl").textContent=EDIT&&EDIT.p==="an"?"Зажми, чтобы сохранить":SCH.an?(aud==="me"?"Запланировать себе":"Зажми, чтобы запланировать"):aud==="me"?"Отправить себе":"Зажми, чтобы отправить";
 }
+function anFill(o){
+  $("#ak").value=o.kind||"notice";$("#ak").dispatchEvent(new Event("change",{bubbles:true}));
+  if(o.kind==="gift"&&o.gift_kind){var g=$("#agk");if(g){g.value=o.gift_kind;g.dispatchEvent(new Event("change"))}}
+  $("#aa").value=o.audience||"me";$("#aa").dispatchEvent(new Event("change",{bubbles:true}));
+  $("#at").value=o.title||"";$("#ab").value=o.body||"";$("#ac").value=o.cta||"";axBtn=!!o.cta;$("#an").checked=o.notify!==false;$("#alist").value=o.targets||"";
+  if(o.image){anImg=o.image;$("#athumbi").src=o.image;$("#athumbn").textContent="картинка из публикации";var sm=$("#athumbs");sm.textContent="";sm.className="";$("#athumb").hidden=false;$("#ahint").hidden=true}
+  else{anImg="";$("#athumb").hidden=true;$("#ahint").hidden=false;$("#afile").value=""}
+  annRender();
+}
+function anLoad(pl){anFill(pl)}
+function anSnap(){return{kind:$("#ak").value,audience:$("#aa").value,title:$("#at").value,body:$("#ab").value,cta:$("#ac").value,notify:$("#an").checked,targets:$("#alist").value,gift_kind:($("#agk")||{}).value,image:anImg||""}}
+function anRestore(sn){anFill(sn)}
 function annSend(){
   var aud=$("#aa").value,kind=$("#ak").value,cv=$("#ac").value.trim(),b={kind:kind,audience:aud,title:$("#at").value.trim(),body:$("#ab").value.trim(),cta:kind==="poll"?null:(cv==="pro"?cv:normUrl(cv))||null,notify:$("#an").checked,image:anImg||undefined};
   if(kind==="gift")b.gift_kind=$("#agk").value;if(aud==="list")b.targets=$("#alist").value;
   $("#eab").textContent="";if(annBad()){annRender();return}
-  if(SCH.an)b.send_at=new Date(SCH.an).toISOString();$("#ago").disabled=true;api("announce",b,"x").then(function(j){$("#ago").disabled=false;
+  var ed=!!(EDIT&&EDIT.p==="an");if(ed){if(!SCH.an){$("#eab").textContent="Выбери время отправки в «Отправить позже»";return}b.id=EDIT.id}
+  if(SCH.an)b.send_at=new Date(SCH.an).toISOString();$("#ago").disabled=true;api(ed?"sched_update":"announce",b,"x").then(function(j){$("#ago").disabled=false;
     $("#eab").innerHTML=j.error?esc(j.error):j.status==="scheduled"?'<span class="ok">Запланировано на '+schHuman(Date.parse(j.at))+"</span>":'<span class="ok">Отправлено: '+j.total+", в Telegram дошло "+j.sent+"</span>";
-    if(!j.error&&j.status==="scheduled"){SCH.an=0;schList()}
-    if(!j.error){if(aud!=="me"){$("#at").value=$("#ab").value=$("#ac").value="";axBtn=false;anSetImg(null)}loadAnn()}annRender()});
+    if(!j.error&&j.status==="scheduled"){if(ed)schExit();else{SCH.an=0;schList()}}
+    if(!j.error){if(aud!=="me"&&!ed){$("#at").value=$("#ab").value=$("#ac").value="";axBtn=false;anSetImg(null)}loadAnn()}annRender()});
 }
 
 
@@ -3553,7 +3568,7 @@ function lhAttach(inp,onpick){
 }
 
 /* ---------- отложенная отправка: «Отправить позже» для рассылки и объявления ---------- */
-var SCH={bc:0,an:0};
+var SCH={bc:0,an:0},EDIT=null;
 (function(){
   var ICON='<svg viewBox="0 0 18 18" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><circle cx="9" cy="9" r="7"/><path d="M9 5v4l2.8 1.7"/></svg>';
   function pad(n){return n<10?"0"+n:""+n}
@@ -3609,16 +3624,19 @@ var SCH={bc:0,an:0};
     bar.parentNode.insertBefore(w,bar);W[p]={w:w,fn:fn,refresh:refresh};
     var t=w.querySelector(".sch-t"),pn=w.querySelector(".sch-p"),ch=w.querySelector(".sch-c"),dp=mkdp(function(ms){set(ms)});w.querySelector(".dpk-host").appendChild(dp.el);
     function set(ms){SCH[p]=ms||0;paint();refresh&&refresh()}
+    W[p].set=set;
     function paint(){
       var on=!!SCH[p];w.classList.toggle("on",on);t.querySelector("span").textContent=on?"Отправка: "+human(SCH[p]):"Отправить позже";
-      dp.sync(on?SCH[p]:0);
+      dp.sync(on?SCH[p]:0);if(EDIT&&EDIT.p===p)bannerT();
       var now=Date.now(),opts=[["Через час",now+36e5],["Сегодня 18:00",at(18,0,0)],["Завтра 10:00",at(10,0,1)],["Завтра 18:00",at(18,0,1)]].filter(function(o){return o[1]>now+120000});
       ch.innerHTML=opts.map(function(o,i){return '<button type="button" data-i="'+i+'" class="'+(SCH[p]&&Math.abs(SCH[p]-o[1])<6e4?"on":"")+'">'+o[0]+"</button>"}).join("");
       ch._o=opts}
     t.addEventListener("click",function(){pn.hidden=!pn.hidden;t.classList.toggle("open",!pn.hidden);if(!pn.hidden){paint();dp.show()}});
     ch.addEventListener("click",function(e){var b=e.target.closest("button");if(b)set(ch._o[+b.dataset.i][1])});
     w.querySelector(".sch-x").addEventListener("click",function(){set(0)});
-    w.querySelector(".sch-l").addEventListener("click",function(e){var b=e.target.closest("[data-cx]");if(!b)return;b.disabled=true;api("sched_cancel",{id:+b.dataset.cx}).then(function(){list()})});
+    w.querySelector(".sch-l").addEventListener("click",function(e){var b=e.target.closest("[data-cx]");
+      if(!b){var ed=e.target.closest("[data-ed]");if(ed)edit(p,+ed.dataset.ed);return}
+      b.disabled=true;var cid=+b.dataset.cx;api("sched_cancel",{id:cid}).then(function(){if(EDIT&&EDIT.id===cid)exitEdit();list()})});
     paint();
   }
   function list(){
@@ -3626,7 +3644,36 @@ var SCH={bc:0,an:0};
       Object.keys(W).forEach(function(p){var w=W[p],it=(j.items||[]).filter(function(x){return x.fn===w.fn}).sort(function(a,b){return a.run_at<b.run_at?-1:1}),el=w.w.querySelector(".sch-l");
         el.innerHTML=it.map(function(x){var ms=Date.parse(x.run_at),pend=x.status==="pending"||x.status==="running",tx=esc(x.summary||"без текста");
           var st=pend?'<span class="sch-s">'+human(ms)+"</span>":x.status==="sent"?'<span class="sch-s ok">отправлено</span>':x.status==="failed"?'<span class="sch-s dn">не ушло</span>':'<span class="sch-s">отменено</span>';
-          return '<div class="sch-it'+(pend?"":" done")+'">'+ICON+'<b>'+tx+"</b>"+st+(x.status==="pending"?'<button type="button" class="sch-cx" data-cx="'+x.id+'" aria-label="Отменить">×</button>':"")+"</div>"}).join("")})})}
+          var can=x.status==="pending";
+          return '<div class="sch-it'+(pend?"":" done")+(can?" ed":"")+(EDIT&&EDIT.id===x.id?" cur":"")+'"'+(can?' data-ed="'+x.id+'" title="Открыть, посмотреть и изменить"':"")+'>'+ICON+'<b>'+tx+"</b>"+(can?'<span class="sch-pen">'+PEN+"</span>":"")+st+(can?'<button type="button" class="sch-cx" data-cx="'+x.id+'" aria-label="Отменить">×</button>':"")+"</div>"}).join("")})})}
+  var PEN='<svg viewBox="0 0 18 18" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M3 15l.8-3.4L12.6 2.8a1.5 1.5 0 0 1 2.1 0l.5.5a1.5 1.5 0 0 1 0 2.1L6.4 14.2z"/><path d="M11 4.5l2.5 2.5"/></svg>';
+  /* просмотр и правка запланированного: открываем в той же форме, где живой предпросмотр */
+  function rootOf(p){return p==="bc"?$("#bxroot"):$("#axroot")}
+  function bannerT(){var s=document.querySelector(".sch-ed [data-t]");if(s&&EDIT)s.textContent=SCH[EDIT.p]?human(SCH[EDIT.p]):"— выбери время"}
+  function banner(){
+    var old=document.querySelector(".sch-ed");if(old)old.remove();
+    var b=document.createElement("div");b.className="sch-ed";
+    b.innerHTML='<div><b>Редактируешь запланированное</b><small>Уйдёт: <span data-t></span> · время меняется в «Отправить позже», сохранить: кнопка отправки справа</small></div><button type="button" class="btn sm" data-x="exit">Выйти без сохранения</button><button type="button" class="btn sm dn" data-x="cancel">Отменить отправку</button>';
+    b.addEventListener("click",function(e){var x=e.target.closest("[data-x]");if(!x||!EDIT)return;
+      if(x.dataset.x==="exit"){exitEdit();return}
+      var id=EDIT.id;x.disabled=true;api("sched_cancel",{id:id}).then(function(){exitEdit();list()})});
+    var r=rootOf(EDIT.p);r.insertBefore(b,r.firstChild);bannerT()}
+  function exitEdit(){
+    if(!EDIT)return;var e=EDIT;EDIT=null;var bn=document.querySelector(".sch-ed");if(bn)bn.remove();
+    (e.p==="bc"?window.bcRestore:anRestore)(e.snap);W[e.p].set(e.snap.sch||0);list()}
+  function edit(p,id){
+    if(EDIT&&EDIT.id===id)return;
+    api("sched_get",{id:id}).then(function(j){
+      if(!j||j.error||!j.item){toast((j&&j.error)||"Не получилось открыть","err");list();return}
+      var it=j.item,pl=it.payload||{};
+      if(EDIT)exitEdit();
+      EDIT={p:p,id:id,snap:(p==="bc"?window.bcSnap:anSnap)()};
+      EDIT.snap.sch=SCH[p];
+      if(p==="bc")window.bcLoad(pl);else anLoad(pl);
+      W[p].set(Date.parse(it.run_at));banner();list();
+      toast("Открыто для просмотра и правки");
+      try{rootOf(p).scrollIntoView({behavior:"smooth",block:"start"})}catch(e){}})}
+  window.schExit=exitEdit;
   window.schMount=mount;window.schList=list;window.schHuman=human;
 })();
 var bcImg="";
@@ -3900,7 +3947,7 @@ function render(){Object.keys(SEGN).forEach(function(k){N[k]=AUD[k]||0});qRender
   if(S.btn){var res=$("#bxres");if(st.bad&&/ссылк|название/i.test(st.bad)&&S.url.trim()&&!/https:\/\/\S+$/i.test(norm(S.url))){res.className="bx-res bx-bad";res.textContent=st.bad}else if(S.url.trim()){res.className="bx-res bx-ok";res.innerHTML='Откроется <code>'+norm(S.url).replace(/</g,"&lt;")+'</code> прямо в Telegram'}else{res.className="bx-res";res.textContent=""}}
   /* панель отправки */
   var n=N[S.aud];$("#bxinfo").innerHTML=st.bad?'<b style="color:var(--gold)">'+st.bad+'</b><small>Получат '+AN[S.aud]+'</small>':'<b>Получат '+AN[S.aud]+': '+fmt(n)+'</b><small>'+(S.btn?'Кнопка «'+S.label.replace(/</g,"&lt;")+'» вместо «Открыть VOOB»':'Под сообщением кнопка «Открыть VOOB»')+(S.img?' · с картинкой':'')+'</small>';
-  var h=$("#bgo");h.disabled=!!st.bad;if(!h.classList.contains("bx-boom"))$("#bxholdl").textContent=SCH.bc?(S.aud==="me"?"Запланировать себе":"Зажми, чтобы запланировать"):S.aud==="me"?"Отправить себе":"Зажми, чтобы отправить";
+  var h=$("#bgo");h.disabled=!!st.bad;if(!h.classList.contains("bx-boom"))$("#bxholdl").textContent=EDIT&&EDIT.p==="bc"?"Зажми, чтобы сохранить":SCH.bc?(S.aud==="me"?"Запланировать себе":"Зажми, чтобы запланировать"):S.aud==="me"?"Отправить себе":"Зажми, чтобы отправить";
   h.classList.remove("bx-go");hxPaint(st)}
 /* зажать, чтобы отправить */
 (function(){var h=$("#bgo"),tm=0;
@@ -3916,9 +3963,13 @@ function bcSend(){
   var st=state(),t=st.t,tg=S.aud==="q"?"q:"+JSON.stringify(qRule()):S.aud,bb=S.btn?S.label.trim():"",bu=S.btn?normUrl(S.url):"";$("#ebc").textContent="";
   if(st.bad){$("#ebc").textContent=st.bad;return}
   if(bu)S.url=bu;
-  $("#bgo").disabled=true;var sat=SCH.bc?new Date(SCH.bc).toISOString():undefined;api("broadcast",{text:t,target:tg,image:bcImg||undefined,btn_text:bb||undefined,btn_url:bu||undefined,send_at:sat}).then(function(j){$("#bgo").disabled=false;
+  var ed=!!(EDIT&&EDIT.p==="bc"),rq={text:t,target:tg,image:bcImg||undefined,btn_text:bb||undefined,btn_url:bu||undefined};
+  if(ed){if(!SCH.bc){$("#ebc").textContent="Выбери время отправки в «Отправить позже»";return}rq.id=EDIT.id;if(!bcImg&&S.img&&S.img===EDIT.imgUrl)rq.image_url=EDIT.imgUrl}
+  $("#bgo").disabled=true;rq.send_at=SCH.bc?new Date(SCH.bc).toISOString():undefined;api(ed?"sched_update":"broadcast",rq).then(function(j){$("#bgo").disabled=false;
     if(j.error){$("#ebc").innerHTML='<div class="bx-res2 bad"><span class="bx-ri"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M12 7v6M12 17h.01"/></svg></span><div class="bx-rt"><b>Не отправилось</b><small>'+esc(j.error)+"</small></div></div>";render();return}
-    var sch=j.status==="scheduled";if(sch){SCH.bc=0;schList()}
+    var sch=j.status==="scheduled";
+    if(ed&&sch){window.schExit();$("#ebc").innerHTML=bcResult(j,true,tg);toast("Изменения сохранены");return}
+    if(sch){SCH.bc=0;schList()}
     $("#ebc").innerHTML=bcResult(j,sch,tg);
     try{setTimeout(function(){$("#ebc").scrollIntoView({behavior:"smooth",block:"nearest"})},350)}catch(e){}
     if(tg!=="me"||sch){bcFly(function(){$("#btext").value="";S.btn=false;S.label="";S.url="";setImg(null);renderKb();render()})}else render()})}
@@ -3947,6 +3998,16 @@ $(".bx-av").innerHTML=mark(24,1);
 renderKb();setLay("a");
 
 window.bcRender=bcRender;window.bcSetImg=setImg;
+function bcAudUi(){$$("#bxaud button").forEach(function(x){x.classList.toggle("bx-on",x.dataset.a===S.aud)});var a=$("#bxaud");if(a._pos)a._pos()}
+window.bcSnap=function(){return{t:$("#btext").value,S:JSON.parse(JSON.stringify(S)),img:bcImg,st:JSON.parse(JSON.stringify(QB.st))}};
+window.bcRestore=function(sn){$("#btext").value=sn.t;Object.keys(sn.S).forEach(function(k){S[k]=sn.S[k]});bcImg=sn.img;QB.st=sn.st;renderKb();bcAudUi();grow();render()};
+window.bcLoad=function(pl){
+  var tg=String(pl.target||"me");$("#btext").value=pl.text||"";QB.st={};
+  if(tg.indexOf("q:")===0){try{var r=JSON.parse(tg.slice(2));[["inc",1],["exc",-1]].forEach(function(z){(r[z[0]]||[]).forEach(function(i){QB.st[i]=z[1];if(/^(nd|ad):/.test(i)&&QB.cus.indexOf(i)<0)QB.cus.push(i)})})}catch(e){}S.aud="q"}else S.aud=tg;
+  S.btn=!!(pl.btn_text||pl.btn_url);S.label=pl.btn_text||"";S.url=pl.btn_url||"";
+  bcImg=pl.image||"";S.img=pl.image||pl.image_url||null;S.imgInfo=pl.image?"":(pl.image_url?"картинка по ссылке":"");
+  if(EDIT)EDIT.imgUrl=pl.image_url&&!pl.image?pl.image_url:"";
+  renderKb();bcAudUi();grow();render()};
 })();
 schMount("bc",$("#bxschhost"),"broadcast",function(){window.bcRender&&window.bcRender()});
 schMount("an",$(".ax-send"),"announce",function(){typeof annRender==="function"&&annRender()});

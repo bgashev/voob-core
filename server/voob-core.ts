@@ -68,7 +68,7 @@ const MAIL_TTL = 10 * 60000, MAIL_TRIES = 3, MAIL_COOLDOWN = 30000;
 const STEP_FRESH = 5 * 60000;                                  // после кода опасные действия открыты 5 минут
 const LOCK_FAILS = 6, LOCK_WINDOW = 15 * 60000;                // 6 неверных кодов за 15 минут — общий запрет на 15 минут
 const CHANGE_DELAY = DAY;                                      // смена почты вступает в силу через сутки
-const SENS = new Set(["refund", "broadcast", "pro", "block", "unblock", "del_workout", "kick", "edit", "chg_start", "chg_confirm", "sess_end"]);
+const SENS = new Set(["refund", "broadcast", "sched_update", "pro", "block", "unblock", "del_workout", "kick", "edit", "chg_start", "chg_confirm", "sess_end"]);
 
 // ---- второй шаг входа для программы Windows: 4-значный код в бот. Пока сессия не подтверждена кодом, сервер не выполняет ни одного действия.
 async function verified(th: string) {
@@ -855,6 +855,32 @@ async function schedCancel(id: number) {
   if (!data?.length) return { error: "Уже отправлено или отменено" };
   await log("sched_cancel", null, { id }); return { status: "ok" };
 }
+
+/* посмотреть запланированное целиком (для просмотра и правки в форме) */
+async function schedGet(id: number) {
+  const { data } = await db.from("scheduled_sends").select("id, fn, run_at, status, summary, payload").eq("id", id).maybeSingle();
+  if (!data) return { error: "Не нашёл такую отправку" };
+  if (data.status !== "pending") return { error: "Уже отправлено или отменено — править нельзя" };
+  return { status: "ok", item: data };
+}
+/* сохранить правки рассылки: новый текст/получатели/кнопка/картинка и время; только пока не ушла */
+async function schedUpdate(id: number, body: any) {
+  const { data: cur } = await db.from("scheduled_sends").select("id, fn, status").eq("id", id).maybeSingle();
+  if (!cur) return { error: "Не нашёл такую отправку" };
+  if (cur.fn !== "broadcast") return { error: "Это не рассылка" };
+  if (cur.status !== "pending") return { error: "Уже отправляется или отправлено — править поздно" };
+  const at = Date.parse(String(body?.send_at ?? ""));
+  if (!isFinite(at) || at < Date.now() + 60_000) return { error: "Время отправки должно быть хотя бы через минуту" };
+  if (at > Date.now() + 60 * DAY) return { error: "Дальше чем на 60 дней планировать нельзя" };
+  const v: any = await broadcast({ ...body, dry: true }); if (v?.error) return v;
+  const payload = { ...body }; delete payload.send_at; delete payload.token; delete payload.action; delete payload.client; delete payload.id;
+  const summary = String(body?.text ?? "").trim().slice(0, 100) || "картинка";
+  const { data, error } = await db.from("scheduled_sends").update({ payload, run_at: new Date(at).toISOString(), summary: summary.slice(0, 160) }).eq("id", id).eq("status", "pending").select("id");
+  if (error) return { error: "Не удалось сохранить: " + error.message };
+  if (!data?.length) return { error: "Уже отправляется или отправлено — править поздно" };
+  await log("sched_edit", null, { id, fn: "broadcast", at: new Date(at).toISOString(), summary: summary.slice(0, 80) });
+  return { status: "scheduled", id, at: new Date(at).toISOString() };
+}
 /* вызывается по расписанию (pg_cron → POST с x-cron-secret): берёт созревшие рассылки и отправляет */
 async function schedRun() {
   const { data: due } = await db.from("scheduled_sends").update({ status: "running" }).eq("fn", "broadcast").eq("status", "pending").lte("run_at", new Date().toISOString()).select("id, payload, summary");
@@ -910,7 +936,7 @@ Deno.serve(async (req) => {
       if (!(await coreVerified(th))) return json({ error: "Подтверди вход кодом с почты", need_otp: true }, 401);
       if (a === "pin_step") return json(await pinStep(th, body?.code));
       if (SENS.has(a) && !(await coreFresh(th))) {
-        if (a === "broadcast") { if (String(body?.target ?? "") !== "me" && !(await pinFresh(th))) return json({ error: "Введи код подтверждения", need_pin: true }, 401); }
+        if (a === "broadcast" || a === "sched_update") { if (String(body?.target ?? "") !== "me" && !(await pinFresh(th))) return json({ error: "Введи код подтверждения", need_pin: true }, 401); }
         else return json({ error: "Подтверди действие кодом с почты", need_step: true }, 401);
       }
       if (a === "sess_list") {
@@ -974,6 +1000,8 @@ Deno.serve(async (req) => {
       case "seg_del": return json(await segDel(Number(body?.id)));
       case "sched_list": return json(await schedList());
       case "sched_cancel": return json(await schedCancel(Number(body?.id)));
+      case "sched_get": return json(await schedGet(Number(body?.id)));
+      case "sched_update": return json(await schedUpdate(Number(body?.id), body));
       case "log": { const { data } = await db.from("admin_log").select("id, at, action, target, details").order("id", { ascending: false }).limit(300); return json({ items: (data ?? []).map((x: any) => x.action === "login" ? { ...x, details: {} } : x) }); }
       case "gift_types": { const { data } = await db.from("gift_types").select("kind, emoji, title").order("sort"); return json({ items: data ?? [] }); }
     }

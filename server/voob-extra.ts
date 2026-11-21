@@ -393,6 +393,23 @@ async function schedAddAnn(b: any) {
   await log("sched_add", null, { id: data.id, fn: "announce", at: new Date(at).toISOString(), summary: summary.slice(0, 80) });
   return { status: "scheduled", id: data.id, at: new Date(at).toISOString() };
 }
+async function schedUpdateAnn(id: number, b: any) {
+  const { data: cur } = await db.from("scheduled_sends").select("id, fn, status").eq("id", id).maybeSingle();
+  if (!cur) return { error: "Не нашёл такую отправку" };
+  if (cur.fn !== "announce") return { error: "Это не объявление" };
+  if (cur.status !== "pending") return { error: "Уже отправляется или отправлено — править поздно" };
+  const at = Date.parse(String(b?.send_at ?? ""));
+  if (!isFinite(at) || at < Date.now() + 60_000) return { error: "Время отправки должно быть хотя бы через минуту" };
+  if (at > Date.now() + 60 * DAY) return { error: "Дальше чем на 60 дней планировать нельзя" };
+  const v: any = await announce({ ...b, dry: true }); if (v?.error) return v;
+  const payload = { ...b }; delete payload.send_at; delete payload.token; delete payload.action; delete payload.client; delete payload.id;
+  const summary = String(b?.title ?? "").trim().slice(0, 100);
+  const { data, error } = await db.from("scheduled_sends").update({ payload, run_at: new Date(at).toISOString(), summary }).eq("id", id).eq("status", "pending").select("id");
+  if (error) return { error: "Не удалось сохранить: " + error.message };
+  if (!data?.length) return { error: "Уже отправляется или отправлено — править поздно" };
+  await log("sched_edit", null, { id, fn: "announce", at: new Date(at).toISOString(), summary: summary.slice(0, 80) });
+  return { status: "scheduled", id, at: new Date(at).toISOString() };
+}
 async function schedRunAnn() {
   const { data: due } = await db.from("scheduled_sends").update({ status: "running" }).eq("fn", "announce").eq("status", "pending").lte("run_at", new Date().toISOString()).select("id, payload, summary");
   let n = 0;
@@ -435,11 +452,11 @@ Deno.serve(async (req) => {
       await db.from("sessions").update({ last_seen: new Date().toISOString() }).eq("token_hash", th);
       const { data: okLogin } = await db.from("core_otp").select("id").eq("th", th).eq("purpose", "login").not("used_at", "is", null).limit(1);
       if (!okLogin?.length) return json({ error: "Подтверди вход кодом с почты", need_otp: true }, 401);
-      if (["announce", "promo_create", "promo_off", "promo_delete", "ach"].includes(a)) {
+      if (["announce", "sched_update", "promo_create", "promo_off", "promo_delete", "ach"].includes(a)) {
         const { data: fresh } = await db.from("core_otp").select("id").eq("th", th).in("purpose", ["login", "step"]).gte("used_at", new Date(Date.now() - 5 * 60000).toISOString()).limit(1);
         if (!fresh?.length) {
           // объявление: себе — без кода; остальным — короткий код (его проверяет voob-core, отметка pin_ok в журнале на 5 минут)
-          if (a === "announce") {
+          if (a === "announce" || a === "sched_update") {
             if (String(body?.audience ?? "") !== "me") {
               const { data: pin } = await db.from("admin_log").select("id").eq("action", "pin_ok").eq("details->>th", th).gte("at", new Date(Date.now() - 5 * 60000).toISOString()).limit(1);
               if (!pin?.length) return json({ error: "Введи код подтверждения", need_pin: true }, 401);
@@ -451,6 +468,7 @@ Deno.serve(async (req) => {
     const id = Number(body?.tg_id ?? 0);
     switch (a) {
       case "announce": return json(body?.send_at ? await schedAddAnn(body) : await announce(body));
+      case "sched_update": return json(await schedUpdateAnn(Number(body?.id), body));
       case "announces": return json(await announces());
       case "ann_stats": return json(await annStats(Number(body?.id)));
       case "audience": return json(await audienceCounts());
