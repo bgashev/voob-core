@@ -296,6 +296,11 @@ textarea.pvaw.ax-in{font-size:13px;color:#c4c4cc;line-height:1.5;max-height:none
 .ax-chip,.ax-x{border:0;border-radius:8px;background:rgba(255,255,255,.08);color:#c4c4cc;font:700 10.5px var(--sans);height:24px;padding:0 8px;cursor:pointer}
 .ax-chip:hover,.ax-x:hover{background:rgba(255,255,255,.18);color:#fff}
 #axk button{display:inline-flex;align-items:center;gap:7px}#axk button svg{width:15px;height:15px;flex:none}
+.ax-sw{position:relative;display:grid;grid-template-columns:1fr 1fr;background:#ffffff0d;border-radius:13px;padding:3px}.ax-sw i{position:absolute;top:3px;bottom:3px;left:3px;width:calc(50% - 3px);border-radius:10px;background:#ffffff1c;transition:transform .4s var(--ease)}.ax-sw.b i{transform:translateX(100%)}.ax-sw button{position:relative;border:0;background:none;color:var(--mute);font:700 12px var(--sans);padding:8px 4px;cursor:pointer}.ax-sw button.on{color:#fff}
+.ax-opts{display:grid;gap:7px}.ax-oe{display:flex;align-items:center;gap:9px;border:1px solid var(--line2);border-radius:14px;padding:5px 6px 5px 11px;background:#ffffff08;animation:axoe .35s var(--ease)}.ax-oe i,.pb-d{width:10px;height:10px;border-radius:4px;background:var(--c);flex:none}.ax-oe input{flex:1;min-width:0;width:0;height:30px;background:none;border:0;outline:0;color:#f4f4f5;font:650 13px var(--sans)}.ax-oe button{width:28px;height:28px;border:0;border-radius:9px;background:#ffffff10;color:var(--mute);cursor:pointer}.ax-oe button:disabled{opacity:.25;cursor:default}.ax-oadd{border:1px dashed #ffffff38;background:none;color:#8a8a94;border-radius:14px;padding:9px;font:700 12px var(--sans);cursor:pointer}.ax-pshow{display:flex;gap:8px;align-items:center;text-align:left;font-size:11.5px;color:var(--mute);cursor:pointer;padding:2px}
+@keyframes axoe{from{opacity:0;transform:translateY(8px)}}
+.pb{display:grid;gap:8px}.pb-r{position:relative;overflow:hidden;border-radius:18px;background:var(--tile2);border:1px solid var(--line);padding:12px 16px;display:flex;align-items:center;gap:12px;width:100%;text-align:left;color:var(--fg);font:inherit;cursor:pointer}.pb-r i{position:absolute;left:0;top:0;bottom:0;width:0;background:linear-gradient(90deg,color-mix(in srgb,var(--c) 12%,transparent),color-mix(in srgb,var(--c) 42%,transparent));transition:width 1.1s var(--ease)}.pb-r i.has{border-right:3px solid var(--c)}.pb-r>span,.pb-r>b{position:relative}.pb-r>span{flex:1;min-width:0;font-weight:700;overflow-wrap:anywhere}.pb-r small{display:block;color:var(--mute);font-weight:500;font-size:12px}.pb-r>b{font-size:26px;font-variant-numeric:tabular-nums}.pb-r.on{outline:2px solid var(--c);outline-offset:1px}
+.pb-app{display:grid;gap:6px;margin-top:8px}.pb-app span{display:flex;align-items:center;gap:9px;border:1px solid var(--line2);border-radius:14px;padding:10px 12px;font-weight:700;text-align:left}
 .pvab{display:inline-flex;align-items:center;gap:6px}.pvab svg{width:12px;height:12px;flex:none}
 .ax-gi svg{width:64px;height:64px;color:#c4b5fd}
 .ax-cnt{font-size:11.5px;color:var(--dim);text-align:center}.ax-cnt .dn{color:var(--bad)}
@@ -1563,7 +1568,7 @@ textarea.field{resize:none;line-height:1.5;min-height:84px;padding:12px 15px;fon
             <input class="pvat ax-in" id="at" maxlength="80" placeholder="Заголовок" autocomplete="off">
             <textarea class="pvaw ax-in" id="ab" maxlength="600" rows="2" placeholder="Текст объявления"></textarea>
             <div class="pvas" id="axgs" hidden></div>
-            <div class="ax-ans" id="axans" hidden><div class="ax-ansf">Ответ напишет человек</div><div class="ax-ansb">Отправить ответ</div></div>
+            <div class="ax-ans" id="axans" hidden><div class="ax-sw" id="axpsw"><i></i><button type="button" data-m="text">Своими словами</button><button type="button" data-m="btn">Кнопки</button></div><div class="ax-opts" id="axopts"></div><label class="ax-pshow" id="axpshl"><input type="checkbox" id="axpshow"> Показать человеку проценты после голоса</label><div class="ax-ansf" id="axansf">Ответ напишет человек</div><div class="ax-ansb" id="axansb">Отправить ответ</div></div>
             <div class="ax-ctaw" id="axctaw">
               <button class="ax-add" id="axadd" type="button">+ Кнопка</button>
               <div id="axcb" hidden><div class="pvac" id="axbtnp">Открыть</div>
@@ -2887,18 +2892,24 @@ function annStatsLoad(x){
     if(!j||j.error){el.innerHTML='<div class="ahs-ld">'+esc(j&&j.error||"Не получилось загрузить")+"</div>";return}
     var n=j.total||0,pc=function(v){return n?Math.round(v*100/n):0};
     var fn=[["Получили",n,100,""],["Открыли",j.seen,pc(j.seen),""],["Нажали кнопку",j.click,pc(j.click),"go"],["Скрыли",j.dismiss,pc(j.dismiss),"no"],["Прочитали",j.ack,pc(j.ack),"ok"],["Ответили",j.answer||0,pc(j.answer||0),"ok"]].filter(function(f,i){return i<2||f[1]>0});
-    var h='<div class="ahs-f">'+fn.map(function(f){return '<div class="ahs-r"><span>'+f[0]+'</span><div class="ahs-b '+f[3]+'"><i style="--w:'+f[2]+'%"></i></div><b>'+f[1]+'<small>'+f[2]+'%</small></b></div>'}).join("")+"</div>";
+    var P=j.poll,ph="",pick=null;
+    if(P){var tot=P.counts.reduce(function(a,b){return a+b},0),pp=pollPct(P.counts),mx=Math.max.apply(null,P.counts);
+      ph='<div class="pb" id="pbv">'+P.options.map(function(o,i){return '<button type="button" class="pb-r" data-i="'+i+'" style="--c:'+PC[i]+'"><i data-w="'+pp[i]+'" class="'+(pp[i]?"has":"")+'"></i><span>'+esc(o)+(mx&&P.counts[i]===mx?" 👑":"")+'<small>'+P.counts[i]+' чел.</small></span><b>'+pp[i]+'%</b></button>'}).join("")+'</div><div class="ahs-ld">'+(tot?"Голосов: "+tot+" · "+pc(tot)+"% получивших. Нажми вариант, чтобы увидеть, кто выбрал":"Голосов пока нет")+'</div>'}
+    var h=ph+'<div class="ahs-f">'+fn.map(function(f){return '<div class="ahs-r"><span>'+f[0]+'</span><div class="ahs-b '+f[3]+'"><i style="--w:'+f[2]+'%"></i></div><b>'+f[1]+'<small>'+f[2]+'%</small></b></div>'}).join("")+"</div>";
     var tabs=[["all","Все",j.people.length],["go","Нажали",j.click],["no","Скрыли",j.dismiss],["ok","Прочитали",j.ack],["an","Ответили",j.answer||0]].filter(function(t,i){return i===0||t[2]>0});
     h+='<div class="ahs-t">'+tabs.map(function(t,i){return '<button type="button" data-f="'+t[0]+'" class="'+(i?"":"on")+'">'+t[1]+" <em>"+t[2]+"</em></button>"}).join("")+"</div><div class='ahs-l' id='ahsl'></div>";
     el.innerHTML=h;
     function draw(f){
       var ps=j.people.filter(function(p){return f==="all"||(p.action&&AHS_A[p.action]&&AHS_A[p.action][1]===f)});
+      if(pick!==null)ps=ps.filter(function(p){return p.choice===pick});
       $("#ahsl").innerHTML=ps.length?ps.map(function(p){var u={tg_id:p.tg_id,first_name:p.first_name,handle:p.handle},a=p.action&&AHS_A[p.action];
-        return '<div class="item ahs-p" data-id="'+p.tg_id+'">'+av(u)+'<div class="m"><div class="t">'+nm(u)+'</div><div class="s">открыл '+dt(p.seen_at)+(p.acted_at&&p.action!=="ack"?" · через "+gapTxt(p.seen_at,p.acted_at):"")+"</div></div>"+(a?'<span class="ahs-c '+a[1]+'">'+a[0]+"</span>":'<span class="ahs-c">только открыл</span>')+"</div>"}).join(""):'<div class="ahs-ld">Пока никого</div>';
+        return '<div class="item ahs-p" data-id="'+p.tg_id+'">'+av(u)+'<div class="m"><div class="t">'+nm(u)+'</div><div class="s">открыл '+dt(p.seen_at)+(p.acted_at&&p.action!=="ack"?" · через "+gapTxt(p.seen_at,p.acted_at):"")+"</div></div>"+(P&&p.choice!=null?'<span class="ahs-c" style="color:'+PC[p.choice]+'">'+esc(P.options[p.choice])+"</span>":a?'<span class="ahs-c '+a[1]+'">'+a[0]+"</span>":'<span class="ahs-c">только открыл</span>')+"</div>"}).join(""):'<div class="ahs-ld">Пока никого</div>';
       try{hydrate($("#ahsl"))}catch(e){}
       $$("#ahsl .item").forEach(function(it){it.onclick=function(){closeDlg();openUser(+it.dataset.id)}})}
-    $$("#ahs .ahs-t button").forEach(function(b){b.onclick=function(){$$("#ahs .ahs-t button").forEach(function(o){o.classList.toggle("on",o===b)});draw(b.dataset.f)}});
+    $$("#ahs .ahs-t button").forEach(function(b){b.onclick=function(){pick=null;$$("#pbv .pb-r").forEach(function(o){o.classList.remove("on")});$$("#ahs .ahs-t button").forEach(function(o){o.classList.toggle("on",o===b)});draw(b.dataset.f)}});
     draw("all");
+    if(P){setTimeout(function(){$$("#pbv .pb-r i").forEach(function(i){i.style.width=i.dataset.w+"%"})},40);
+      $$("#pbv .pb-r").forEach(function(b){b.onclick=function(){var i=+b.dataset.i;pick=pick===i?null:i;$$("#pbv .pb-r").forEach(function(o){o.classList.toggle("on",+o.dataset.i===pick)});$$("#ahs .ahs-t button").forEach(function(o){o.classList.toggle("on",o.dataset.f==="all")});draw("all")}})}
     if(j.people.length>=300)$("#ahsl").insertAdjacentHTML("afterend",'<div class="ahs-ld">Показаны последние 300 открывших</div>');
   });
 }
@@ -2911,13 +2922,13 @@ function annPreview(i){
     '<div class="ahd-st"><div><b>'+n+'</b><small>получателей</small></div><div><b>'+(x.seen||0)+'</b><small>открыли</small></div><div><b>'+pc+'%</b><small>охват</small></div></div>'+
     '<div class="ahd-l">Кто смотрел и что сделал</div><div class="ahs" id="ahs"><div class="ahs-ld">Загружаю статистику…</div></div>'+
     '<div class="ahd-l">Так выглядело в Telegram</div>'+tgBubble(esc2(head+x.title)+"<br><br>"+esc2(x.body||"")+"<br><br>— команда VOOB",btn,false,x.image_url||"")+
-    '<div class="ahd-l">Так выглядело в приложении</div><div class="ahd-app'+(x.image_url?" has":"")+'">'+(x.image_url?'<img src="'+esc(x.image_url)+'" alt="">':"")+'<div class="ahd-ab"><span class="ah-k ah-'+esc(x.kind)+'">'+(AH_IC[x.kind]||AH_IC.notice)+'</span><b>'+esc(x.title)+'</b><p>'+esc2(x.body||"")+'</p>'+(cta?'<div class="ahd-btn">'+(cta==="pro"?"Оформить PRO":"Открыть")+"</div>":"")+'</div></div>'+
+    '<div class="ahd-l">Так выглядело в приложении</div><div class="ahd-app'+(x.image_url?" has":"")+'">'+(x.image_url?'<img src="'+esc(x.image_url)+'" alt="">':"")+'<div class="ahd-ab"><span class="ah-k ah-'+esc(x.kind)+'">'+(AH_IC[x.kind]||AH_IC.notice)+'</span><b>'+esc(x.title)+'</b><p>'+esc2(x.body||"")+'</p>'+(x.options?'<div class="pb-app">'+x.options.map(function(o,k){return '<span style="--c:'+PC[k]+'"><i class="pb-d"></i>'+esc(o)+'</span>'}).join("")+'</div>':"")+(cta?'<div class="ahd-btn">'+(cta==="pro"?"Оформить PRO":"Открыть")+"</div>":"")+'</div></div>'+
     '<div class="ahd-f"><button type="button" class="btn" data-close>Закрыть</button><button type="button" class="btn primary" id="ahuse">Использовать как шаблон</button></div></div>');
   annStatsLoad(x);
   $("#ahuse").onclick=function(){
     closeDlg();var k=$("#ak");k.value=x.kind;k.dispatchEvent(new Event("change"));
     if(x.kind==="gift"&&x.gift_kind){var g=$("#agk");if(g){g.value=x.gift_kind;g.dispatchEvent(new Event("change"))}}
-    $("#at").value=x.title||"";$("#ab").value=x.body||"";$("#ac").value=x.cta||"";
+    pollSet(x);$("#at").value=x.title||"";$("#ab").value=x.body||"";$("#ac").value=x.cta||"";
     ["#at","#ab","#ac"].forEach(function(q){$(q).dispatchEvent(new Event("input"))});annRender();toast("Шаблон подставлен — поправь и отправляй");
     try{$("#at").scrollIntoView({behavior:"smooth",block:"center"})}catch(e){}};
 }
@@ -3472,11 +3483,29 @@ function tgBubble(text,btn,dim,img){
   return '<div class="tgc"><div class="tgh"><span class="tga">'+mark(26,1)+'</span><div><b>VOOB</b><i>бот</i></div></div><div class="tgm'+(dim?" dim":"")+'">'+(img?'<img class="tgp" src="'+img+'" alt="">':"")+'<div class="tgb">'+text+'</div><div class="tgt">'+new Date().toLocaleTimeString("ru-RU",{hour:"2-digit",minute:"2-digit"})+' <span>✓✓</span></div></div>'+(btn?'<div class="tgk">'+btn+"</div>":"")+"</div>";
 }
 var axBtn=false,axSig="";
+/* опрос: режим «текст / кнопки», 2–4 варианта */
+var PC=["#a78bfa","#22d3ee","#34d399","#fbbf24"],axPoll={m:"btn",o:["",""],show:true};
+function pollList(){return axPoll.o.map(function(x){return x.trim()}).filter(Boolean)}
+function pollEdit(){
+  $("#axopts").innerHTML=axPoll.o.map(function(o,i){return '<div class="ax-oe" style="--c:'+PC[i]+'"><i></i><input maxlength="30" data-i="'+i+'" value="'+esc(o)+'" placeholder="Вариант '+(i+1)+'" autocomplete="off"><button type="button" data-del="'+i+'" title="Убрать"'+(axPoll.o.length<3?" disabled":"")+'>✕</button></div>'}).join("")+(axPoll.o.length<4?'<button type="button" class="ax-oadd">+ Вариант ('+axPoll.o.length+' из 4)</button>':"");
+}
+function pollUI(){var b=axPoll.m==="btn";$("#axpsw").classList.toggle("b",b);$$("#axpsw button").forEach(function(x){x.classList.toggle("on",x.dataset.m===axPoll.m)});$("#axopts").hidden=!b;$("#axpshl").hidden=!b;$("#axansf").hidden=b;$("#axansb").textContent=b?"Проголосовать":"Отправить ответ";$("#axpshow").checked=axPoll.show}
+function pollSet(o){axPoll={m:o.options?"btn":(o.kind==="poll"?"text":"btn"),o:o.options?o.options.slice(0,4):["",""],show:o.options?!!o.show_results:true};pollEdit()}
+function pollBind(){
+  $("#axpsw").onclick=function(e){var b=e.target.closest("button");if(!b)return;axPoll.m=b.dataset.m;annRender()};
+  $("#axopts").oninput=function(e){axPoll.o[+e.target.dataset.i]=e.target.value;annRender()};
+  $("#axopts").onclick=function(e){var b=e.target.closest("button");if(!b)return;var add=!b.dataset.del;if(add)axPoll.o.push("");else axPoll.o.splice(+b.dataset.del,1);pollEdit();annRender();if(add)$('#axopts input[data-i="'+(axPoll.o.length-1)+'"]').focus()};
+  $("#axpshow").onchange=function(){axPoll.show=this.checked};
+  pollEdit();
+}
+/* проценты по вариантам, в сумме всегда 100 */
+function pollPct(v){var t=v.reduce(function(a,b){return a+b},0);if(!t)return v.map(function(){return 0});var r=v.map(function(x){return x*100/t}),f=r.map(Math.floor),left=100-f.reduce(function(a,b){return a+b},0);r.map(function(x,i){return[x-f[i],i]}).sort(function(a,b){return b[0]-a[0]||a[1]-b[1]}).slice(0,left).forEach(function(p){f[p[1]]++});return f}
 var AX_CLIP='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.5 12.4 21a5.5 5.5 0 0 1-7.8-7.8l9-9a3.7 3.7 0 0 1 5.3 5.2l-9 9a1.8 1.8 0 0 1-2.6-2.6l8.3-8.3"/></svg>';
 function axPos(){var el=$("#axk");if(!el)return;var th=el.querySelector(".bx-th"),b=el.querySelector(".bx-on");if(!b||!b.offsetWidth)return;th.style.width=b.offsetWidth+"px";th.style.transform="translateX("+b.offsetLeft+"px)"}
 function annBad(){
   var title=$("#at").value.trim(),cta=$("#ac").value.trim();
   if(title.length<2)return "Нужен заголовок";
+  if($("#ak").value==="poll"){if(axPoll.m!=="btn")return "";var l=pollList();if(l.length<2)return "Нужно минимум 2 варианта ответа";if(new Set(l.map(function(x){return x.toLowerCase()})).size!==l.length)return "Варианты повторяются";return ""}
   if(cta&&cta!=="pro"&&!/^https:\/\/\S+$/i.test(normUrl(cta)))return "Ссылка кнопки некорректна";
   return "";
 }
@@ -3500,38 +3529,39 @@ function annRender(){
   var wn=$("#athumbs").className==="warn"?$("#athumbs").textContent:"";var ww=$("#axwarn");
   if(anImg&&wn){if(!ww){ww=document.createElement("div");ww.id="axwarn";ww.className="ax-warn";$("#axmedia").appendChild(ww)}ww.textContent=wn}else if(ww)ww.remove();
   $("#axgs").hidden=kind!=="gift";if(kind==="gift")$("#axgs").textContent=g?g.title+" · уже в коллекции":"Подарок уже в коллекции";
-  var isP=kind==="poll";$("#axans").hidden=!isP;$("#axctaw").hidden=isP;$("#at").placeholder=isP?"Ваш вопрос":"Заголовок";$("#ab").placeholder=isP?"Пояснение (можно пусто)":"Текст объявления";
+  var isP=kind==="poll";$("#axans").hidden=!isP;$("#axctaw").hidden=isP;$("#at").placeholder=isP?"Ваш вопрос":"Заголовок";$("#ab").placeholder=isP?"Пояснение (можно пусто)":"Текст объявления";pollUI();var isB=isP&&axPoll.m==="btn";
   $("#axadd").hidden=axBtn;$("#axcb").hidden=!axBtn;$("#axbtnp").textContent=cta==="pro"?"Оформить PRO":"Открыть";
   var ab=$("#ab");ab.style.height="auto";ab.style.height=Math.max(40,ab.scrollHeight)+"px";
   var head=kind==="gift"?"🎁 ":kind==="promo"?"✨ ":kind==="poll"?"📊 ":"📣 ";
-  $("#axTg").innerHTML=tgBubble(esc2(head+(title||"Заголовок"))+"<br><br>"+esc2(body||"Текст объявления")+"<br><br>"+(isP?"Ответь в приложении, мы читаем каждый ответ":"— команда VOOB"),'<span>'+(cta&&cta!=="pro"?"Открыть":"Открыть VOOB")+'</span>',!notify,anImg)+(notify?"":'<p class="hint" style="text-align:center;margin:0">Галочка выключена: сообщение в Telegram не уйдёт.</p>');
+  $("#axTg").innerHTML=tgBubble(esc2(head+(title||"Заголовок"))+"<br><br>"+esc2(body||"Текст объявления")+"<br><br>"+(isP?(isB?"Проголосуй в приложении, это один тап.":"Ответь в приложении — мы читаем каждый ответ.")+"<br><br>— команда VOOB":"— команда VOOB"),'<span>'+(cta&&cta!=="pro"?"Открыть":"Открыть VOOB")+'</span>',!notify,anImg)+(notify?"":'<p class="hint" style="text-align:center;margin:0">Галочка выключена: сообщение в Telegram не уйдёт.</p>');
   var long=title.length>80||body.length>600;
   $("#axcnt").innerHTML="заголовок "+title.length+" / 80 · текст "+body.length+" / 600"+(long?' · <span class="dn">длиннее лимита</span>':"");
   if(isP)cta="";var bad=annBad(),who=aud==="me"?"Увидишь только ты (проверка)":aud==="list"?"Получат люди из списка":SEGN[aud]?"Получат "+SEGN[aud]+": "+fmt(AUD[aud]||0):aud==="all"?"Получат все: "+fmt(AUD.all):aud==="pro"?"Получат PRO: "+fmt(AUD.pro):"Получат без PRO: "+fmt(AUD.free);
-  $("#axinfo").innerHTML=bad?'<b style="color:var(--gold)">'+bad+'</b><small>'+who+'</small>':'<b>'+who+'</b><small>'+(isP?"Ответы придут в «Жалобы и идеи»":cta?(cta==="pro"?"Кнопка «Оформить PRO»":"Кнопка «Открыть» → "+esc(normUrl(cta))):"Без кнопки")+(anImg?" · с картинкой":"")+'</small>';
+  $("#axinfo").innerHTML=bad?'<b style="color:var(--gold)">'+bad+'</b><small>'+who+'</small>':'<b>'+who+'</b><small>'+(isP?(isB?"Проценты — в статистике объявления":"Ответы придут в «Жалобы и идеи»"):cta?(cta==="pro"?"Кнопка «Оформить PRO»":"Кнопка «Открыть» → "+esc(normUrl(cta))):"Без кнопки")+(anImg?" · с картинкой":"")+'</small>';
   var h=$("#ago");h.disabled=!!bad;if(!h.classList.contains("bx-go")&&!h.classList.contains("bx-boom"))$("#axhl").textContent=EDIT&&EDIT.p==="an"?"Зажми, чтобы сохранить":SCH.an?(aud==="me"?"Запланировать себе":"Зажми, чтобы запланировать"):aud==="me"?"Отправить себе":"Зажми, чтобы отправить";
 }
 function anFill(o){
   $("#ak").value=o.kind||"notice";$("#ak").dispatchEvent(new Event("change",{bubbles:true}));
   if(o.kind==="gift"&&o.gift_kind){var g=$("#agk");if(g){g.value=o.gift_kind;g.dispatchEvent(new Event("change"))}}
-  $("#aa").value=o.audience||"me";$("#aa").dispatchEvent(new Event("change",{bubbles:true}));
+  pollSet(o);$("#aa").value=o.audience||"me";$("#aa").dispatchEvent(new Event("change",{bubbles:true}));
   $("#at").value=o.title||"";$("#ab").value=o.body||"";$("#ac").value=o.cta||"";axBtn=!!o.cta;$("#an").checked=o.notify!==false;$("#alist").value=o.targets||"";
   if(o.image){anImg=o.image;$("#athumbi").src=o.image;$("#athumbn").textContent="картинка из публикации";var sm=$("#athumbs");sm.textContent="";sm.className="";$("#athumb").hidden=false;$("#ahint").hidden=true}
   else{anImg="";$("#athumb").hidden=true;$("#ahint").hidden=false;$("#afile").value=""}
   annRender();
 }
 function anLoad(pl){anFill(pl)}
-function anSnap(){return{kind:$("#ak").value,audience:$("#aa").value,title:$("#at").value,body:$("#ab").value,cta:$("#ac").value,notify:$("#an").checked,targets:$("#alist").value,gift_kind:($("#agk")||{}).value,image:anImg||""}}
+function anSnap(){return{kind:$("#ak").value,audience:$("#aa").value,title:$("#at").value,body:$("#ab").value,cta:$("#ac").value,notify:$("#an").checked,targets:$("#alist").value,options:$("#ak").value==="poll"&&axPoll.m==="btn"?axPoll.o.slice():null,show_results:axPoll.show,gift_kind:($("#agk")||{}).value,image:anImg||""}}
 function anRestore(sn){anFill(sn)}
 function annSend(){
   var aud=$("#aa").value,kind=$("#ak").value,cv=$("#ac").value.trim(),b={kind:kind,audience:aud,title:$("#at").value.trim(),body:$("#ab").value.trim(),cta:kind==="poll"?null:(cv==="pro"?cv:normUrl(cv))||null,notify:$("#an").checked,image:anImg||undefined};
+  if(kind==="poll"&&axPoll.m==="btn"){b.options=pollList();b.show_results=axPoll.show}
   if(kind==="gift")b.gift_kind=$("#agk").value;if(aud==="list")b.targets=$("#alist").value;
   $("#eab").textContent="";if(annBad()){annRender();return}
   var ed=!!(EDIT&&EDIT.p==="an");if(ed){if(!SCH.an){$("#eab").textContent="Выбери время отправки в «Отправить позже»";return}b.id=EDIT.id}
   if(SCH.an)b.send_at=new Date(SCH.an).toISOString();$("#ago").disabled=true;api(ed?"sched_update":"announce",b,"x").then(function(j){$("#ago").disabled=false;
     $("#eab").innerHTML=j.error?esc(j.error):j.status==="scheduled"?'<span class="ok">Запланировано на '+schHuman(Date.parse(j.at))+"</span>":'<span class="ok">Отправлено: '+j.total+", в Telegram дошло "+j.sent+"</span>";
     if(!j.error&&j.status==="scheduled"){if(ed)schExit();else{SCH.an=0;schList()}}
-    if(!j.error){if(aud!=="me"&&!ed){$("#at").value=$("#ab").value=$("#ac").value="";axBtn=false;anSetImg(null)}loadAnn()}annRender()});
+    if(!j.error){if(aud!=="me"&&!ed){$("#at").value=$("#ab").value=$("#ac").value="";axBtn=false;pollSet({});anSetImg(null)}loadAnn()}annRender()});
 }
 
 
@@ -3794,6 +3824,7 @@ window.addEventListener("dragover",function(e){e.preventDefault()});window.addEv
   ["#ak","#aa","#agk","#at","#ab","#ac","#an"].forEach(function(s){var e=$(s);e.addEventListener("input",annRender);e.addEventListener("change",annRender)});
   $("#ak").addEventListener("change",function(){if(this.value==="gift")gifts(function(){annRender()})});
   $$("#axk button").forEach(function(b){b.innerHTML=ic(b.dataset.k,2)+"<span>"+b.textContent+"</span>"});
+  pollBind();
   $$("#axk button").forEach(function(b){b.onclick=function(){$("#ak").value=b.dataset.k;$("#ak").dispatchEvent(new Event("change",{bubbles:true}))}});
   $$("#axaud button").forEach(function(b){b.onclick=function(){$("#aa").value=b.dataset.a;$("#aa").dispatchEvent(new Event("change",{bubbles:true}))}});
   (function(){var sel=$("#aa");Object.keys(SEGN).forEach(function(k){var o=document.createElement("option");o.value=k;o.textContent=k;sel.appendChild(o)});var sg=$("#axsg");sg.innerHTML=segHTML();sg.onclick=function(e){var b=e.target.closest("button[data-a]");if(!b)return;sel.value=b.dataset.a;sel.dispatchEvent(new Event("change",{bubbles:true}))}})();

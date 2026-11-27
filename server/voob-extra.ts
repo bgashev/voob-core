@@ -57,19 +57,42 @@ async function inbox(me: number) {
     db.from("pro_subs").select("until, plan").eq("tg_id", me).maybeSingle(),
   ]);
   const ids = (rows ?? []).map((r: any) => r.ann_id);
-  const { data: anns } = ids.length ? await db.from("announcements").select("id, kind, title, body, gift_kind, cta, image_url, created_at").in("id", ids) : { data: [] };
+  const { data: anns } = ids.length ? await db.from("announcements").select("id, kind, title, body, gift_kind, cta, image_url, options, show_results, created_at").in("id", ids) : { data: [] };
   const gm = new Map((rows ?? []).map((r: any) => [r.ann_id, r.gift_id]));
   const notices = (anns ?? []).sort((a: any, b: any) => a.id - b.id).map((a: any) => ({ ...a, gift_id: gm.get(a.id) ?? null }));
   const pro = me === ADMIN || proOn(sub?.until);
   return { status: "ok", notices, ach_off: (u as any)?.ach_off ?? [], pro, pro_until: sub?.until ?? null, creator: me === ADMIN };
 }
 
+// число голосов по каждому варианту опроса с кнопками
+async function pollCounts(id: number, n: number): Promise<number[]> {
+  return await Promise.all(Array.from({ length: n }, async (_, i) =>
+    (await db.from("announce_inbox").select("tg_id", { count: "exact", head: true }).eq("ann_id", id).eq("choice", i)).count ?? 0));
+}
+const pollOpts = (a: any): string[] | null => Array.isArray(a?.options) && a.options.length >= 2 ? a.options.map(String) : null;
+// кнопка опроса: один голос на человека; проценты отдаём только если это включено в объявлении
+async function pollVote(me: number, id: number, a: any, opts: string[], choiceRaw: unknown) {
+  const choice = typeof choiceRaw === "number" ? choiceRaw : -1;
+  if (!Number.isInteger(choice) || choice < 0 || choice >= opts.length) return { error: "Выбери вариант (возможно, нужно обновить приложение)" };
+  const now = new Date().toISOString();
+  const { data: ok, error } = await db.from("announce_inbox").update({ seen_at: now, action: "answer", acted_at: now, choice }).eq("tg_id", me).eq("ann_id", id).is("action", null).select("ann_id");
+  if (error) return { error: "Не получилось сохранить" };
+  if (!ok?.length) {
+    // повторный запрос после обрыва связи: показываем итог только тому, кто действительно голосовал
+    const { data: mine } = await db.from("announce_inbox").select("choice").eq("tg_id", me).eq("ann_id", id).maybeSingle();
+    if ((mine as any)?.choice == null) return { status: "done" };
+  }
+  return a.show_results ? { status: ok?.length ? "ok" : "done", counts: await pollCounts(id, opts.length) } : { status: ok?.length ? "ok" : "done" };
+}
+
 /* ответ на опрос: текст уходит в «Жалобы и идеи» (feedback, type = poll); один ответ на человека */
-async function pollAnswer(me: number, id: number, textRaw: string) {
-  const text = String(textRaw ?? "").trim().slice(0, 1000);
-  if (text.length < 2) return { status: "short" };
-  const { data: a } = await db.from("announcements").select("kind, title").eq("id", id).maybeSingle();
+async function pollAnswer(me: number, id: number, textRaw: string, choice?: unknown) {
+  const { data: a } = await db.from("announcements").select("kind, title, options, show_results").eq("id", id).maybeSingle();
   if (!a || (a as any).kind !== "poll") return { error: "Это не опрос" };
+  const opts = pollOpts(a);
+  if (opts) return await pollVote(me, id, a, opts, choice);
+  const text = String(textRaw ?? "").trim().slice(0, 1000);
+  if (text.length < 3) return { status: "short" };
   const now = new Date().toISOString();
   const { data: ok } = await db.from("announce_inbox").update({ seen_at: now, action: "answer", acted_at: now }).eq("tg_id", me).eq("ann_id", id).is("action", null).select("ann_id");
   if (!ok?.length) return { status: "done" };
@@ -90,7 +113,10 @@ async function seen(me: number, id: number, act?: string) {
 /* статистика одного объявления: воронка и список людей */
 async function annStats(id: number) {
   if (!(id > 0)) return { error: "Нет такого объявления" };
-  const { data: rows } = await db.from("announce_inbox").select("tg_id, seen_at, action, acted_at").eq("ann_id", id).limit(5000);
+  const { data: rows } = await db.from("announce_inbox").select("tg_id, seen_at, action, acted_at, choice").eq("ann_id", id).limit(5000);
+  const { data: ann } = await db.from("announcements").select("options").eq("id", id).maybeSingle();
+  const opts = pollOpts(ann);
+  const poll = opts ? { options: opts, counts: await pollCounts(id, opts.length) } : null;
   const all = rows ?? [];
   const count = (f: (r: any) => boolean) => all.filter(f).length;
   const shown = all.filter((r: any) => r.seen_at).sort((a: any, b: any) => (a.seen_at < b.seen_at ? 1 : -1)).slice(0, 300);
@@ -98,8 +124,8 @@ async function annStats(id: number) {
   const { data: us } = ids.length ? await db.from("users").select("tg_id, first_name, handle").in("tg_id", ids) : { data: [] };
   const um = new Map((us ?? []).map((u: any) => [Number(u.tg_id), u]));
   return {
-    status: "ok", total: all.length, seen: count((r) => !!r.seen_at), click: count((r) => r.action === "click"), dismiss: count((r) => r.action === "dismiss"), ack: count((r) => r.action === "ack"), answer: count((r) => r.action === "answer"),
-    people: shown.map((r: any) => ({ tg_id: Number(r.tg_id), first_name: (um.get(Number(r.tg_id)) as any)?.first_name ?? null, handle: (um.get(Number(r.tg_id)) as any)?.handle ?? null, seen_at: r.seen_at, action: r.action ?? null, acted_at: r.acted_at ?? null })),
+    status: "ok", poll, total: all.length, seen: count((r) => !!r.seen_at), click: count((r) => r.action === "click"), dismiss: count((r) => r.action === "dismiss"), ack: count((r) => r.action === "ack"), answer: count((r) => r.action === "answer"),
+    people: shown.map((r: any) => ({ tg_id: Number(r.tg_id), first_name: (um.get(Number(r.tg_id)) as any)?.first_name ?? null, handle: (um.get(Number(r.tg_id)) as any)?.handle ?? null, seen_at: r.seen_at, action: r.action ?? null, acted_at: r.acted_at ?? null, choice: r.choice ?? null })),
   };
 }
 
@@ -287,12 +313,19 @@ async function announce(b: any) {
   // ссылку можно писать без https://: t.me/..., @ник, example.kz/...
   const cta = !cta0 ? null : cta0 === "pro" ? cta0 : /^@\w{4,}$/.test(cta0) ? "https://t.me/" + cta0.slice(1) : /^[a-z][a-z0-9+.-]*:\/\//i.test(cta0) ? cta0 : "https://" + cta0.replace(/^\/+/, "");
   if (cta && cta !== "pro" && !/^https:\/\/\S+$/.test(cta)) return { error: "Кнопка: «pro» или ссылка (например t.me/boost/voobkz)" };
+  // опрос с кнопками: 2–4 разных варианта до 30 знаков; без options — свободный ответ
+  let options: string[] | null = null;
+  if (kind === "poll" && b?.options != null) {
+    options = (Array.isArray(b.options) ? b.options : []).map((x: unknown) => String(x ?? "").trim().slice(0, 30)).filter(Boolean) as string[];
+    if (options.length < 2 || options.length > 4) return { error: "Нужно от 2 до 4 вариантов" };
+    if (new Set(options.map((x) => x.toLowerCase())).size !== options.length) return { error: "Варианты повторяются" };
+  }
   const ids = await audienceIds(aud, b?.targets);
   if (!ids.length) return { error: aud === "list" ? "В списке никого не нашли — проверь ники и ID" : "В этой аудитории никого нет" };
   if (b?.dry) return { status: "ok", total: ids.length };
   const up = await uploadImage(b?.image);
   if (up.error) return { error: up.error };
-  const { data: a, error } = await db.from("announcements").insert({ kind, audience: aud, title, body, gift_kind: gk, cta, image_url: up.url ?? null, recipients: ids.length }).select("id").single();
+  const { data: a, error } = await db.from("announcements").insert({ kind, audience: aud, title, body, gift_kind: gk, cta, image_url: up.url ?? null, options, show_results: !!options && !!b?.show_results, recipients: ids.length }).select("id").single();
   if (error || !a) return { error: error?.message ?? "Не удалось создать" };
   // подарок сразу «получен»: он уже в коллекции, а окно объявления — само поздравление (без второго окна «Входящие подарки»)
   let gifts = new Map<number, number>();
@@ -309,7 +342,7 @@ async function announce(b: any) {
   let sent = 0;
   if (b?.notify) {
     const head = kind === "gift" ? "🎁 " : kind === "promo" ? "✨ " : kind === "poll" ? "📊 " : "📣 ";
-    const text = kind === "poll" ? `${head}${title}${body ? "\n\n" + body : ""}\n\nОтветь в приложении — мы читаем каждый ответ.\n\n— команда VOOB` : `${head}${title}\n\n${body}\n\n— команда VOOB`;
+    const text = kind === "poll" ? `${head}${title}${body ? "\n\n" + body : ""}\n\n${options ? "Проголосуй в приложении, это один тап." : "Ответь в приложении — мы читаем каждый ответ."}\n\n— команда VOOB` : `${head}${title}\n\n${body}\n\n— команда VOOB`;
     for (const t of ids) { if (up.url ? await sayPhoto(t, up.url, text) : await say(t, text)) sent++; await new Promise((r) => setTimeout(r, 40)); }
   }
   await log("announce", null, { id: a.id, kind, audience: aud, title, gift: gk, n: ids.length, sent, image: !!up.url });
@@ -424,7 +457,7 @@ async function schedRunAnn() {
 
 Deno.serve(async (req) => {
   if (req.method === "OPTIONS") return new Response("ok", { headers: CORS });
-  if (req.method !== "POST") return json({ app: "VOOB extra", version: "1.607", ok: true });
+  if (req.method !== "POST") return json({ app: "VOOB extra", version: "1.608", ok: true });
   try {
     const body = await req.json().catch(() => ({}));
     if (body?.action === "sched_run") { if (!CRON_SECRET || !safeEq(req.headers.get("x-cron-secret") ?? "", CRON_SECRET)) return json({ error: "Нет доступа" }, 403); return json(await schedRunAnn()); }
@@ -437,7 +470,7 @@ Deno.serve(async (req) => {
     if (body?.client === "web" && (s as any).device === "desktop") await db.from("sessions").update({ device: "web" }).eq("token_hash", th);
     const me = Number(s.tg_id), a = String(body?.action ?? "");
     if (a === "inbox") return json(await inbox(me));
-    if (a === "seen") return json(body?.act === "answer" ? await pollAnswer(me, Number(body?.id), String(body?.text ?? "")) : await seen(me, Number(body?.id), String(body?.act ?? "")));
+    if (a === "seen") return json(body?.act === "answer" ? await pollAnswer(me, Number(body?.id), String(body?.text ?? ""), body?.choice) : await seen(me, Number(body?.id), String(body?.act ?? "")));
     if (a === "bgs") return json(await bgs(Array.isArray(body?.ids) ? body.ids : []));
     if (a === "promo") return json(await redeem(me, body?.code));
     // дальше — только создатель с подтверждённым входом
