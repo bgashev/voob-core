@@ -1416,6 +1416,18 @@ textarea.field{resize:none;line-height:1.5;min-height:84px;padding:12px 15px;fon
 .ds .item .t .dsgi{display:inline-grid;vertical-align:middle;width:34px;height:34px;border-radius:10px;margin-right:10px;font-size:14px}img.dsgi{display:block}.ds .item .t img.dsgi{display:inline-block}
 .delh{color:var(--bad)}.dell{list-style:none;margin:12px 0;padding:0;max-height:210px;overflow:auto}.dell li{display:flex;justify-content:space-between;gap:12px;padding:7px 0;border-top:1px solid var(--line);font-size:13px}.dell span{color:var(--mute);font-family:var(--mono)}
 .delc>span{display:block;margin-top:14px;font-size:12.5px;color:var(--mute)}.delc .codes{margin:8px 0 0}
+/* пневмопочта и «Открыть Gmail» */
+.pm{position:relative;width:100%;max-width:314px;height:150px;margin:8px auto 0}.pmt{position:absolute;inset:0;width:100%;height:100%;overflow:visible;fill:none}.pmt path{fill:none}.pmt .p1{stroke:#26262e;stroke-width:26}.pmt .p2{stroke:#121215;stroke-width:20}.pmt .p3{stroke:url(#pmg);stroke-width:20;stroke-dasharray:100;stroke-dashoffset:100;opacity:0}
+.pmn{position:absolute;width:54px;height:54px;box-sizing:border-box;border-radius:18px;background:#1d1d23;border:1px solid #34343f;display:grid;place-items:center;color:#ddd;z-index:2;transition:border-color .4s,box-shadow .4s}.pmn svg,.pmgo svg,.gmbtn svg{width:22px;height:22px;fill:none;stroke:currentColor;stroke-width:1.9;stroke-linecap:round;stroke-linejoin:round}.pmn.a{left:4px;bottom:14px}.pmn.z{left:calc(100% - 64px);top:14px}
+.pmn b{position:absolute;right:-7px;top:-7px;width:20px;height:20px;border-radius:50%;background:#ef4444;color:#fff;font:800 11px/20px var(--sans);text-align:center;transform:scale(0);transition:transform .5s cubic-bezier(.2,.9,.2,1.8)}.pm.ok .pmn.z{border-color:#34d399;box-shadow:0 0 26px rgba(52,211,153,.35);animation:pmhit .45s}.pm.ok .pmn b{transform:scale(1)}.pm.bad .pmn.z{border-color:var(--bad);box-shadow:0 0 22px rgba(251,113,133,.35);animation:shake .45s}@keyframes pmhit{20%{transform:translateX(7px) rotate(9deg)}45%{transform:translateX(-5px) rotate(-7deg)}70%{transform:translateX(2px) rotate(3deg)}}
+.pmc{position:absolute;left:0;top:0;width:30px;height:16px;border-radius:9px;background:linear-gradient(90deg,#fff,#c4b5fd);box-shadow:0 0 22px 6px rgba(139,92,246,.7);opacity:0;z-index:1;offset-rotate:auto}
+#pan-mail #mailHint{text-align:center;margin:6px 0 0}
+.pmgo{display:flex;align-items:center;justify-content:center;gap:9px;width:100%;height:50px;margin-top:16px;border:0;border-radius:99px;background:#f4f4f5;color:#111;font:800 14px var(--sans);cursor:pointer;transition:transform .2s}.pmgo:active{transform:scale(.96)}#pan-mail.sending .pmgo,#pan-mail.sent .pmgo{display:none}
+.pmafter{display:grid;grid-template-rows:0fr;grid-template-columns:minmax(0,1fr);opacity:0;visibility:hidden;transition:grid-template-rows .6s cubic-bezier(.2,.9,.2,1),opacity .5s,visibility 0s .6s}.pmafter>div{overflow:hidden;min-height:0}#pan-mail.sent .pmafter{grid-template-rows:1fr;opacity:1;visibility:visible;transition:grid-template-rows .6s cubic-bezier(.2,.9,.2,1),opacity .5s}#pan-mail.sent.open .pmafter>div{overflow:visible}
+#pan-mail .codes{margin-top:14px;padding-top:3px}
+.gmbtn{position:relative;isolation:isolate;display:flex;align-items:center;justify-content:center;gap:10px;height:52px;margin:12px 0 2px;border-radius:99px;color:#fff;text-decoration:none;font:800 14px var(--sans);background:conic-gradient(from var(--ang),#26262e 0 55%,#4f7cff 70%,#c4b5fd 82%,#26262e 95%);animation:gmspin 2.6s linear infinite;visibility:hidden;transition:box-shadow .3s}.gmbtn:before{content:"";position:absolute;inset:2px;border-radius:99px;background:#17171b;z-index:-1}.gmbtn:hover{box-shadow:0 0 26px rgba(139,92,246,.55)}
+#pan-mail.sent.open .gmbtn{visibility:visible;animation:gmin .65s cubic-bezier(.2,.9,.2,1.35) backwards,gmspin 2.6s linear infinite}
+@property --ang{syntax:"<angle>";inherits:false;initial-value:0deg}@keyframes gmspin{to{--ang:360deg}}@keyframes gmin{from{transform:scale(.6) translateY(14px);opacity:0}}
 @keyframes dsgrow{from{width:0}}@keyframes dsup{from{height:0}}
 @media(max-width:1000px){.ds{grid-template-columns:minmax(0,1fr)}.ds>aside{position:static;max-height:none}}
 </style>
@@ -1478,12 +1490,17 @@ textarea.field{resize:none;line-height:1.5;min-height:84px;padding:12px 15px;fon
       </div>
 
       <div class="mpan" id="pan-mail" hidden>
-        <div class="mrow"><span class="ms ld" id="mailIc"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="14" rx="3"/><path d="m4 7 8 6 8-6"/></svg></span><p class="hint" id="mailHint" style="margin:0">Отправляю код…</p></div>
+        <div class="pm" id="pm" aria-hidden="true"><svg class="pmt"><defs><linearGradient id="pmg" x1="0" x2="1"><stop stop-color="#4f7cff"/><stop offset="1" stop-color="#a78bfa"/></linearGradient></defs><path class="p1"/><path class="p2"/><path class="p3" pathLength="100"/></svg><span class="pmn a"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M12 4a8 8 0 018 8M12 20a8 8 0 01-8-8"/></svg></span><span class="pmn z"><svg viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="3"/><path d="m4 7 8 6 8-6"/></svg><b>1</b></span><i class="pmc"></i></div>
+        <p class="hint" id="mailHint">Код придёт на твою почту</p>
+        <button class="pmgo" id="mailSend" type="button"><svg viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="3"/><path d="m4 7 8 6 8-6"/></svg>Выслать код</button>
+        <div class="pmafter" id="mailAfter"><div>
         <div class="codes" id="codes"></div>
+        <a class="gmbtn" href="https://mail.google.com/mail/u/0/#search/VOOB+CORE" target="_blank" rel="noopener noreferrer"><svg viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="3"/><path d="m4 7 8 6 8-6"/></svg>Открыть Gmail ↗</a>
         <div class="row">
           <button class="btn pri" id="mailGo" type="button">Подтвердить</button>
           <button class="btn" id="mailAgain" type="button" disabled>Отправить ещё раз</button>
         </div>
+        </div></div>
       </div>
 
       <div class="mpan" id="pan-bk" hidden>
@@ -1879,7 +1896,6 @@ var qrCode=null,pollT=null,qrTimer=null;
 function stage(n){$("#p1").hidden=n===3;$("#p3").hidden=n!==3}
 function qrOk(){var q=$("#qr");if(q.querySelector(".qok"))return;var o=document.createElement("div");o.className="qok chk";o.innerHTML='<svg viewBox="0 0 52 52"><circle cx="26" cy="26" r="24"/><path d="M15 27l8 8 14-16"/></svg>';q.appendChild(o)}
 function busy(b,on){b.classList.toggle("ld",!!on)}
-function mailIc(k){var e=$("#mailIc");e.className="ms "+k}
 function stopPoll(){clearTimeout(pollT);clearTimeout(qrTimer);pollT=null}
 function drawQr(text){
   var q=qrcode(0,"M");q.addData(text);q.make();
@@ -2001,29 +2017,65 @@ $("#bkGo").onclick=bkLogin;
 $("#bkIn").addEventListener("keydown",function(e){if(e.key==="Enter")bkLogin()});
 $("#bkIn").addEventListener("input",function(){var t=$("#bkIn").value.toUpperCase().replace(/[^A-Z0-9]/g,"").slice(0,10);$("#bkIn").value=t.length>5?t.slice(0,5)+"-"+t.slice(5):t});
 
-/* код с почты */
+/* код с почты: уходит только по кнопке, летит по пневмопочте */
+var mFlow=null,mState="idle",pmAn=[],mOpenT=0;
+function pmDraw(){
+  var h=$("#pm"),w=h.clientWidth||314,k=w/314;
+  var d="M"+31*k+" 109 C"+110*k+" 109 "+90*k+" 41 "+157*k+" 41 S"+224*k+" 41 "+277*k+" 41";
+  $$(".pmt path",h).forEach(function(p){p.setAttribute("d",d)});$(".pmc",h).style.offsetPath="path('"+d+"')";return h;
+}
+function pmClear(){pmAn.forEach(function(a){a.cancel()});pmAn=[];$("#pm").classList.remove("ok","bad")}
+function pmRun(){
+  var h=pmDraw();pmClear();
+  if(!h.animate||(window.matchMedia&&matchMedia("(prefers-reduced-motion: reduce)").matches))return Promise.resolve();
+  var go=function(el,k,o){var a=el.animate(k,Object.assign({fill:"forwards",easing:"cubic-bezier(.6,0,.35,1)"},o));pmAn.push(a);return a};
+  go($(".pmn.a",h),[{transform:"scale(1)"},{transform:"scale(.78,.86)",offset:.7},{transform:"scale(1.15)",offset:.85},{transform:"scale(1)"}],{duration:620});
+  go($(".pmc",h),[{offsetDistance:"0%",opacity:1},{offsetDistance:"18%",opacity:1,offset:.35},{offsetDistance:"100%",opacity:1,offset:.94},{offsetDistance:"100%",opacity:0}],{duration:1150,delay:480});
+  go($(".p3",h),[{strokeDashoffset:100,opacity:.6},{strokeDashoffset:0,opacity:.6,offset:.85},{strokeDashoffset:0,opacity:.18}],{duration:1350,delay:480});
+  return new Promise(function(r){setTimeout(r,1650)});
+}
+function mView(st){
+  mState=st;var p=$("#pan-mail");p.classList.toggle("sending",st==="sending");p.classList.toggle("sent",st==="sent");
+  clearTimeout(mOpenT);if(st!=="sent")p.classList.remove("open");else mOpenT=setTimeout(function(){p.classList.add("open")},650);
+  $("#mailSend").disabled=st!=="idle";$("#mailAfter").inert=st!=="sent";
+}
+function mReset(){var to="";try{to=localStorage.getItem("voobcore.mto")||""}catch(e){}pmClear();clearInterval(cool);mView("idle");$("#mailHint").textContent="Код придёт на "+(to||"твою почту")}
 function beginMail(){
   $("#e1").textContent="";
   if(!mc)mc=mkCodes($("#codes"),function(){$("#mailGo").click()});
-  mc.clear();sendMail();
+  mc.clear();
+  if(mFlow!==AF){mFlow=AF;mSeq++;mReset()}
+  requestAnimationFrame(pmDraw);
+  if(mState==="idle")setTimeout(function(){$("#mailSend").focus({preventScroll:true})},60);
 }
 function sendMail(){
-  var my=++mSeq;
-  $("#mailHint").textContent="Отправляю код…";mailIc("ld");$("#mailAgain").disabled=true;
-  call("auth_mail_start",{flow:AF},"a").then(function(j){
+  var my=++mSeq,again=mState==="sent",res=null,ready=false,mb=$("#mailAgain");
+  $("#e1").textContent="";$("#mailHint").textContent="Отправляю код…";mb.disabled=true;if(!again)mView("sending");
+  call("auth_mail_start",{flow:AF},"a").then(function(j){res=j||{}},function(){res={error:"Нет связи"}});
+  var tries=0;
+  function fly(){pmRun().then(function(){
     if(my!==mSeq)return;
+    if(!res){if(++tries>25)return done({error:"Сервер не отвечает"});return setTimeout(fly,200)}
+    done(res);
+  })}
+  fly();
+  function done(j){
+    if(my!==mSeq||ready)return;ready=true;
     if(fres(j))return;
-    if(j.status==="sent")$("#mailHint").textContent="Код отправлен на "+j.to;
-    else if(j.status==="soon")$("#mailHint").textContent="Код уже отправлен на почту";
-    else if(j.status==="locked")$("#e1").textContent=mailMsg.locked();
-    else if(j.status==="undelivered"){$("#mailHint").textContent="Не удалось отправить код";$("#e1").textContent="Попробуй ещё раз чуть позже"}
-    else $("#e1").textContent=j.error||"Не удалось отправить код";
-    mailIc(j.status==="sent"||j.status==="soon"?"ok":"bad");
-    var t=30,mb=$("#mailAgain");mb.classList.add("cd");mb.style.setProperty("--p",0);clearInterval(cool);
+    var ok=j.status==="sent"||j.status==="soon";
+    $("#pm").classList.add(ok?"ok":"bad");
+    if(j.to)try{localStorage.setItem("voobcore.mto",j.to)}catch(e){}
+    if(ok){$("#mailHint").textContent=j.status==="sent"?"Код отправлен на "+j.to:"Код уже отправлен на почту";mView("sent");cooldown();setTimeout(function(){var f=$("#codes input");if(f&&!$("#pan-mail").hidden)f.focus({preventScroll:true})},700);return}
+    $("#mailHint").textContent="Не удалось отправить код";
+    $("#e1").textContent=j.status==="locked"?mailMsg.locked():j.status==="undelivered"?"Попробуй ещё раз чуть позже":(j.error||"Не удалось отправить код");
+    if(again){mb.disabled=false;mb.textContent="Отправить ещё раз"}else mView("idle");
+  }
+  function cooldown(){
+    var t=30;mb.classList.add("cd");mb.style.setProperty("--p",0);clearInterval(cool);mb.textContent="Ещё раз через 30 с";
     cool=setInterval(function(){t--;mb.style.setProperty("--p",(30-t)/30);mb.textContent=t>0?"Ещё раз через "+t+" с":"Отправить ещё раз";if(t<=0){clearInterval(cool);mb.disabled=false;mb.classList.remove("cd")}},1000);
-    mb.textContent="Ещё раз через 30 с";
-  });
+  }
 }
+$("#mailSend").onclick=function(){sendMail()};
 $("#mailAgain").onclick=function(){$("#e1").textContent="";mc.clear();sendMail()};
 $("#mailGo").onclick=function(){
   var v=mc.val();if(v.length<6){$("#e1").textContent="Введи все шесть цифр";return}
