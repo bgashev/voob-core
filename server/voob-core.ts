@@ -481,6 +481,98 @@ async function user(id: number) {
     note: nt?.note ?? "", tags: nt?.tags ?? [] };
 }
 
+/* ---------- профиль «Досье»: всё, чего нет в user(): игры, привычки, приложения, планы, люди, система.
+   Названия привычек, состав еды и ставки споров не отдаём — это личное, в админке нужны только цифры. */
+function netWinner(game: string, st: any, host: number, guest: number): number | "draw" | null {
+  if (!st) return null;
+  const other = (x: number) => (x === host ? guest : host);
+  if (game === "stk" && Number(st.loser)) return other(Number(st.loser));
+  const w = String(st.win ?? "");
+  if (!w) return null;
+  if (w === "draw" || w === "d" || w === "D") return "draw";
+  if (game === "ttt" && (w === "X" || w === "O")) return w === "X" ? Number(st.x) : other(Number(st.x));
+  if ((game === "chk" || game === "che") && (w === "w" || w === "b")) return w === "w" ? Number(st.white) : other(Number(st.white));
+  if (w === "0" || w === "1") return Number(st.p?.[Number(w)]) || null;
+  const n = Number(w);
+  return n === host || n === guest ? n : null;
+}
+async function userMore(id: number) {
+  const q = await Promise.all([
+    db.from("users").select("notify_ok, remind_at, remind_n, visits").eq("tg_id", id).maybeSingle(),
+    all((a, b) => db.from("records").select("kind, id, data, updated").eq("tg_id", id).eq("deleted", false).in("kind", ["appday", "habit", "plan", "cact"]).range(a, b)),
+    db.from("game_scores").select("game, best, plays, last_played, updated").eq("tg_id", id).limit(60),
+    db.from("friends").select("b, created_at").eq("a", id).limit(500),
+    db.from("net_rooms").select("id, host_id, guest_id, game, status, state, updated_at").or(`host_id.eq.${id},guest_id.eq.${id}`).order("updated_at", { ascending: false }).limit(40),
+    db.from("net_invites").select("from_id, to_id, status, created_at").or(`from_id.eq.${id},to_id.eq.${id}`).limit(500),
+    db.from("habit_duels").select("id, from_id, to_id, status, kind, days, starts_on, ends_on, winner, draw, created_at").or(`from_id.eq.${id},to_id.eq.${id}`).order("created_at", { ascending: false }).limit(30),
+    db.from("referral_rewards").select("newbie, inviter, created_at").or(`newbie.eq.${id},inviter.eq.${id}`).limit(200),
+    db.from("streak_freezes").select("day, paid, created_at").eq("tg_id", id).order("day", { ascending: false }).limit(60),
+    db.from("google_links").select("created_at").eq("tg_id", id).limit(1),
+    db.from("user_passwords").select("updated_at").eq("tg_id", id).maybeSingle(),
+    db.from("announce_inbox").select("ann_id, seen_at, action, acted_at, choice").eq("tg_id", id).order("ann_id", { ascending: false }).limit(30),
+    db.from("admin_log").select("at, action, details").eq("target", id).order("id", { ascending: false }).limit(60),
+    db.from("welcome_claims").select("day", { count: "exact", head: true }).eq("tg_id", id),
+    db.from("friend_requests").select("from_id, to_id").or(`from_id.eq.${id},to_id.eq.${id}`).limit(200),
+  ]);
+  // если какой-то запрос упал, честно говорим об этом, а не показываем нули
+  const failed = q.some((r: any) => r && !Array.isArray(r) && r.error);
+  const [uq, recs, gs, fr, rooms, inv, duels, refs, frz, gl, pw, inbox, alog, welc, freq] = q as any[];
+  const rs: any[] = recs as any[];
+  const of = (k: string) => rs.filter((r) => r.kind === k);
+
+  const appdays = of("appday").map((r) => ({ date: String(r.id), water: Number(r.data?.w) || 0, food: Array.isArray(r.data?.f) ? r.data.f.length : 0 }))
+    .filter((x) => x.water > 0 || x.food > 0).sort((a, b) => (a.date < b.date ? 1 : -1));
+  const habits = of("habit").map((r) => {
+    const h = r.data ?? {}, log = Object.entries(h.log ?? {}).filter(([, v]) => Number(v) > 0).map(([d]) => d).sort();
+    return { quit: h.k === "quit", archived: !!h.ar, created: Number(h.cr) || null, since: h.k === "quit" ? Number(h.s) || Number(h.cr) || null : null,
+      marks: log.length, days: log.slice(-200), slips: Array.isArray(h.rl) ? h.rl.length : 0 };
+  });
+  const plans = of("plan").map((r) => ({ date: String(r.data?.date ?? ""), done: !!r.data?.done_id, skipped: !!r.data?.skipped }));
+  const cacts = of("cact").map((r) => ({ id: String(r.id), name: String(r.data?.name ?? ""), color: String(r.data?.color ?? ""), cat: String(r.data?.cat ?? ""), tpl: String(r.data?.tpl ?? ""), arch: !!r.data?.arch }));
+
+  const fids: number[] = (fr.data ?? []).map((x: any) => Number(x.b));
+  const mine: any[] = gs.data ?? [];
+  const fscores: any[] = fids.length && mine.length ? await all((a, b) => db.from("game_scores").select("tg_id, game, best").in("tg_id", fids).range(a, b)) as any[] : [];
+  const games = mine.map((g) => {
+    const f = fscores.filter((x) => x.game === g.game && (x.best ?? 0) > 0);
+    return { game: g.game, best: g.best ?? 0, plays: g.plays ?? 0, last: g.last_played ?? g.updated ?? null,
+      rank: (g.best ?? 0) > 0 && f.length ? 1 + f.filter((x) => x.best > g.best).length : null, of: f.length + 1 };
+  });
+
+  const dl: any[] = duels.data ?? [];
+  const dlogs: any[] = dl.length ? await all((a, b) => db.from("habit_duel_logs").select("duel_id, tg_id, v").in("duel_id", dl.map((d) => d.id)).range(a, b)) as any[] : [];
+  const rf: any[] = refs.data ?? [], rl: any[] = rooms.data ?? [], ib: any[] = inbox.data ?? [];
+  const nm = await userMap([...new Set([...fids, ...rl.flatMap((r) => [r.host_id, r.guest_id]), ...dl.flatMap((d) => [d.from_id, d.to_id]), ...rf.flatMap((r) => [r.newbie, r.inviter])].map(Number).filter((x) => x > 0))]);
+  const who = (x: unknown) => { const u: any = nm.get(Number(x)) ?? [...nm.values()].find((v: any) => Number(v.tg_id) === Number(x)); return { tg_id: Number(x), name: u?.first_name ?? u?.handle ?? String(x) }; };
+  const { data: anns } = ib.length ? await db.from("announcements").select("id, kind, title, options").in("id", ib.map((x) => x.ann_id)) : { data: [] };
+  const am = new Map((anns ?? []).map((a: any) => [Number(a.id), a]));
+  const il: any[] = inv.data ?? [], rq: any[] = freq.data ?? [];
+
+  return {
+    status: "ok", partial: failed,
+    appdays: appdays.slice(0, 200), habits, plans, cacts, games,
+    net: rl.filter((r) => r.guest_id).map((r) => {
+      const h = Number(r.host_id), g = Number(r.guest_id), w = netWinner(r.game, r.state, h, g);
+      return { game: r.game, with: who(h === id ? g : h), at: r.updated_at, status: r.status, result: w === null ? null : w === "draw" ? "draw" : w === id ? "win" : "loss" };
+    }),
+    invites: { sent: il.filter((x) => Number(x.from_id) === id).length, got: il.filter((x) => Number(x.to_id) === id).length },
+    duels: dl.map((d) => {
+      const peer = Number(d.from_id) === id ? Number(d.to_id) : Number(d.from_id);
+      const sc = (u: number) => dlogs.filter((l) => l.duel_id === d.id && Number(l.tg_id) === u && Number(l.v) > 0).length;
+      return { with: who(peer), status: d.status, kind: d.kind, days: d.days, starts_on: d.starts_on, ends_on: d.ends_on, my: sc(id), their: sc(peer),
+        result: d.draw ? "draw" : d.winner ? (Number(d.winner) === id ? "win" : "loss") : null };
+    }),
+    friends_since: Object.fromEntries((fr.data ?? []).map((x: any) => [x.b, x.created_at])),
+    friend_requests: { sent: rq.filter((x) => Number(x.from_id) === id).length, got: rq.filter((x) => Number(x.to_id) === id).length },
+    referrals: { by: rf.filter((r) => Number(r.newbie) === id).map((r) => who(r.inviter))[0] ?? null, invited: rf.filter((r) => Number(r.inviter) === id).map((r) => who(r.newbie)) },
+    freezes: frz.data ?? [], welcome: welc.count ?? 0,
+    notify: { ok: !!uq.data?.notify_ok, last: uq.data?.remind_at ?? null, count: uq.data?.remind_n ?? 0, visits: uq.data?.visits ?? 0 },
+    google: !!gl.data?.length, password: pw.data?.updated_at ?? null,
+    announces: ib.map((x) => { const a: any = am.get(Number(x.ann_id)); return { kind: a?.kind ?? "", title: a?.title ?? "", seen_at: x.seen_at, action: x.action, choice: x.choice != null && Array.isArray(a?.options) ? a.options[x.choice] ?? null : null }; }),
+    log: alog.data ?? [],
+  };
+}
+
 async function block(id: number, on: boolean, reason: string, notify: boolean) {
   if (id === ADMIN) return { error: "Себя заблокировать нельзя" };
   const { data: u } = await db.from("users").select("blocked, hide_feed, handle, handle_prev, hide_feed_prev").eq("tg_id", id).maybeSingle();
@@ -971,6 +1063,7 @@ Deno.serve(async (req) => {
       case "kick": return json(await kick(id));
       case "users": return json(await users(body));
       case "user": return json(await user(id));
+      case "user_more": return json(await userMore(id));
       case "note_set": return json(await noteSet(id, body));
       case "block": return json(await block(id, true, String(body?.reason ?? ""), n));
       case "unblock": return json(await block(id, false, "", n));

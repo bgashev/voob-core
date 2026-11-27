@@ -1385,6 +1385,24 @@ textarea.field{resize:none;line-height:1.5;min-height:84px;padding:12px 15px;fon
 #ust button.on b{color:var(--c)}#ust button.on span{color:var(--fg);font-weight:700}#ust button.on small{color:var(--mute)}
 #ust button.on::after{content:"✓";position:absolute;right:12px;top:13px;width:20px;height:20px;border-radius:50%;background:var(--c);color:#0B0B0D;font:900 12px/20px var(--sans);text-align:center;animation:ustck .45s cubic-bezier(.3,1.7,.5,1)}
 @keyframes ustck{from{transform:scale(0)}}
+/* ---- профиль «Досье» ---- */
+#main:has(#t-user:not([hidden])){max-width:1480px}
+.ds{display:grid;grid-template-columns:300px minmax(0,1fr);gap:16px;align-items:start}.ds>aside{position:sticky;top:16px;display:grid;gap:10px;max-height:calc(100vh - 32px);overflow:auto}
+.ds .uhero.dsid{flex-direction:column;flex-wrap:nowrap;text-align:center;gap:14px;padding:24px 18px}.ds .dsid .uinfo{flex:none;min-width:0;width:100%}.ds .dsid .uchips{justify-content:center}
+.dsf{width:100%;text-align:left}.dsf>div{display:flex;justify-content:space-between;gap:12px;padding:8px 0;border-top:1px solid var(--line);font-size:12.5px;min-width:0}.dsf span{color:var(--mute)}.dsf b{font-weight:650;text-align:right;min-width:0;overflow-wrap:anywhere}.dsf .dn b{color:var(--bad)}
+.dsq{display:flex;gap:7px;flex-wrap:wrap;justify-content:center}.dsmain{min-width:0}
+.ds .utabs{width:auto;margin:0;justify-content:flex-start;flex-wrap:wrap;gap:2px}.ds .utabs button{padding-left:11px;padding-right:11px;gap:5px}.ds #eu:empty{display:none}
+.ds .upane{display:grid;grid-template-columns:minmax(0,1fr);gap:14px;margin-top:14px}.ds .upane[hidden]{display:none}.ds .upane .ug2{margin:0}.ds .upane>*{margin-top:0;margin-bottom:0}.ds .ug2>*{min-width:0}
+.dsn{display:grid;grid-template-columns:repeat(auto-fit,minmax(96px,1fr));gap:8px;margin-bottom:10px}.dsn>div{background:var(--tile2);border-radius:16px;padding:11px 13px}.dsn b{display:block;font:800 22px/1.2 var(--disp);color:var(--c);font-variant-numeric:tabular-nums}.dsn span{font-size:11.5px;color:var(--mute)}
+.dsk{font:700 10.5px var(--sans);letter-spacing:.12em;text-transform:uppercase;color:var(--dim);margin:14px 0 8px}
+.dsb{margin-top:12px}.dsb>div{display:flex;justify-content:space-between;gap:10px;font-size:13px}.dsb small{color:var(--mute);font-size:11.5px;margin-left:4px}.dsb>i{display:block;height:7px;border-radius:9px;background:var(--tile3);margin-top:6px;overflow:hidden}.dsb u{display:block;height:100%;border-radius:9px;background:var(--c);animation:dsgrow 1s var(--ease) backwards}
+.dsc{display:flex;gap:5px;height:118px}.dsc>div{flex:1;min-width:0;display:flex;flex-direction:column;justify-content:flex-end;align-items:center;gap:5px}.dsc i{width:100%;min-height:3px;max-height:calc(100% - 18px);border-radius:7px;background:linear-gradient(var(--c),color-mix(in srgb,var(--c) 25%,transparent));animation:dsup .8s var(--ease) backwards}.dsc small{font-size:9.5px;color:var(--dim);white-space:nowrap}
+.dsh{display:grid;grid-auto-flow:column;grid-template-rows:repeat(7,auto);grid-template-columns:repeat(26,minmax(0,1fr));gap:3px}.dsh i{aspect-ratio:1.5;border-radius:4px;background:var(--tile3)}.dsh i[data-l="1"]{background:#34d39950}.dsh i[data-l="2"]{background:#34d39995}.dsh i[data-l="3"]{background:#34d399}.dsh i[data-l="f"]{opacity:.25}
+.dsl{border:0;background:none;padding:0;color:inherit;font:inherit;cursor:pointer;text-decoration:underline;text-underline-offset:3px;text-decoration-color:var(--line2)}.dsl:hover{text-decoration-color:currentColor}
+.dsscroll{max-height:380px;overflow:auto}.dsw{color:var(--gold);margin:0}
+.ds #achBox .atl:not(.got):not(.off){opacity:.42}.ds #achBox .atl:hover{opacity:1}
+@keyframes dsgrow{from{width:0}}@keyframes dsup{from{height:0}}
+@media(max-width:1000px){.ds{grid-template-columns:minmax(0,1fr)}.ds>aside{position:static;max-height:none}}
 </style>
 </head>
 <body>
@@ -2452,7 +2470,7 @@ function openUser(id,np){
   if(!np&&location.pathname!=="/users/"+id)history.pushState(null,"","/users/"+id);
   var my=++uTok,soft=function(p){return p.catch(function(){return {}})};
   /* всё, что нужно странице, грузим одним заходом и рисуем один раз: без дорисовок и повторных анимаций */
-  Promise.all([api("user",{tg_id:id}),GT?Promise.resolve(GT):api("gift_types"),soft(api("bgs",{ids:[id]},"x")),soft(api("user_extra",{tg_id:id},"x")),soft(api("user_games",{tg_id:id},"g"))]).then(function(r){
+  Promise.all([api("user",{tg_id:id}),GT?Promise.resolve(GT):api("gift_types"),soft(api("bgs",{ids:[id]},"x")),soft(api("user_extra",{tg_id:id},"x")),soft(api("user_games",{tg_id:id},"g")),api("user_more",{tg_id:id}).catch(function(){return {error:"нет связи"}})]).then(function(r){
     if(my!==uTok)return;
     var j=r[0];if(j.error){toast(j.error,"err");return}
     if(!GT)GT=r[1].items||[];
@@ -2464,8 +2482,9 @@ function openUser(id,np){
     var fc=function(k,v,c){return '<div class="fct"><div class="fk">'+k+'</div><div class="fv'+(c?" "+c:"")+'">'+v+"</div></div>"};
     var frs=(j.friends||[]).filter(function(f){return f&&f.tg_id}),FRMAX=14;
     var friendsH=frs.length?'<div class="ufr"><div class="lbl">Друзья · '+frs.length+'</div><div class="ufl">'+frs.slice(0,FRMAX).map(function(f){return '<button type="button" class="ufc" data-fid="'+f.tg_id+'" title="Открыть профиль">'+av(f)+"<span>"+esc(String(f.first_name||f.username||f.handle||f.tg_id))+"</span></button>"}).join("")+(frs.length>FRMAX?'<span class="ufm2">ещё '+(frs.length-FRMAX)+"</span>":"")+"</div></div>":"";
-    var h='<div class="tile uhero'+(bst?" pbg":"")+'">'+bst+uav+'<div class="uinfo"><div class="crumb">VOOB CORE / люди / '+u.tg_id+'</div><div class="ptitle" style="font-size:28px">'+nm(u)+'</div><div class="uchips">'+chips+'</div>'+friendsH+'</div><button class="btn sm" type="button" data-uback>← Все пользователи</button>'+
-      '<div class="facts">'+fc("ID",'<span class="mono">'+u.tg_id+"</span>")+fc("Ник",u.handle?"@"+esc(u.handle):"—")+fc("Telegram",'<a class="tgl" target="_blank" rel="noopener" href="'+(u.username?"https://t.me/"+encodeURIComponent(u.username):"tg://user?id="+u.tg_id)+'" title="'+(u.username?"Открыть профиль в Telegram":"Нет публичного ника: откроется по ID, если Telegram знает этого человека")+'">'+(u.username?"@"+esc(u.username):"по ID")+" ↗</a>")+fc("Регистрация",dt(u.created_at))+fc("Был",dt(u.last_seen))+fc("Тренировок",j.workouts_total)+fc("PRO",pro?"до "+dt(j.pro.until):"нет")+(u.blocked?fc("Блок",esc(u.block_reason||"без причины"),"dn"):"")+"</div>"+"</div>";
+    var h="",frs2=(j.friends||[]).filter(function(f){return f&&f.tg_id});
+    var fl=function(k,v,c){return '<div class="'+(c||"")+'"><span>'+k+"</span><b>"+v+"</b></div>"};
+    var side='<div class="tile uhero dsid'+(bst?" pbg":"")+'">'+bst+uav+'<div class="uinfo"><div class="ptitle" style="font-size:27px">'+nm(u)+'</div><div class="uchips">'+chips+'</div></div><div class="dsf">'+fl("ID",'<span class="mono">'+u.tg_id+"</span>")+fl("Ник",u.handle?"@"+esc(u.handle):"—")+fl("Telegram",'<a class="tgl" target="_blank" rel="noopener" href="'+(u.username?"https://t.me/"+encodeURIComponent(u.username):"tg://user?id="+u.tg_id)+'">'+(u.username?"@"+esc(u.username):"по ID")+" ↗</a>")+fl("С нами с",dt(u.created_at))+fl("Был",dt(u.last_seen))+fl("Друзей",frs2.length)+fl("PRO",pro?(Date.parse(j.pro.until)>Date.parse("2090-01-01")?"бессрочно":"до "+new Date(j.pro.until).toLocaleDateString("ru-RU")):"нет")+(u.blocked?fl("Блок",esc(u.block_reason||"без причины"),"dn"):"")+'</div><div class="dsq"><button type="button" class="btn sm primary" data-dsgo="ov" data-dsf="umsg">Написать</button><button type="button" class="btn sm" data-dsgo="pp" data-dsf="gk">Подарить</button><button type="button" class="btn sm" data-dsgo="ov" data-dsf="pdays">PRO</button></div></div>';
     P.msg=tl("Сообщение",'<div class="stack"><textarea class="field" id="umsg" rows="3" maxlength="3500" placeholder="Текст, который придёт человеку в Telegram от имени VOOB"></textarea><div class="ufoot"><span class="hint" id="umc" style="margin:0">0 / 3500 · Ctrl+Enter — отправить</span><button class="btn pri sm" id="usend" type="button">Отправить</button></div></div>');
     var pLeft=pro?Math.max(0,Math.ceil((Date.parse(j.pro.until)-Date.now())/86400000)):0;
     P.src=(function(){
@@ -2501,7 +2520,7 @@ function openUser(id,np){
       var cur=j.pro&&j.pro.until?'<p class="hint" style="margin:0 0 4px">Сейчас в подписке записан источник: <b style="color:var(--fg)">'+esc(PL2[j.pro.plan]||j.pro.plan||"—")+"</b></p>":"";
       return tl("Откуда PRO и покупки",cur+sec("PRO",lst(ev,"Платежей, промокодов и ручных выдач PRO нет"))+sec("Рамки, фоны, наборы",lst(it,"Из магазина ничего не покупали и не дарили"))+sec("Подарки в коллекции",lst(gf,"Подарков не получал")));
     })();
-    P.pro=tl("PRO",'<div class="stack"><div class="ustat'+(pro?" on":"")+'"><i></i><span>'+(pro?"Активен до <b>"+dt(j.pro.until)+"</b> · осталось "+pLeft+" "+plural(pLeft,"день","дня","дней"):"Нет подписки")+'</span></div>'+
+    P.pro=tl("PRO",'<div class="stack"><div class="ustat'+(pro?" on":"")+'"><i></i><span>'+(pro?"Активен до <b>"+(Date.parse(j.pro.until)>Date.parse("2090-01-01")?"бессрочно (2099)":new Date(j.pro.until).toLocaleDateString("ru-RU"))+"</b> · осталось "+pLeft+" "+plural(pLeft,"день","дня","дней"):"Нет подписки")+'</span></div>'+
       '<div class="qchips" id="pq"><button type="button" data-d="7">+7 дн.</button><button type="button" data-d="30">+30 дн.</button><button type="button" data-d="90">+90 дн.</button><button type="button" data-d="365">+365 дн.</button><button type="button" data-d="-7" class="neg">−7 дн.</button></div>'+
       '<div class="inl"><input class="field" id="pdays" type="number" placeholder="Своё число дней (минус — забрать)"><button class="btn sm" id="pgo" type="button">Применить</button></div></div>');
     P.prof=tl("Профиль",'<div class="stack ufm"><label class="fld"><span class="lbl">Имя</span><span class="inl"><input class="field" id="ename" placeholder="Имя" value="'+esc(nameNow)+'"><button class="btn sm" id="ename_go" type="button">Сохранить</button></span></label>'+
@@ -2526,15 +2545,16 @@ function openUser(id,np){
     if(j.feedback.length)P.fb=tl("Обращения",'<div class="list">'+j.feedback.slice(0,5).map(function(x){return '<div class="item"><div class="m"><div class="s wrap">'+esc(x.text)+"</div></div></div>"}).join("")+"</div>");
     P.ses=tl("Сессии",'<p class="hint" style="margin:0 0 8px">'+(j.sessions.length?j.sessions.map(function(x){return esc(x.device||"?")+" · "+dt(x.last_seen)}).join("<br>"):"Нет активных")+"</p>"+(u.creator?"":'<button class="btn sm bad" id="ukick">Завершить все сессии</button>'));
     if(!u.creator)P.acc=tl("Доступ",u.blocked?'<button class="btn sm" id="ublk">Разблокировать</button>':'<button class="btn sm bad" id="ublk">Заблокировать</button>');
-    var g2=function(){return '<div class="ug2">'+[].slice.call(arguments).join("")+"</div>"},ne=function(x){return x||""};
-    var PANES={act:g2(P.msg,P.pro)+P.src+P.gift+ne(P.state)+ne(P.acc),prof:g2(P.prof,P.frame),ach:P.ach+P.gm,hist:g2(ne(P.wk),ne(P.wt),ne(P.pay),ne(P.fb),P.ses)};
-    var offN=((r[3]&&r[3].ach_off)||[]).length,hN=(j.payments.length+j.feedback.length)||0;
-    var TL=[["act","Действия",""],["prof","Профиль",""],["ach","Достижения",offN?offN+" откл.":""],["hist","История",hN?String(hN):""]];
-    if(!PANES[UTAB])UTAB="act";
-    h+='<div class="utabs" role="tablist">'+TL.map(function(t){return '<button type="button" role="tab" data-utab="'+t[0]+'" aria-selected="'+(t[0]===UTAB)+'">'+t[1]+(t[2]?"<i>"+t[2]+"</i>":"")+"</button>"}).join("")+"</div>"+
-      TL.map(function(t){return '<div class="upane" data-pane="'+t[0]+'"'+(t[0]===UTAB?"":" hidden")+">"+PANES[t[0]]+"</div>"}).join("")+'<p class="err" id="eu"></p>';
+    M0err=(r[5]&&r[5].error)||"";
+    var D=dsPanes(j,r[5],P),offN=((r[3]&&r[3].ach_off)||[]).length;
+    var TL=[["ov","Обзор",""],["wk","Тренировки",D.counts.wk],["gm","Игры",D.counts.gm],["hb","Привычки",D.counts.hb],["ap","Приложения",""],["pp","Люди",D.counts.pp],["pro","PRO",""],["pf","Профиль",offN?offN+" откл.":""],["sy","Система",""]];
+    if(!D.S[UTAB])UTAB="ov";
+    h='<div class="ds"><aside>'+side+'<button class="btn sm" type="button" data-uback>← Все пользователи</button></aside><div class="dsmain"><div class="utabs" role="tablist">'+TL.map(function(t){return '<button type="button" role="tab" data-utab="'+t[0]+'" aria-selected="'+(t[0]===UTAB)+'">'+t[1]+(t[2]?"<i>"+t[2]+"</i>":"")+"</button>"}).join("")+'</div><p class="err" id="eu"></p>'+
+      TL.map(function(t){return '<div class="upane" data-pane="'+t[0]+'"'+(t[0]===UTAB?"":" hidden")+">"+D.S[t[0]]+"</div>"}).join("")+"</div></div>";
     var sy=window.scrollY;$("#ubody").innerHTML=h;showUserPage(sy);gpick($("#gk"),GT);
     hydrate($("#ubody"));
+    (function(){var got=(meta.settings&&meta.settings.ach)||[],off=(r[3]&&r[3].ach_off)||[],n=0;$$("#achBox .atl").forEach(function(b){var y=got.indexOf(b.dataset.ach)>=0&&off.indexOf(b.dataset.ach)<0;if(y)n++;b.classList.toggle("got",y)});var bx=$("#achBox");if(bx)bx.insertAdjacentHTML("beforebegin",'<p class="hint" style="margin:0 0 10px">Получено по данным приложения: <b>'+n+"</b>. Яркие получены, бледные нет; нажатие отзывает или возвращает.</p>")})();
+    $$("[data-dsgo]").forEach(function(b){b.onclick=function(){var t=$('.ds [data-utab="'+b.dataset.dsgo+'"]');t.click();var f=$("#"+b.dataset.dsf);if(f){f.scrollIntoView({behavior:"smooth",block:"center"});try{f.focus({preventScroll:true})}catch(e){}}}});
     (function(){var h=$("#uph");while(h.parentElement&&!h.parentElement.classList.contains("uhero"))h=h.parentElement;h.style.cursor="zoom-in";h.title="Открыть фото крупно";h.onclick=function(){openPhoto(id,String(u.first_name||u.username||u.handle||id))}})();
     if(UPH[id])putImg($("#uph"),UPH[id],1);
     else api("photo",{tg_id:id,big:true}).then(function(p){if(p&&p.ok){UPH[id]="data:image/jpeg;base64,"+p.b64;if(my===uTok&&$("#uph"))putImg($("#uph"),UPH[id])}});
@@ -2566,6 +2586,81 @@ function openUser(id,np){
     }
   });
 }
+
+/* ---------- профиль «Досье»: карточка слева, разделы справа ---------- */
+var DSACT={run:"Бег / ходьба",dumbbell:"Гантели",squat:"Приседания",pushup:"Отжимания",bike:"Велосипед",yoga:"Растяжка / йога",plank:"Планка",burpee:"Бёрпи",pullup:"Подтягивания",barbell:"Штанга",abs:"Пресс",jumprope:"Скакалка",stepper:"Степпер",swim:"Плавание"};
+var DSGM={flap:"Пролёт",stack:"Башня",wave:"Волна",tile:"2048-подход",slice:"Слайсер",memo:"Мемо-серия",aim:"Прицел",jump:"Скачок",dart:"Дротик",bike:"Байк",spk:"Отскок",zig:"Зигзаг",road:"Перебежка",snake:"Змейка",dunk:"Данк",hit:"Баскет",climb:"Подъём",trial:"Трайл",orbit:"Орбита",ttt:"Крестики-нолики",chk:"Шашки",che:"Шахматы",golf:"Гольф",sea:"Морской бой",bil:"Бильярд",stk:"Стопка",dk:"Дурак",k5:"105",arc:"Лучники",un:"ONE",hl:"Больше-меньше"};
+var DSC=["#34D399","#6EA0FF","#B39DFF","#FB923C","#22D3EE","#FBBF24","#FB7185"];
+function dsIso(d){return d.getFullYear()+"-"+("0"+(d.getMonth()+1)).slice(-2)+"-"+("0"+d.getDate()).slice(-2)}
+function dsEp(n){return new Date(n*864e5).toLocaleDateString("ru-RU",{day:"numeric",month:"short",timeZone:"UTC"})}
+function dsDay(x){var d=new Date(String(x).length===10?x+"T12:00:00":x);return isNaN(d)?"—":d.toLocaleDateString("ru-RU",{day:"numeric",month:"short"})}
+function dsNums(a){return '<div class="dsn">'+a.map(function(x){return '<div style="--c:'+(x[2]||"var(--fg)")+'"><b>'+x[0]+"</b><span>"+x[1]+"</span></div>"}).join("")+"</div>"}
+function dsRows(a,empty){return a.length?'<div class="list">'+a.map(function(r){return '<div class="item"><div class="m"><div class="t">'+r[0]+'</div><div class="s">'+r[1]+"</div></div>"+(r[2]||"")+"</div>"}).join("")+"</div>":'<p class="hint" style="margin:0">'+(empty||"Пока пусто")+"</p>"}
+function dsChip(t,c){return '<span class="chip" style="color:'+c+';background:color-mix(in srgb,'+c+' 15%,transparent)">'+t+"</span>"}
+function dsBar(n,v,p,c){return '<div class="dsb" style="--c:'+c+'"><div><span>'+n+"</span><b>"+v+'</b></div><i><u style="width:'+Math.max(2,Math.min(100,p))+'%"></u></i></div>'}
+function dsCols(a,c){var m=Math.max.apply(null,a.map(function(x){return x[1]}).concat(1));return '<div class="dsc" style="--c:'+c+'">'+a.map(function(x,i){return '<div title="'+x[0]+": "+x[1]+'"><i style="height:'+Math.round(x[1]*100/m)+'%;animation-delay:'+i*30+'ms"></i><small>'+x[0]+"</small></div>"}).join("")+"</div>"}
+function dsLast(n){var o=[],t=new Date();t.setHours(12,0,0,0);for(var i=n-1;i>=0;i--){var d=new Date(t);d.setDate(t.getDate()-i);o.push(dsIso(d))}return o}
+function dsRes(r){return r==="win"?dsChip("победа","#34D399"):r==="loss"?dsChip("поражение","#FB7185"):r==="draw"?dsChip("ничья","#FBBF24"):dsChip("без итога","#A1A1AA")}
+function dsStreak(set){var t=new Date();t.setHours(12,0,0,0);if(!set[dsIso(t)])t.setDate(t.getDate()-1);var n=0;while(set[dsIso(t)]){n++;t.setDate(t.getDate()-1)}return n}
+function dsHeat(days){var W=26,t=new Date();t.setHours(12,0,0,0);var s=new Date(t);s.setDate(t.getDate()-((t.getDay()+6)%7)-(W-1)*7);var h="",act=0;
+  for(var i=0;i<W*7;i++){var d=new Date(s);d.setDate(s.getDate()+i);var k=dsIso(d),v=days[k]||0,fut=d>t;if(v&&!fut)act++;h+='<i data-l="'+(fut?"f":v>2?3:v)+'" title="'+dsDay(k)+(v?" · отметок: "+v:"")+'"></i>'}
+  return tl("Активность за полгода",'<div class="dsh">'+h+'</div><p class="hint" style="margin:10px 0 0">Активных дней: '+act+" · тренировки, приложения, привычки</p>")}
+/* собирает все разделы; M — ответ user_more (может отсутствовать, пока сервер не обновлён) */
+function dsPanes(j,M,P){
+  var ok=!!(M&&M.status==="ok");M=ok?M:{appdays:[],habits:[],plans:[],cacts:[],games:[],net:[],duels:[],announces:[],log:[],freezes:[],friends_since:{},invites:{},friend_requests:{},referrals:{invited:[]},notify:{}};
+  var meta=j.meta||{},ws=j.workouts||[],today=dsIso(new Date()),cm={};M.cacts.forEach(function(c){cm[c.id]=c.name});
+  var an=function(k){k=k||"run";return DSACT[k]||cm[k]||k};
+  var days={},wd={};ws.forEach(function(w){if(w.date){days[w.date]=(days[w.date]||0)+1;wd[w.date]=1}});
+  M.appdays.forEach(function(a){days[a.date]=(days[a.date]||0)+1});M.habits.forEach(function(h){(h.days||[]).forEach(function(d){days[d]=(days[d]||0)+1})});
+  var mins=ws.reduce(function(a,w){return a+(+w.minutes||0)},0),plays=M.games.reduce(function(a,g){return a+g.plays},0),habOn=M.habits.filter(function(h){return !h.archived}).length;
+  var warn=ok?(M.partial?'<p class="hint dsw">Часть данных не загрузилась: нули ниже могут быть неполными.</p>':""):'<p class="hint dsw">Дополнительная статистика не загрузилась'+(M0err?": "+esc(M0err):"")+". Обнови страницу.</p>";
+  var S={};
+  S.ov=warn+tl("Сводка",dsNums([[j.workouts_total,"тренировок","#34D399"],[dsStreak(wd)+" дн.","серия тренировок","#FB923C"],[ok?plays:"—","партий","#B39DFF"],[ok?habOn:"—","привычек","#22D3EE"],[ok?fmt(M.notify.visits):"—","заходов","#6EA0FF"]]))+dsHeat(days)+'<div class="ug2">'+P.msg+P.pro+"</div>"+(P.state||"");
+  /* тренировки */
+  var weeks=[],t0=new Date();t0.setHours(12,0,0,0);t0.setDate(t0.getDate()-((t0.getDay()+6)%7));
+  for(var i=7;i>=0;i--){var a=new Date(t0);a.setDate(t0.getDate()-i*7);var b=new Date(a);b.setDate(a.getDate()+6);var x=dsIso(a),y=dsIso(b);weeks.push([dsDay(x),ws.filter(function(w){return w.date>=x&&w.date<=y}).length])}
+  var by={};ws.forEach(function(w){var k=w.act||"run";by[k]=(by[k]||0)+1});
+  var types=Object.keys(by).sort(function(a,b){return by[b]-by[a]}).map(function(k,n){return dsBar(esc(an(k)),by[k],by[k]*100/ws.length,DSC[n%DSC.length])}).join("");
+  var pl=M.plans,pd=pl.filter(function(p){return p.done}).length,ps=pl.filter(function(p){return p.skipped&&!p.done}).length,pf=pl.filter(function(p){return !p.done&&!p.skipped&&p.date>=today}).length,pm=pl.length-pd-ps-pf;
+  var wl=ws.slice(0,50).map(function(w){var v=[];if(+w.minutes)v.push(w.minutes+" мин");if((w.act||"run")==="run"&&+w.speed&&+w.minutes)v.push((w.speed*w.minutes/60).toFixed(1)+" км");if(+w.sets)v.push(w.sets+" подх.");if(+w.reps)v.push(w.reps+" повт.");if(+w.kg)v.push(w.kg+" кг");if(+w.secs)v.push(w.secs+" с");
+    return [esc(an(w.act)),dsDay(w.date)+(v.length?" · "+esc(v.join(" · ")):""),'<button class="btn sm bad" data-w="'+esc(w.rid)+'">Удалить</button>']});
+  var kg=(j.weights||[]).slice(0,14).reverse().map(function(w){return [dsDay(w.date),+(w.kg!=null?w.kg:w.value)||0]}),goal=meta.weight_goal&&(meta.weight_goal.kg||meta.weight_goal.goal||meta.weight_goal.value);
+  S.wk='<div class="ug2">'+tl("Тренировки",dsNums([[ws.length,"всего"],[Math.round(mins/60)+" ч","время","#6EA0FF"],[Object.keys(by).length,"видов","#B39DFF"]])+'<div class="dsk">По неделям</div>'+dsCols(weeks,"#34D399")+types)+
+    tl("Планы",dsNums([[pl.length,"всего"],[pd,"выполнено","#34D399"],[ps,"пропущено","#FB7185"],[Math.max(0,pm),"не отмечено","#FBBF24"],[pf,"впереди","#6EA0FF"]])+(pl.length-pf>0?dsBar("Выполнение прошедших",Math.round(pd*100/(pl.length-pf))+"%",pd*100/(pl.length-pf),"#34D399"):""))+"</div>"+
+    tl("Последние тренировки"+(ws.length>50?" (50 из "+ws.length+")":""),'<div class="dsscroll">'+dsRows(wl,"Тренировок нет")+"</div>")+
+    tl("Свои активности",dsRows(M.cacts.map(function(c){var col=/^#[0-9a-f]{3,8}$/i.test(c.color)?c.color:"#B39DFF";return [esc(c.name),esc(c.cat||"без категории")+" · тренировок: "+(by[c.id]||0),dsChip(c.arch?"в архиве":"активна",c.arch?"#A1A1AA":col)]}),"Своих активностей нет"));
+  /* игры */
+  var gl=M.games.slice().sort(function(a,b){return b.plays-a.plays}),gm=gl.length?gl[0].plays||1:1,net=M.net;
+  S.gm='<div class="ug2">'+tl("Одиночные и рекорды",dsNums([[plays,"партий","#B39DFF"],[gl.length,"игр"],[gl.filter(function(g){return g.rank===1&&g.of>1}).length,"первых мест","#FBBF24"]])+(gl.length?gl.map(function(g,n){return dsBar(esc(DSGM[g.game]||g.game)+" <small>рекорд "+fmt(g.best)+(g.rank&&g.of>1?" · "+g.rank+"-е из "+g.of+" среди друзей":"")+(g.last?" · "+dsDay(g.last):"")+"</small>",g.plays,g.plays*100/gm,DSC[n%DSC.length])}).join(""):'<p class="hint">Не играл</p>'))+
+    tl("Сетевые игры",dsNums([[net.filter(function(r){return r.result==="win"}).length,"побед","#34D399"],[net.filter(function(r){return r.result==="loss"}).length,"поражений","#FB7185"],[M.invites.sent||0,"позвал","#6EA0FF"],[M.invites.got||0,"позвали","#22D3EE"]])+
+      dsRows(net.map(function(r){return [esc(DSGM[r.game]||r.game)+' · <button type="button" class="dsl" data-fid="'+r.with.tg_id+'">'+esc(r.with.name)+"</button>",dt(r.at),dsRes(r.result)]}),"По сети не играл")+'<p class="hint">Сервер хранит последнюю партию каждой комнаты, не всю историю матчей.</p>')+"</div>";
+  /* привычки */
+  var hb=M.habits.map(function(h,n){var set={};(h.days||[]).forEach(function(d){set[d]=1});var m30=dsLast(30).filter(function(d){return set[d]}).length,name=(h.quit?"Бросить":"Делать")+" № "+(n+1);
+    if(h.quit){var c=h.since?Math.max(0,Math.floor((Date.now()-h.since)/864e5)):0;return [name,"чист "+c+" "+plural(c,"день","дня","дней")+" · срывов в записи: "+h.slips,dsChip(h.archived?"в архиве":"идёт",h.archived?"#A1A1AA":"#FB923C")]}
+    return [name,"за 30 дней: "+m30+" · всего: "+h.marks+" · серия по дням: "+dsStreak(set),dsChip(h.archived?"в архиве":"активна",h.archived?"#A1A1AA":"#22D3EE")]});
+  var DST={pending:["ждёт ответа","#FBBF24"],active:["идёт","#6EA0FF"],done:["завершён","#34D399"],finished:["завершён","#34D399"],declined:["отклонён","#A1A1AA"],cancelled:["отменён","#A1A1AA"],expired:["истёк","#A1A1AA"]},DSK={duel:"Дуэль",survive:"Выживание",together:"Вместе"};
+  S.hb='<div class="ug2">'+tl("Привычки",dsRows(hb,"Привычек нет")+'<p class="hint">Названия скрыты: это личное.</p>')+tl("Споры",dsRows(M.duels.map(function(d){var s=DST[d.status]||[esc(d.status),"#A1A1AA"];return [esc(DSK[d.kind]||d.kind||"Спор")+' с <button type="button" class="dsl" data-fid="'+d.with.tg_id+'">'+esc(d.with.name)+"</button>",(d.starts_on?dsEp(d.starts_on)+" – "+dsEp(d.ends_on):(d.days||"?")+" дн.")+" · отметки "+d.my+" : "+d.their,d.result?dsRes(d.result):dsChip(s[0],s[1])]}),"Споров не было"))+"</div>";
+  /* приложения */
+  var am={};M.appdays.forEach(function(a){am[a.date]=a});var l14=dsLast(14),wdays=M.appdays.filter(function(a){return a.water>0}).length,fdays=M.appdays.filter(function(a){return a.food>0}).length;
+  S.ap='<div class="ug2">'+tl("Вода",dsNums([[wdays,"дней с записями","#22D3EE"],[am[today]?fmt(am[today].water):0,"мл сегодня"]])+'<div class="dsk">14 дней, мл</div>'+dsCols(l14.map(function(d){return [d.slice(8),am[d]?am[d].water:0]}),"#22D3EE"))+
+    tl("Калории",dsNums([[fdays,"дней с записями","#FB923C"],[am[today]?am[today].food:0,"записей сегодня"]])+'<div class="dsk">14 дней, число записей</div>'+dsCols(l14.map(function(d){return [d.slice(8),am[d]?am[d].food:0]}),"#FB923C")+'<p class="hint">Состав еды скрыт.</p>')+"</div>"+
+    tl("Вес",(kg.length?dsCols(kg,"#6EA0FF")+'<p class="hint">Последний: <b>'+kg[kg.length-1][1]+" кг</b>":'<p class="hint">Записей веса нет')+(goal?" · цель: <b>"+esc(goal)+" кг</b>":"")+"</p>");
+  /* люди */
+  var fr=(j.friends||[]).filter(function(f){return f&&f.tg_id}),ref=M.referrals,who=function(u){return '<button type="button" class="dsl" data-fid="'+u.tg_id+'">'+esc(u.name)+"</button>"};
+  S.pp='<div class="ug2">'+tl("Друзья · "+fr.length,dsRows(fr.map(function(f){var s=M.friends_since[f.tg_id];return ['<button type="button" class="dsl" data-fid="'+f.tg_id+'">'+esc(f.first_name||f.handle||f.tg_id)+"</button>",s?"дружат с "+dsDay(s):"друг"]}),"Друзей нет")+(M.friend_requests.sent||M.friend_requests.got?'<p class="hint">Висят заявки: отправил '+M.friend_requests.sent+", получил "+M.friend_requests.got+"</p>":""))+
+    tl("Рефералы",dsRows([["Кто пригласил",ref.by?who(ref.by):"нет награды за приглашение"],["Привёл: "+ref.invited.length,ref.invited.length?ref.invited.map(who).join(", "):"никого"]]))+"</div>"+P.gift;
+  S.pro=(P.pay||tl("Платежи",'<p class="hint" style="margin:0">Платежей нет</p>'))+P.src;
+  S.pf='<div class="ug2">'+P.prof+P.frame+"</div>"+P.ach;
+  /* система */
+  var AA={click:"нажал кнопку",dismiss:"скрыл",ack:"прочитал",answer:"ответил"};
+  S.sy='<div class="ug2">'+tl("Уведомления и вход",dsRows([["Бот может писать",M.notify.ok?"разрешено":"нет разрешения"],["Напоминания бота",M.notify.count?"отправлено подряд: "+M.notify.count+(M.notify.last?" · последнее "+dt(M.notify.last):""):(M.notify.last?"последнее "+dt(M.notify.last):"не отправлялись")],["Google",M.google?"привязан":"не привязан"],["Пароль",M.password?"задан · "+dt(M.password):"не задан"],["Бонус новичка","получено дней: "+(M.welcome||0)]]))+
+    tl("Заморозки серии",dsRows(M.freezes.map(function(f){return [dsEp(f.day),f.paid?"платная":"бесплатная"]}),"Не использовал"))+"</div>"+
+    '<div class="ug2">'+P.ses+tl("Опросы и объявления",'<div class="dsscroll">'+dsRows(M.announces.map(function(a){return [esc(a.title||"удалено"),(a.seen_at?"открыл "+dt(a.seen_at):"ещё не открыл")+(a.action?" · "+(AA[a.action]||esc(a.action))+(a.choice?": "+esc(a.choice):""):"")]}),"Не получал")+"</div>")+"</div>"+
+    (P.fb||"")+tl("Журнал действий над профилем",'<div class="dsscroll">'+dsRows(M.log.map(function(x){return [esc(x.action),dt(x.at)+(x.details&&Object.keys(x.details).length?" · "+esc(JSON.stringify(x.details)).slice(0,160):"")]}),"Действий не было")+"</div>")+(P.acc||"");
+  if(!ok){["gm","hb"].forEach(function(k){S[k]=warn});S.ap=warn+tl("Вес",kg.length?dsCols(kg,"#6EA0FF"):'<p class="hint">Записей веса нет</p>')}
+  return {S:S,counts:{wk:j.workouts_total||"",gm:plays||"",hb:habOn||"",pp:fr.length||""}};
+}
+var M0err="";
 
 /* ---------- фото крупно ---------- */
 var UPHX={};
