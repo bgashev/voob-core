@@ -1380,6 +1380,11 @@ textarea.field{resize:none;line-height:1.5;min-height:84px;padding:12px 15px;fon
 @media(max-width:560px){.pset2{grid-template-columns:1fr}}
 @media(max-width:560px){.pcd{grid-template-columns:1fr}.pcd .pca{grid-column:1;grid-row:auto}}
 
+/* активный фильтр: цветная заливка, полоса сверху и галочка */
+#ust button.on,#ust button.on:hover{position:relative;background:linear-gradient(180deg,color-mix(in srgb,var(--c) 30%,transparent),color-mix(in srgb,var(--c) 7%,transparent));box-shadow:inset 0 3px 0 var(--c),inset 0 0 0 1px color-mix(in srgb,var(--c) 55%,transparent)}
+#ust button.on b{color:var(--c)}#ust button.on span{color:var(--fg);font-weight:700}#ust button.on small{color:var(--mute)}
+#ust button.on::after{content:"✓";position:absolute;right:12px;top:13px;width:20px;height:20px;border-radius:50%;background:var(--c);color:#0B0B0D;font:900 12px/20px var(--sans);text-align:center;animation:ustck .45s cubic-bezier(.3,1.7,.5,1)}
+@keyframes ustck{from{transform:scale(0)}}
 </style>
 </head>
 <body>
@@ -2195,6 +2200,8 @@ function seenCls(x){var d=Date.now()-Date.parse(x);return d<15*60000?"on":d<DAY?
 function uSave(){lsSet(UKEY,US)}
 function uReset(extra){US=Object.assign({},UDEF,{sort:US.sort,dir:US.dir},extra||{});US.fl=Object.assign({},US.fl||{});uq="";$("#uq").value="";ulim=50;uanim=true;uSave();uRender()}
 
+/* цвета плиток-фильтров; UON — какие сейчас включены (повторный клик выключает) */
+var UCOL=["#EDEDF2","#FBBF24","#34D399","#22D3EE","#6EA0FF","#B39DFF","#FB7185","#FB923C"],UON=[];
 function uStats(){
   var now=Date.now(),c={all:uall.length,pro:0,d1:0,d7:0,n7:0,s14:0,bl:0,paid:0,stars:0};
   uall.forEach(function(u){var p=proSt(u,now),ls=Date.parse(u.last_seen)||0;
@@ -2202,8 +2209,9 @@ function uStats(){
     if(Date.parse(u.created_at)>=now-7*DAY)c.n7++;if(ls<now-14*DAY)c.s14++;if(u.blocked)c.bl++;if(u.paid>0){c.paid++;c.stars+=u.stars||0}});
   var pc=function(n){return c.all?Math.round(n/c.all*100)+"% от всех":""};
   var T=[["Всего",c.all,"",null],["С PRO",c.pro,pc(c.pro),{pro:"pro"}],["Заходили за сутки",c.d1,pc(c.d1),{seen:"d1"}],["Активны за 7 дн.",c.d7,pc(c.d7),{seen:"d7"}],["Новые за 7 дн.",c.n7,"",{reg:"7"}],["Спят 14+ дн.",c.s14,pc(c.s14),{seen:"s14"}],["Заблокированы",c.bl,"",{fl:{blocked:1}}],["Платили ⭐",c.paid,c.stars?fmt(c.stars)+" ⭐ всего":"",{fl:{paid:1}}]];
-  $("#ust").innerHTML=T.map(function(t,i){return '<button type="button" data-p="'+i+'" style="--i:'+i+'"><b>'+fmt(t[1])+"</b><span>"+t[0]+"</span><small>"+(t[2]||"&nbsp;")+"</small></button>"}).join("");
-  $("#ust").onclick=function(e){var b=e.target.closest("[data-p]");if(b)uReset(T[+b.dataset.p][3])};
+  $("#ust").innerHTML=T.map(function(t,i){var p=t[3],on=!!p&&(p.fl?Object.keys(p.fl).every(function(k){return !!US.fl[k]}):Object.keys(p).every(function(k){return US[k]===p[k]}));UON[i]=on;
+    return '<button type="button" data-p="'+i+'" class="'+(on?"on":"")+'" aria-pressed="'+on+'" style="--i:'+i+';--c:'+UCOL[i]+'"><b>'+fmt(t[1])+"</b><span>"+t[0]+"</span><small>"+(t[2]||"&nbsp;")+"</small></button>"}).join("");
+  $("#ust").onclick=function(e){var b=e.target.closest("[data-p]");if(!b)return;var i=+b.dataset.p;uReset(UON[i]?null:T[i][3])};
 }
 function uChips(){
   var now=Date.now(),cnt=function(fn){var n=0;uall.forEach(function(u){if(fn(u))n++});return n};
