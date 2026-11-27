@@ -59,7 +59,7 @@ async function all(q: (from: number, to: number) => any, cap = 50000) {
   return out;
 }
 // v1.8: 56 рамок мобильной версии + старые ключи (их клиент переводит в новые через FR_LEGACY)
-const FRAME_KEYS = ["classic", "ears", "orbit", "pulse", "sparkle", "flame", "glitch", "crystal", "comet", "vine", "autumn", "daisy", "jelly", "runes", "sigil", "radar", "lights", "halo", "sakura", "stars", "fireflies", "wave", "bubbles", "frost", "antlers", "hearts", "cloud", "bow", "eclipse", "lava", "hud", "laurel", "wind", "pixring", "coins", "crown8", "hologram", "circuit", "eye3", "phases", "fairywing", "gummy", "blackhole", "clockwork", "neonportal", "ribbons", "waterblade", "arcflash", "paws", "matrix", "dice", "cards", "lockon", "telemetry", "claw", "doodlespace", "corrupt", "aurora", "gold", "neon", "ocean", "cyber", "emerald", "galaxy", "ice", "storm", "pixel", "plasma", "atom", "holo", "moon", "prism"];
+const FRAME_KEYS = ["classic", "nyballs", "nymandarin", "nygingerbread", "nygoat", "ears", "orbit", "pulse", "sparkle", "flame", "glitch", "crystal", "comet", "vine", "autumn", "daisy", "jelly", "runes", "sigil", "radar", "lights", "halo", "sakura", "stars", "fireflies", "wave", "bubbles", "frost", "antlers", "hearts", "cloud", "bow", "eclipse", "lava", "hud", "laurel", "wind", "pixring", "coins", "crown8", "hologram", "circuit", "eye3", "phases", "fairywing", "gummy", "blackhole", "clockwork", "neonportal", "ribbons", "waterblade", "arcflash", "paws", "matrix", "dice", "cards", "lockon", "telemetry", "claw", "doodlespace", "corrupt", "aurora", "gold", "neon", "ocean", "cyber", "emerald", "galaxy", "ice", "storm", "pixel", "plasma", "atom", "holo", "moon", "prism"];
 const OTP_TTL = 10 * 60000, OTP_TRIES = 5, TRUST_DAYS = 30;
 
 // ---- WEB: параметры
