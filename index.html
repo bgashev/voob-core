@@ -1414,6 +1414,8 @@ textarea.field{resize:none;line-height:1.5;min-height:84px;padding:12px 15px;fon
 @keyframes bgpop{from{transform:scale(.4);opacity:0}}
 .dsg{display:flex;align-items:center;gap:12px;margin-top:12px}.dsg>.dsb{flex:1;min-width:0;margin:0}.dsgi{width:42px;height:42px;border-radius:12px;flex:none;object-fit:cover;display:grid;place-items:center;background:var(--tile3);font:800 17px var(--disp);color:var(--mute)}
 .ds .item .t .dsgi{display:inline-grid;vertical-align:middle;width:34px;height:34px;border-radius:10px;margin-right:10px;font-size:14px}img.dsgi{display:block}.ds .item .t img.dsgi{display:inline-block}
+.delh{color:var(--bad)}.dell{list-style:none;margin:12px 0;padding:0;max-height:210px;overflow:auto}.dell li{display:flex;justify-content:space-between;gap:12px;padding:7px 0;border-top:1px solid var(--line);font-size:13px}.dell span{color:var(--mute);font-family:var(--mono)}
+.delc>span{display:block;margin-top:14px;font-size:12.5px;color:var(--mute)}.delc .codes{margin:8px 0 0}
 @keyframes dsgrow{from{width:0}}@keyframes dsup{from{height:0}}
 @media(max-width:1000px){.ds{grid-template-columns:minmax(0,1fr)}.ds>aside{position:static;max-height:none}}
 </style>
@@ -2361,7 +2363,7 @@ function uBulk(srt){
   b.hidden=false;
   b.innerHTML='<div class="ubc"><b><i>'+ids.length+'</i>выбрано</b>'+(srt&&srt.length>ids.length?'<a data-b="all">выбрать все '+srt.length+'</a>':"")+'</div>'+
     '<div class="ubg"><button type="button" data-b="gift"><svg viewBox="0 0 24 24"><rect x="3" y="8" width="18" height="4" rx="1"/><path d="M12 8v13M5 12v8a1 1 0 001 1h12a1 1 0 001-1v-8M7.5 8a2.5 2.5 0 010-5C10 3 12 8 12 8s2-5 4.5-5a2.5 2.5 0 010 5"/></svg>Подарок</button><button type="button" data-b="pro"><svg viewBox="0 0 24 24"><path d="M3 8l4 4 5-7 5 7 4-4-2 11H5z"/></svg>PRO</button><button type="button" data-b="msg"><svg viewBox="0 0 24 24"><path d="M4 5h16v11H9l-5 4z"/></svg>Сообщение</button><button type="button" data-b="tag" title="Теги и заметка"><svg viewBox="0 0 24 24"><path d="M3 12V4h8l10 10-8 8z"/><circle cx="7.5" cy="8.5" r="1"/></svg>Теги</button></div>'+
-    '<div class="ubg"><button type="button" data-b="blk" class="dg"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M5.6 5.6l12.8 12.8"/></svg>Блок</button><button type="button" data-b="unb" title="Разблокировать"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M8 12.5l3 3 5-6"/></svg>Разблок.</button></div>'+
+    '<div class="ubg"><button type="button" data-b="blk" class="dg"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M5.6 5.6l12.8 12.8"/></svg>Блок</button><button type="button" data-b="unb" title="Разблокировать"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M8 12.5l3 3 5-6"/></svg>Разблок.</button><button type="button" data-b="del" class="dg" title="Удалить аккаунты навсегда"><svg viewBox="0 0 24 24"><path d="M4 7h16M10 11v6M14 11v6M6 7l1 13h10l1-13M9 7V4h6v3"/></svg>Удалить</button></div>'+
     '<div class="ubg"><button type="button" data-b="ids" class="ic" title="Скопировать ID выбранных"><svg viewBox="0 0 24 24"><rect x="8" y="8" width="12" height="12" rx="2"/><path d="M16 8V6a2 2 0 00-2-2H6a2 2 0 00-2 2v8a2 2 0 002 2h2"/></svg></button><button type="button" data-b="csv" class="ic" title="Выгрузить CSV"><svg viewBox="0 0 24 24"><path d="M12 4v11M7 11l5 5 5-5M5 20h14"/></svg></button></div>'+
     '<button type="button" class="ubx" data-b="x" title="Снять выбор (Esc)"><svg viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18"/></svg></button>';
 }
@@ -2377,6 +2379,7 @@ $("#ubulk").onclick=function(e){
   else if(k==="tag")uBulkTags(ids);
   else if(k==="blk")uBulkBlock(ids,true);
   else if(k==="unb")uBulkBlock(ids,false);
+  else if(k==="del")uBulkDelete(ids);
 };
 function uRun(title,ids,fn){
   var done=0,fail=0,errs=[],i=0,stop=false;
@@ -2439,6 +2442,46 @@ function uBulkBlock(ids,on){
   if(!todo.length)return toast(on?"Некого блокировать":"Некого разблокировать","err");
   dlg("<h3>"+(on?"Заблокировать":"Разблокировать")+" · "+todo.length+'</h3><p class="hint">'+esc(uNames(todo))+(todo.length<ids.length?". Остальных пропущу: уже в нужном состоянии или это создатель.":".")+'</p><div class="stack" style="margin-top:12px">'+(on?'<input class="field" id="bw" placeholder="Причина (человек её увидит)">':"")+uNotify()+'<div class="row" style="margin:0"><button class="btn '+(on?"bad":"pri")+' sm" id="ubgo">'+(on?"Заблокировать":"Разблокировать")+'</button><button class="btn sm" data-close>Отмена</button></div></div>');
   $("#ubgo").onclick=function(){var w=on?$("#bw").value.trim():"",n=$("#bn").checked;uRun(on?"Блокирую":"Снимаю блок",todo,function(id){return api(on?"block":"unblock",{tg_id:id,reason:w,notify:n})})};
+}
+/* ---------- удаление аккаунтов: список → коды из почты и бота → подтверждение ---------- */
+function uBulkDelete(ids,after){
+  var m={};uall.forEach(function(u){m[u.tg_id]=u});
+  var todo=ids.map(Number).filter(function(i){return !(m[i]&&m[i].creator)&&i!==702410323});
+  if(!todo.length)return toast("Некого удалять","err");
+  if(todo.length>100)return toast("За один раз можно удалить не больше 100 человек","err");
+  var n=todo.length,skip=ids.length-n,who=n+" "+plural(n,"аккаунт","аккаунта","аккаунтов");
+  var names=function(){return todo.slice(0,12).map(function(i){var u=m[i]||{};return "<li><b>"+esc(u.first_name||u.handle||(after&&after.name)||"без имени")+"</b><span>"+i+"</span></li>"}).join("")+(n>12?"<li><b>и ещё "+(n-12)+"</b></li>":"")};
+  dlg('<h3 class="delh">Удалить '+who+'</h3><ul class="dell">'+names()+'</ul><p class="hint" style="white-space:normal">Сотрутся тренировки, привычки, друзья, игры, подарки, PRO и вход. Отменить нельзя. История платежей останется. Если человек снова откроет VOOB, у него появится новый пустой аккаунт.'+(skip?" Создателя пропускаю.":"")+'</p><label class="dnote"><input type="checkbox" id="deln"> Уведомить в боте</label><div class="row" style="margin:12px 0 0"><button class="btn bad sm" id="delsend">Получить коды</button><button class="btn sm" data-close>Отмена</button></div><p class="err" id="dele"></p>');
+  var wait={locked:"Слишком много неверных кодов. Подожди 15 минут",soon:"Коды только что отправлены. Новые можно запросить через 30 секунд"};
+  $("#delsend").onclick=function(){
+    var btn=this,notify=$("#deln").checked;btn.disabled=true;$("#dele").textContent="";
+    api("del_start",{ids:todo}).then(function(j){
+      if(j.status!=="sent"){btn.disabled=false;$("#dele").textContent=wait[j.status]||j.error||"Не получилось";return}
+      step(j,notify);
+    });
+  };
+  function step(s,notify){
+    dlg('<h3 class="delh">Подтверди удаление · '+s.count+'</h3><div class="delc"><span>Код с почты '+esc(s.to)+'</span><div class="codes" id="delm"></div><span>Код из Telegram-бота</span><div class="codes" id="delt"></div></div><div class="row" style="margin:14px 0 0"><button class="btn bad sm" id="delgo" disabled>Удалить навсегда</button><button class="btn sm" data-close>Отмена</button><button class="btn sm" id="delre">Новые коды</button></div><p class="err" id="dele"></p>');
+    var busy=false,cm,ct,ready=function(){$("#delgo").disabled=busy||!(cm&&ct&&cm.val().length===6&&ct.val().length===6)};
+    cm=mkCodes($("#delm"),function(){$("#delt input").focus()});ct=mkCodes($("#delt"));
+    $("#delm").oninput=$("#delt").oninput=function(){setTimeout(ready,0)};
+    $("#delm input").focus();
+    $("#delre").onclick=function(){api("del_start",{ids:todo}).then(function(j){if(j.status==="sent"){cm.clear();ct.clear();ready();$("#dele").textContent="Новые коды отправлены"}else $("#dele").textContent=wait[j.status]||j.error||"Не получилось"})};
+    $("#delgo").onclick=function(){
+      busy=true;ready();$("#dele").textContent="Удаляю…";
+      api("del_confirm",{ids:todo,code_mail:cm.val(),code_tg:ct.val(),notify:notify}).then(function(j){
+        busy=false;
+        if(j.status==="ok"){
+          var d=j.deleted||[],f=j.failed||[];d.forEach(function(i){delete usel[i]});
+          dlg("<h3>Удалено: "+d.length+"</h3>"+(f.length?'<p class="hint" style="white-space:normal;color:var(--bad)">Не вышло: '+f.length+"<br>"+f.slice(0,5).map(function(x){return x.tg_id+": "+esc(x.error)}).join("<br>")+"</p>":'<p class="hint">Данные стёрты.</p>')+'<div class="row"><button class="btn pri sm" data-close>Закрыть</button></div>');
+          if(after&&d.length&&after.done)after.done();loadUsers();return;
+        }
+        var box=j.which==="mail"?cm:j.which==="tg"?ct:null,where=j.which==="mail"?"Код с почты: ":j.which==="tg"?"Код из бота: ":"";
+        $("#dele").textContent=where+(j.status==="wrong"?"неверный, осталось попыток: "+j.left:j.status==="spent"?"попытки кончились, запроси новые коды":j.status==="expired"?"устарел, запроси новые коды":j.status==="locked"?wait.locked:j.error||"не получилось. Проверь список пользователей, прежде чем повторять");
+        if(box){box.clear()}ready();
+      });
+    };
+  }
 }
 function uCsv(onlySel){
   var src=onlySel?uall.filter(function(u){return usel[u.tg_id]}):(window._usrt||uall),now=Date.now();
@@ -2558,6 +2601,7 @@ function openUser(id,np){
     if(j.feedback.length)P.fb=tl("Обращения",'<div class="list">'+j.feedback.slice(0,5).map(function(x){return '<div class="item"><div class="m"><div class="s wrap">'+esc(x.text)+"</div></div></div>"}).join("")+"</div>");
     P.ses=tl("Сессии",'<p class="hint" style="margin:0 0 8px">'+(j.sessions.length?j.sessions.map(function(x){return esc(x.device||"?")+" · "+dt(x.last_seen)}).join("<br>"):"Нет активных")+"</p>"+(u.creator?"":'<button class="btn sm bad" id="ukick">Завершить все сессии</button>'));
     if(!u.creator)P.acc=tl("Доступ",u.blocked?'<button class="btn sm" id="ublk">Разблокировать</button>':'<button class="btn sm bad" id="ublk">Заблокировать</button>');
+    if(!u.creator)P.acc=tl("Доступ",'<div class="row" style="margin:0">'+(u.blocked?'<button class="btn sm" id="ublk">Разблокировать</button>':'<button class="btn sm bad" id="ublk">Заблокировать</button>')+'<button class="btn sm bad" id="udel">Удалить аккаунт</button></div>');
     M0err=(r[5]&&r[5].error)||"";
     var D=dsPanes(j,r[5],P),offN=((r[3]&&r[3].ach_off)||[]).length;
     var TL=[["ov","Обзор",""],["wk","Тренировки",D.counts.wk],["gm","Игры",D.counts.gm],["hb","Привычки",D.counts.hb],["ap","Приложения",""],["pp","Люди",D.counts.pp],["pro","PRO",""],["pf","Профиль",offN?offN+" откл.":""],["sy","Система",""]];
@@ -2591,6 +2635,7 @@ function openUser(id,np){
     $$("[data-pay]").forEach(function(b){b.onclick=function(){payOpen(b.dataset.pay)}});
     $$("[data-w]").forEach(function(b){armed(b,function(){api("del_workout",{tg_id:id,rid:b.dataset.w}).then(again)})});
     if($("#ukick"))armed($("#ukick"),function(){api("kick",{tg_id:id}).then(function(r){if(r.error)say(r);else say(r,"Завершено сессий: "+r.n)})});
+    if($("#udel"))$("#udel").onclick=function(){uBulkDelete([id],{name:u.first_name||u.handle,done:function(){tab("us")}})};
     if($("#ublk")){
       if(u.blocked)$("#ublk").onclick=function(){api("unblock",{tg_id:id}).then(again)};
       else $("#ublk").onclick=function(){

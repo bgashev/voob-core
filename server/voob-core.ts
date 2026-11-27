@@ -573,6 +573,58 @@ async function userMore(id: number) {
   };
 }
 
+/* ---------- удаление аккаунтов: только WEB и только с двумя свежими кодами (почта + бот), привязанными к этому списку людей ---------- */
+const DEL_MAX = 100;
+const delIds = (raw: unknown) => [...new Set((Array.isArray(raw) ? raw : []).map(Number).filter((x) => Number.isSafeInteger(x) && x > 0 && x !== ADMIN))].sort((a, b) => a - b);
+const delHash = (ids: number[]) => sha256("del:" + ids.join(","));
+async function delPeople(ids: number[]) {
+  const { data } = await db.from("users").select("tg_id, first_name, handle").in("tg_id", ids);
+  return (data ?? []) as any[];
+}
+async function delStart(th: string, raw: unknown) {
+  const ids = delIds(raw);
+  if (!ids.length) return { error: "Некого удалять" };
+  if (ids.length > DEL_MAX) return { error: `За один раз можно удалить не больше ${DEL_MAX}` };
+  if (await locked()) return { status: "locked" };
+  if (await cooling(th, "del_tg")) return { status: "soon" };
+  const c = await applyPending();
+  if (!c?.email) return { error: "Почта не настроена" };
+  const people = await delPeople(ids);
+  if (!people.length) return { error: "Этих пользователей уже нет" };
+  const h = await delHash(ids), cm = await issue(th, "del_mail", h), ct = await issue(th, "del_tg", h);
+  if (!cm || !ct) return { error: "Не удалось создать коды" };
+  const esc = (s: unknown) => String(s ?? "").replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+  const names = people.slice(0, 10).map((u) => `• ${esc(u.first_name || u.handle || "без имени")} · <code>${u.tg_id}</code>`).join("\n") + (people.length > 10 ? `\n…и ещё ${people.length - 10}` : "");
+  const mail = await sendMail(c.email, `VOOB CORE · удаление аккаунтов · ${cm}`, mailHtml(`Код для УДАЛЕНИЯ аккаунтов VOOB (${people.length}). Отменить удаление будет нельзя:`, cm, CODE_FOOT));
+  const r = await tg("sendMessage", { chat_id: ADMIN, parse_mode: "HTML", text: `🗑 <b>Удаление аккаунтов: ${people.length}</b>\n\n${names}\n\nКод:  <code>${ct}</code>\nДействует 10 минут. Отменить удаление будет нельзя.\nЕсли это не ты — никому не сообщай код и заверши сессии в Core.` });
+  if (!mail || !r?.ok) return { error: !mail ? "Письмо не доставлено" : "Бот не смог отправить код" };
+  return { status: "sent", to: maskMail(c.email), count: people.length };
+}
+async function delConfirm(th: string, body: any) {
+  const ids = delIds(body?.ids);
+  if (!ids.length || ids.length > DEL_MAX) return { error: "Неверный список" };
+  const a = await codeCheck(th, "del_mail", body?.code_mail, false);
+  if (a.status !== "ok") return { ...a, which: "mail" };
+  const b = await codeCheck(th, "del_tg", body?.code_tg, false);
+  if (b.status !== "ok") return { ...b, which: "tg" };
+  const h = await delHash(ids);
+  if (a.payload !== h || b.payload !== h) return { status: "changed", error: "Список изменился — запроси коды заново" };
+  // гасим оба кода одним запросом: второй такой же запрос уже ничего не получит
+  const { data: used } = await db.from("core_otp").update({ used_at: new Date().toISOString() }).in("id", [a.id, b.id]).is("used_at", null).select("id");
+  if ((used?.length ?? 0) !== 2) return { status: "expired" };
+  const people = await delPeople(ids), done: number[] = [], failed: { tg_id: number; error: string }[] = [];
+  for (const u of people) {
+    const id = Number(u.tg_id);
+    const { data, error } = await db.rpc("core_delete_account", { p_tg: id });
+    if (error || data !== true) { console.error(error); failed.push({ tg_id: id, error: error?.message ?? "уже удалён" }); continue; }
+    done.push(id);
+    await log("account_delete", id, { name: u.first_name ?? null, handle: u.handle ?? null });
+    if (body?.notify === true) await tg("sendMessage", { chat_id: id, text: "Твой аккаунт VOOB и все его данные удалены администратором." });
+  }
+  await tg("sendMessage", { chat_id: ADMIN, text: `🗑 Удалено аккаунтов: ${done.length}${failed.length ? `, не удалось: ${failed.length}` : ""}.` });
+  return { status: "ok", deleted: done, failed };
+}
+
 async function block(id: number, on: boolean, reason: string, notify: boolean) {
   if (id === ADMIN) return { error: "Себя заблокировать нельзя" };
   const { data: u } = await db.from("users").select("blocked, hide_feed, handle, handle_prev, hide_feed_prev").eq("tg_id", id).maybeSingle();
@@ -1049,6 +1101,8 @@ Deno.serve(async (req) => {
       if (a === "chg_start") return json(await chgStart(th, body?.email));
       if (a === "chg_confirm") return json(await chgConfirm(th, body?.code_new, body?.code_tg));
       if (a === "chg_cancel") return json(await chgCancel());
+      if (a === "del_start") return json(await delStart(th, body?.ids));
+      if (a === "del_confirm") return json(await delConfirm(th, body));
     } else {
       if (!LEGACY_OK) return json({ error: "Вход из программы отключён — используй core.voob.kz" }, 403);
       if (a === "whoami") return json({ status: "ok", tg_id: ADMIN, verified: await verified(th) });
